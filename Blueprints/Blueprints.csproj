@@ -67,7 +67,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Compatibility.cs" />
     <Compile Include="CreateBlueprintTool.cs" />
     <Compile Include="CreateBlueprintToolHoverCard.cs" />
     <Compile Include="Blueprints.cs" />
