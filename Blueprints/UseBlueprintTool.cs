@@ -32,9 +32,7 @@ namespace Blueprints {
                 Grid.CellSizeInMeters / (spriteRenderer.sprite.texture.height / spriteRenderer.sprite.pixelsPerUnit)
             );
 
-            offsetObject.SetLayerRecursively(LayerMask.NameToLayer("Overlay"));
             visualizer.transform.SetParent(transform);
-
             OnMouseMove(PlayerController.GetCursorPos(KInputManager.GetMousePos()));
         }
 
