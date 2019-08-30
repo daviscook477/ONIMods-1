@@ -68,5 +68,12 @@ namespace WireCutter {
                 __instance.basicTools.Add(WireCutterAssets.WIRECUTTER_TOOLCOLLECTION);
             }
         }
+
+        [HarmonyPatch(typeof(Game), "DestroyInstances")]
+        public static class Game_DestroyInstances {
+            public static void Postfix() {
+                WireCutterTool.DestroyInstance();
+            }
+        }
     }
 }
