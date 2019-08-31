@@ -105,12 +105,8 @@ namespace WireCutter {
                                                     GameObject otherGameObject = Grid.Objects[offsetCell, layer];
                                                     Building otherBuiilding;
 
-                                                    if (otherGameObject != null && (otherBuiilding = otherGameObject.GetComponent<Building>()) != null) {
-                                                        IHaveUtilityNetworkMgr otherUtilityNetworkManager;
-
-                                                        if ((otherUtilityNetworkManager = otherBuiilding.Def.BuildingComplete.GetComponent<IHaveUtilityNetworkMgr>()) != null) {
-                                                            connectionsToRemove |= utilityConnection;
-                                                        }
+                                                    if (otherGameObject != null && (otherBuiilding = otherGameObject.GetComponent<Building>()) != null && otherBuiilding.Def.BuildingComplete.GetComponent<IHaveUtilityNetworkMgr>() != null) {
+                                                        connectionsToRemove |= utilityConnection;
                                                     }
                                                 }
                                             }
