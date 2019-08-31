@@ -98,6 +98,10 @@
       <Project>{2613b600-705b-4eaf-9ed7-36b6329aad9e}</Project>
       <Name>Compatibility</Name>
     </ProjectReference>
+    <ProjectReference Include="..\VersionDisplayer\VersionDisplayer.csproj">
+      <Project>{d01e0bc6-d209-41be-a346-5aba850468fb}</Project>
+      <Name>VersionDisplayer</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
