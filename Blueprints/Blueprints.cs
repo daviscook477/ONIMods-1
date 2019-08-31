@@ -79,6 +79,7 @@ namespace Blueprints {
 
         public static Blueprint CreateBlueprint(Vector2I topLeft, Vector2I bottomRight, FilteredDragTool originTool = null) {
             Blueprint blueprint = new Blueprint(Utilities.GetNewBlueprintLocation("unnamed"));
+            int blueprintHeight = (topLeft.y - bottomRight.y);
 
             for (int x = topLeft.x; x <= bottomRight.x; ++x) {
                 for (int y = bottomRight.y; y <= topLeft.y; ++y) {
@@ -100,10 +101,9 @@ namespace Blueprints {
 
                                 if ((primaryElement = building.GetComponent<PrimaryElement>()) != null) {
                                     Vector2I centre = Grid.CellToXY(GameUtil.NaturalBuildingCell(building));
-                                    Vector2I centreOffset = new Vector2I(centre.x - building.GetExtents().x, centre.y - building.GetExtents().y);
 
                                     BuildingConfig buildingConfig = new BuildingConfig {
-                                        Offset = new Vector2I((building.GetExtents().x + centreOffset.x) - topLeft.x, (building.GetExtents().y + centreOffset.y) - topLeft.y),
+                                        Offset = new Vector2I(centre.x - topLeft.x, blueprintHeight - (topLeft.y - centre.y)),
                                         BuildingDef = building.Def,
                                         Orientation = building.Orientation
                                     };
@@ -123,7 +123,7 @@ namespace Blueprints {
                         }
 
                         if (emptyCell && (!Grid.IsSolidCell(cell) || Grid.Objects[cell, 7] != null && Grid.Objects[cell, 7].name == "DigPlacer")) {
-                            Vector2I digLocation = new Vector2I(x - topLeft.x, y - topLeft.y);
+                            Vector2I digLocation = new Vector2I(x - topLeft.x, blueprintHeight - (topLeft.y - y));
 
                             if (!blueprint.DigLocations.Contains(digLocation)) {
                                 blueprint.DigLocations.Add(digLocation);
