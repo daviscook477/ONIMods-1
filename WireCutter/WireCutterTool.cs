@@ -112,13 +112,15 @@ namespace WireCutter {
                                             }
                                         }
 
-                                        if (building.GetComponent<KAnimGraphTileVisualizer>() != null) {
-                                            building.GetComponent<KAnimGraphTileVisualizer>().UpdateConnections(buildingConnections & ~connectionsToRemove);
-                                            building.GetComponent<KAnimGraphTileVisualizer>().Refresh();
-                                        }
+                                        if(connectionsToRemove != 0) {
+                                            if (building.GetComponent<KAnimGraphTileVisualizer>() != null) {
+                                                building.GetComponent<KAnimGraphTileVisualizer>().UpdateConnections(buildingConnections & ~connectionsToRemove);
+                                                building.GetComponent<KAnimGraphTileVisualizer>().Refresh();
+                                            }
 
-                                        TileVisualizer.RefreshCell(cell, building.Def.TileLayer, building.Def.ReplacementLayer);
-                                        utilityNetworkManager.GetNetworkManager().ForceRebuildNetworks();
+                                            TileVisualizer.RefreshCell(cell, building.Def.TileLayer, building.Def.ReplacementLayer);
+                                            utilityNetworkManager.GetNetworkManager().ForceRebuildNetworks();
+                                        }
                                     }
                                 }
                             }
