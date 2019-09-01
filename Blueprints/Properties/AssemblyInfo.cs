@@ -6,6 +6,6 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyProduct("Blueprints")]
 [assembly: AssemblyCopyright("Copyright Mayall 2019")]
 [assembly: ComVisible(false)]
-[assembly: AssemblyVersion("2.0.82.0")]
+[assembly: AssemblyVersion("2.0.84.0")]
 [assembly: NeutralResourcesLanguage("en")]
 
