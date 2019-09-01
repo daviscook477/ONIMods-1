@@ -31,7 +31,7 @@ namespace WireCutter {
 
             GameObject offsetObject = new GameObject();
             SpriteRenderer spriteRenderer = offsetObject.AddComponent<SpriteRenderer>();
-            spriteRenderer.color = WireCutterAssets.WIRECUTTER_COLOR_DRAG; ;
+            spriteRenderer.color = WireCutterAssets.WIRECUTTER_COLOR_DRAG;
             spriteRenderer.sprite = WireCutterAssets.WIRECUTTER_VISUALIZER_SPRITE;
 
             offsetObject.transform.SetParent(visualizer.transform);
@@ -72,12 +72,12 @@ namespace WireCutter {
                     Util.Swap(ref x0, ref x1);
                 }
 
-                if (y0 < y1) {
+                if (y0 > y1) {
                     Util.Swap(ref y0, ref y1);
                 }
 
                 for (int x = x0; x <= x1; ++x) {
-                    for (int y = y1; y <= y0; ++y) {
+                    for (int y = y0; y <= y1; ++y) {
                         int cell = Grid.XYToCell(x, y);
 
                         if (Grid.IsVisible(cell)) {
@@ -101,7 +101,7 @@ namespace WireCutter {
                                             if (Grid.IsValidBuildingCell(offsetCell)) {
                                                 Grid.CellToXY(offsetCell, out int x2, out int y2);
 
-                                                if (x2 >= x0 && x2 <= x1 && y2 >= y1 && y2 <= y0) {
+                                                if (x2 >= x0 && x2 <= x1 && y2 >= y0 && y2 <= y1) {
                                                     GameObject otherGameObject = Grid.Objects[offsetCell, layer];
                                                     Building otherBuiilding;
 
