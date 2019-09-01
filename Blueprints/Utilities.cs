@@ -77,6 +77,11 @@ namespace Blueprints {
             FileNameDialog blueprintNameDialog = Util.KInstantiateUI<FileNameDialog>(ScreenPrefabs.Instance.FileNameDialog.gameObject, blueprintNameDialogParent);
             blueprintNameDialog.name = "BlueprintNameDialog";
 
+            Transform titleTransform = blueprintNameDialog.transform?.Find("Panel")?.Find("Title_BG")?.Find("Title");
+            if (titleTransform != null && titleTransform.GetComponent<LocText>() != null) {
+                titleTransform.GetComponent<LocText>().text = "NAME BLUEPRINT";
+            }
+
             return blueprintNameDialog;
         }
 
