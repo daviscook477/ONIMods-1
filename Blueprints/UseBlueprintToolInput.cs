@@ -4,8 +4,10 @@ using UnityEngine;
 
 namespace Blueprints {
     public sealed class UseBlueprintToolInput : MonoBehaviour {
+        public UseBlueprintTool ParentTool { get; set; }
+
         public void Update() {
-            if (BlueprintsState.LoadedBlueprints.Count > 0) {
+            if ((ParentTool?.hasFocus ?? false) && BlueprintsState.LoadedBlueprints.Count > 0) {
                 bool blueprintChanged = false;
 
                 if (Input.GetKeyDown(BlueprintsAssets.BLUEPRINTS_INPUT_KEYBIND_USETOOL_RENAME)) {

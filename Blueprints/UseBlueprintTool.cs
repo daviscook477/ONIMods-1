@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿using Harmony;
+
+using UnityEngine;
 
 namespace Blueprints {
     public sealed class UseBlueprintTool : InterfaceTool {
@@ -47,6 +49,7 @@ namespace Blueprints {
             base.OnActivateTool();
 
             gameObject.AddComponent<UseBlueprintToolInput>();
+            gameObject.GetComponent<UseBlueprintToolInput>().ParentTool = this;
             ToolMenu.Instance.PriorityScreen.Show(true);
 
             if(BlueprintsState.LoadedBlueprints.Count > 0) {
@@ -84,7 +87,7 @@ namespace Blueprints {
         public override void OnMouseMove(Vector3 cursorPos) {
             base.OnMouseMove(cursorPos);
 
-            if (hasFocus) {
+            if (hasFocus) {               
                 BlueprintsState.UpdateVisual(Grid.PosToXY(cursorPos));
             }
         }

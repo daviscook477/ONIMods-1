@@ -66,7 +66,7 @@ namespace Blueprints {
             FieldInfo areaVisualizerField = AccessTools.Field(typeof(DragTool), "areaVisualizer");
             FieldInfo areaVisualizerSpriteRendererField = AccessTools.Field(typeof(DragTool), "areaVisualizerSpriteRenderer");
 
-            GameObject areaVisualizer = Util.KInstantiate((GameObject)AccessTools.Field(typeof(DeconstructTool), "areaVisualizer").GetValue(DeconstructTool.Instance));
+            GameObject areaVisualizer = Util.KInstantiate((GameObject) AccessTools.Field(typeof(DeconstructTool), "areaVisualizer").GetValue(DeconstructTool.Instance));
             areaVisualizer.SetActive(false);
 
             areaVisualizer.name = "SnapshotAreaVisualizer";
@@ -159,7 +159,7 @@ namespace Blueprints {
         }
 
         public override void OnMouseMove(Vector3 cursorPos) {
-            if(blueprint == null) {
+            if (blueprint == null) {
                 base.OnMouseMove(cursorPos);
             }
 
