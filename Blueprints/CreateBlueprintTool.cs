@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using System;
+using System.Reflection;
 
 using Harmony;
 
@@ -40,7 +41,7 @@ namespace Blueprints {
             FieldInfo areaVisualizerField = AccessTools.Field(typeof(DragTool), "areaVisualizer");
             FieldInfo areaVisualizerSpriteRendererField = AccessTools.Field(typeof(DragTool), "areaVisualizerSpriteRenderer");
 
-            GameObject areaVisualizer = Util.KInstantiate((GameObject) AccessTools.Field(typeof(DeconstructTool), "areaVisualizer").GetValue(DeconstructTool.Instance));
+            GameObject areaVisualizer = Util.KInstantiate(Traverse.Create(DeconstructTool.Instance).Field("areaVisualizer").GetValue<GameObject>());
             areaVisualizer.SetActive(false);
 
             areaVisualizer.name = "CreateBlueprintAreaVisualizer";
@@ -75,11 +76,29 @@ namespace Blueprints {
                 }
 
                 else {
-                    blueprint.Write();
+                    FileNameDialog blueprintNameDialog = Utilities.CreateBlueprintRenameDialog();
+                    SpeedControlScreen.Instance.Pause(false);
 
-                    BlueprintsState.LoadedBlueprints.Add(blueprint);
-                    BlueprintsState.SelectedBlueprintIndex = BlueprintsState.LoadedBlueprints.Count - 1;
-                    PopFXManager.Instance.SpawnFX(BlueprintsAssets.BLUEPRINTS_CREATE_ICON_SPRITE, "Blueprint created!", null, PlayerController.GetCursorPos(KInputManager.GetMousePos()), BlueprintsAssets.BLUEPRINTS_FXTIME);
+                    blueprintNameDialog.onConfirm = delegate(string blueprintName) {
+                        blueprint.Rename(blueprintName.Substring(0, blueprintName.Length - 4));
+                        SpeedControlScreen.Instance.Unpause(false);
+
+                        blueprintNameDialog.Deactivate();
+                        blueprint.Write();
+                        PopFXManager.Instance.SpawnFX(BlueprintsAssets.BLUEPRINTS_CREATE_ICON_SPRITE, "Blueprint created!", null, PlayerController.GetCursorPos(KInputManager.GetMousePos()), BlueprintsAssets.BLUEPRINTS_FXTIME);
+
+                        BlueprintsState.LoadedBlueprints.Add(blueprint);
+                        BlueprintsState.SelectedBlueprintIndex = BlueprintsState.LoadedBlueprints.Count - 1;
+                    };
+
+                    blueprintNameDialog.onCancel = delegate {
+                        SpeedControlScreen.Instance.Unpause(false);
+
+                        PopFXManager.Instance.SpawnFX(BlueprintsAssets.BLUEPRINTS_CREATE_ICON_SPRITE, "Blueprint cancelled!", null, PlayerController.GetCursorPos(KInputManager.GetMousePos()), BlueprintsAssets.BLUEPRINTS_FXTIME);
+                        blueprintNameDialog.Deactivate();
+                    };
+
+                    blueprintNameDialog.Activate();
                 }
             }
         }
