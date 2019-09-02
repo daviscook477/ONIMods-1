@@ -4,6 +4,7 @@ using STRINGS;
 using System;
 using System.Collections.Generic;
 using System.IO;
+
 using UnityEngine;
 
 namespace Blueprints {
@@ -62,7 +63,7 @@ namespace Blueprints {
                 }
             }
 
-            if (ingame) {
+            if (ingame && BlueprintsState.LoadedBlueprints.Count > 0) {
                 BlueprintsState.SelectedBlueprintIndex = 0;
                 BlueprintsState.ClearVisuals();
                 BlueprintsState.VisualizeBlueprint(Grid.PosToXY(PlayerController.GetCursorPos(KInputManager.GetMousePos())), BlueprintsState.SelectedBlueprint);
@@ -172,6 +173,8 @@ namespace Blueprints {
                 JObject rootObject = (JObject) JToken.ReadFrom(jsonReader).Root;
 
                 JToken kCreateToolToken = rootObject.SelectToken("keybind_createtool");
+                JToken kUseToolToken = rootObject.SelectToken("keybind_usetool");
+                JToken kReloadToken = rootObject.SelectToken("keybind_usetool_reload");
                 JToken kCycleLeftToken = rootObject.SelectToken("keybind_usetool_cycleleft");
                 JToken kCycleRightToken = rootObject.SelectToken("keybind_usetool_cycleright");
                 JToken kRenameToken = rootObject.SelectToken("keybind_usetool_rename");
@@ -185,6 +188,16 @@ namespace Blueprints {
                 if (kCreateToolToken != null && kCreateToolToken.Type == JTokenType.String && Utilities.TryParseEnum<KeyCode>(kCreateToolToken.Value<string>(), out KeyCode kCreateTool)) {
                     BlueprintsAssets.BLUEPRINTS_INPUT_KEYBIND_CREATETOOL = kCreateTool;
                     BlueprintsAssets.BLUEPRINTS_CREATE_TOOLTIP = "Create blueprint " + Utilities.GetKeyCodeString(kCreateTool);
+                }
+
+                if (kUseToolToken != null && kUseToolToken.Type == JTokenType.String && Utilities.TryParseEnum<KeyCode>(kUseToolToken.Value<string>(), out KeyCode kUseTool)) {
+                    BlueprintsAssets.BLUEPRINTS_INPUT_KEYBIND_USETOOL = kUseTool;
+                    BlueprintsAssets.BLUEPRINTS_USE_TOOLTIP = "Use blueprint " + Utilities.GetKeyCodeString(kUseTool) + "\n\nWhen activating the tool hold " + Utilities.GetKeyCodeString(KeyCode.LeftShift) + " to reload blueprints";
+                }
+
+                if (kReloadToken != null && kReloadToken.Type == JTokenType.String && Utilities.TryParseEnum<KeyCode>(kReloadToken.Value<string>(), out KeyCode kReload)) {
+                    BlueprintsAssets.BLUEPRINTS_INPUT_KEYBIND_USETOOL_RELOAD = kReload;
+                    BlueprintsAssets.BLUEPRINTS_USE_TOOLTIP = "Use blueprint " + Utilities.GetKeyCodeString(BlueprintsAssets.BLUEPRINTS_INPUT_KEYBIND_USETOOL) + "\n\nWhen activating the tool hold " + Utilities.GetKeyCodeString(kReload) + " to reload blueprints";
                 }
 
                 if (kCycleLeftToken != null && kCycleLeftToken.Type == JTokenType.String && Utilities.TryParseEnum<KeyCode>(kCycleLeftToken.Value<string>(), out KeyCode kCycleLeft)) {
