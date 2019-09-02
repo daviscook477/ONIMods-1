@@ -66,7 +66,7 @@ namespace Blueprints {
             FieldInfo areaVisualizerField = AccessTools.Field(typeof(DragTool), "areaVisualizer");
             FieldInfo areaVisualizerSpriteRendererField = AccessTools.Field(typeof(DragTool), "areaVisualizerSpriteRenderer");
 
-            GameObject areaVisualizer = Util.KInstantiate((GameObject) AccessTools.Field(typeof(DeconstructTool), "areaVisualizer").GetValue(DeconstructTool.Instance));
+            GameObject areaVisualizer = Util.KInstantiate(Traverse.Create(DeconstructTool.Instance).Field("areaVisualizer").GetValue<GameObject>());
             areaVisualizer.SetActive(false);
 
             areaVisualizer.name = "SnapshotAreaVisualizer";
