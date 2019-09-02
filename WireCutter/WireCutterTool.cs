@@ -1,11 +1,12 @@
-﻿using System.Reflection;
+﻿using System.Collections.Generic;
+using System.Reflection;
 
 using Harmony;
 
 using UnityEngine;
 
 namespace WireCutter {
-    public sealed class WireCutterTool : DragTool {
+    public sealed class WireCutterTool : FilteredDragTool {
         private static readonly UtilityConnections[] connections = {
             UtilityConnections.Left,
             UtilityConnections.Right,
@@ -61,6 +62,15 @@ namespace WireCutter {
             gameObject.AddComponent<WireCutterToolHoverCard>();
         }
 
+        protected override void GetDefaultFilters(Dictionary<string, ToolParameterMenu.ToggleState> filters) {
+            filters.Add(ToolParameterMenu.FILTERLAYERS.ALL, ToolParameterMenu.ToggleState.On);
+            filters.Add(ToolParameterMenu.FILTERLAYERS.WIRES, ToolParameterMenu.ToggleState.Off);
+            filters.Add(ToolParameterMenu.FILTERLAYERS.LIQUIDCONDUIT, ToolParameterMenu.ToggleState.Off);
+            filters.Add(ToolParameterMenu.FILTERLAYERS.GASCONDUIT, ToolParameterMenu.ToggleState.Off);
+            filters.Add(ToolParameterMenu.FILTERLAYERS.SOLIDCONDUIT, ToolParameterMenu.ToggleState.Off);
+            filters.Add(ToolParameterMenu.FILTERLAYERS.LOGIC, ToolParameterMenu.ToggleState.Off);
+        }
+
         protected override void OnDragComplete(Vector3 cursorDown, Vector3 cursorUp) {
             base.OnDragComplete(cursorDown, cursorUp);
 
@@ -85,7 +95,7 @@ namespace WireCutter {
                                 GameObject gameObject = Grid.Objects[cell, layer];                         
                                 Building building;
 
-                                if (gameObject != null && (building = gameObject.GetComponent<Building>()) != null ) {
+                                if (gameObject != null && (building = gameObject.GetComponent<Building>()) != null && IsActiveLayer(GetFilterLayerFromGameObject(gameObject))) {
                                     IHaveUtilityNetworkMgr utilityNetworkManager;
 
                                     if ((utilityNetworkManager = building.Def.BuildingComplete.GetComponent<IHaveUtilityNetworkMgr>()) != null) {
@@ -105,7 +115,7 @@ namespace WireCutter {
                                                     GameObject otherGameObject = Grid.Objects[offsetCell, layer];
                                                     Building otherBuiilding;
 
-                                                    if (otherGameObject != null && (otherBuiilding = otherGameObject.GetComponent<Building>()) != null && otherBuiilding.Def.BuildingComplete.GetComponent<IHaveUtilityNetworkMgr>() != null) {
+                                                    if (otherGameObject != null && (otherBuiilding = otherGameObject.GetComponent<Building>()) != null && otherBuiilding.Def.BuildingComplete.GetComponent<IHaveUtilityNetworkMgr>() != null && IsActiveLayer(GetFilterLayerFromGameObject(gameObject))) {
                                                         connectionsToRemove |= utilityConnection;
                                                     }
                                                 }
