@@ -40,6 +40,8 @@ namespace Blueprints {
         public static Color                   BLUEPRINTS_COLOR_BLUEPRINT_DRAG = new Color32(0, 119, 145, 255);
 
         public static KeyCode                 BLUEPRINTS_INPUT_KEYBIND_CREATETOOL = KeyCode.None;
+        public static KeyCode                 BLUEPRINTS_INPUT_KEYBIND_USETOOL = KeyCode.None;
+        public static KeyCode                 BLUEPRINTS_INPUT_KEYBIND_USETOOL_RELOAD = KeyCode.LeftShift;
         public static KeyCode                 BLUEPRINTS_INPUT_KEYBIND_USETOOL_CYCLELEFT = KeyCode.LeftArrow;
         public static KeyCode                 BLUEPRINTS_INPUT_KEYBIND_USETOOL_CYCLERIGHT = KeyCode.RightArrow;
         public static KeyCode                 BLUEPRINTS_INPUT_KEYBIND_USETOOL_RENAME = KeyCode.End;
@@ -219,11 +221,15 @@ namespace Blueprints {
             ToolMenu.ToolCollection currentlySelectedCollection = ToolMenu.Instance.currentlySelectedCollection;
 
             if (Input.GetKeyDown(BlueprintsAssets.BLUEPRINTS_INPUT_KEYBIND_CREATETOOL) && currentlySelectedCollection != BlueprintsAssets.BLUEPRINTS_CREATE_TOOLCOLLECTION) {
-                AccessTools.Method(typeof(ToolMenu), "ChooseCollection").Invoke(ToolMenu.Instance, new object[] { BlueprintsAssets.BLUEPRINTS_CREATE_TOOLCOLLECTION, true });
+                Traverse.Create(ToolMenu.Instance).Method("ChooseCollection", BlueprintsAssets.BLUEPRINTS_CREATE_TOOLCOLLECTION, true).GetValue();
+            }
+
+            else if (Input.GetKeyDown(BlueprintsAssets.BLUEPRINTS_INPUT_KEYBIND_USETOOL) && currentlySelectedCollection != BlueprintsAssets.BLUEPRINTS_USE_TOOLCOLLECTION) {
+                Traverse.Create(ToolMenu.Instance).Method("ChooseCollection", BlueprintsAssets.BLUEPRINTS_USE_TOOLCOLLECTION, true).GetValue();
             }
 
             else if (Input.GetKeyDown(BlueprintsAssets.BLUEPRINTS_INPUT_KEYBIND_SNAPSHOTTOOL) && currentlySelectedCollection != BlueprintsAssets.BLUEPRINTS_SNAPSHOT_TOOLCOLLECTION) {
-                AccessTools.Method(typeof(ToolMenu), "ChooseCollection").Invoke(ToolMenu.Instance, new object[] { BlueprintsAssets.BLUEPRINTS_SNAPSHOT_TOOLCOLLECTION, true });
+                Traverse.Create(ToolMenu.Instance).Method("ChooseCollection", BlueprintsAssets.BLUEPRINTS_SNAPSHOT_TOOLCOLLECTION, true).GetValue();
             }
         }
     }
@@ -485,7 +491,7 @@ namespace Blueprints {
                 return true;
             }
 
-            catch (EndOfStreamException) {
+            catch (System.Exception) {
                 return false;
             }
         }
