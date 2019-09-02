@@ -25,7 +25,7 @@ namespace Blueprints {
 
                 else if (Input.GetKeyDown(BlueprintsAssets.BLUEPRINTS_INPUT_KEYBIND_USETOOL_DELETE)) {
                     BlueprintsState.SelectedBlueprint.DeleteFile();
-                    PopFXManager.Instance.SpawnFX(BlueprintsAssets.BLUEPRINTS_USE_ICON_SPRITE, "Deleted \"" + BlueprintsState.SelectedBlueprint.FriendlyName + "\" (" + (BlueprintsState.LoadedBlueprints.Count - 1) + " remaining)", null, PlayerController.GetCursorPos(KInputManager.GetMousePos()), BlueprintsAssets.BLUEPRINTS_FXTIME);
+                    PopFXManager.Instance.SpawnFX(BlueprintsAssets.BLUEPRINTS_CREATE_ICON_SPRITE, "Deleted \"" + BlueprintsState.SelectedBlueprint.FriendlyName + "\" (" + (BlueprintsState.LoadedBlueprints.Count - 1) + " remaining)", null, PlayerController.GetCursorPos(KInputManager.GetMousePos()), BlueprintsAssets.BLUEPRINTS_FXTIME);
 
                     BlueprintsState.LoadedBlueprints.RemoveAt(BlueprintsState.SelectedBlueprintIndex);
                     if (BlueprintsState.SelectedBlueprintIndex >= BlueprintsState.LoadedBlueprints.Count) {

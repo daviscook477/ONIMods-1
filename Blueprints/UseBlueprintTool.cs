@@ -49,11 +49,6 @@ namespace Blueprints {
             gameObject.AddComponent<UseBlueprintToolInput>();
             ToolMenu.Instance.PriorityScreen.Show(true);
 
-            if (Input.GetKey(BlueprintsAssets.BLUEPRINTS_INPUT_KEYBIND_USETOOL_RELOAD)) {
-                Utilities.ReloadBlueprints(true);
-                PopFXManager.Instance.SpawnFX(BlueprintsAssets.BLUEPRINTS_CREATE_ICON_SPRITE, "Loaded " + BlueprintsState.LoadedBlueprints.Count + " blueprints", null, PlayerController.GetCursorPos(KInputManager.GetMousePos()), BlueprintsAssets.BLUEPRINTS_FXTIME);
-            }
-
             if(BlueprintsState.LoadedBlueprints.Count > 0) {
                 BlueprintsState.VisualizeBlueprint(Grid.PosToXY(PlayerController.GetCursorPos(KInputManager.GetMousePos())), BlueprintsState.SelectedBlueprint);
                 if (visualizer != null) {

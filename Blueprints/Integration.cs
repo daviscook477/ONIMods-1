@@ -6,6 +6,7 @@ using Harmony;
 
 using UnityEngine;
 using TMPro;
+using Rendering;
 
 namespace Blueprints {
     public static class Mod_OnLoad {
@@ -24,13 +25,13 @@ namespace Blueprints {
                 IOUtilities.CreateDefaultConfig();
             }
 
-            BlueprintsAssets.BLUEPRINTS_USE_ICON_SPRITE = Utilities.CreateSpriteDXT5(Assembly.GetExecutingAssembly().GetManifestResourceStream("Blueprints.image_useblueprint_button.dds"), 32, 32);
-            BlueprintsAssets.BLUEPRINTS_USE_ICON_SPRITE.name = BlueprintsAssets.BLUEPRINTS_USE_ICON_NAME;
-            BlueprintsAssets.BLUEPRINTS_USE_VISUALIZER_SPRITE = Utilities.CreateSpriteDXT5(Assembly.GetExecutingAssembly().GetManifestResourceStream("Blueprints.image_useblueprint_visualizer.dds"), 256, 256);
-
             BlueprintsAssets.BLUEPRINTS_CREATE_ICON_SPRITE = Utilities.CreateSpriteDXT5(Assembly.GetExecutingAssembly().GetManifestResourceStream("Blueprints.image_createblueprint_button.dds"), 32, 32);
             BlueprintsAssets.BLUEPRINTS_CREATE_ICON_SPRITE.name = BlueprintsAssets.BLUEPRINTS_CREATE_ICON_NAME;
             BlueprintsAssets.BLUEPRINTS_CREATE_VISUALIZER_SPRITE = Utilities.CreateSpriteDXT5(Assembly.GetExecutingAssembly().GetManifestResourceStream("Blueprints.image_createblueprint_visualizer.dds"), 256, 256);
+
+            BlueprintsAssets.BLUEPRINTS_USE_ICON_SPRITE = Utilities.CreateSpriteDXT5(Assembly.GetExecutingAssembly().GetManifestResourceStream("Blueprints.image_useblueprint_button.dds"), 32, 32);
+            BlueprintsAssets.BLUEPRINTS_USE_ICON_SPRITE.name = BlueprintsAssets.BLUEPRINTS_USE_ICON_NAME;
+            BlueprintsAssets.BLUEPRINTS_USE_VISUALIZER_SPRITE = Utilities.CreateSpriteDXT5(Assembly.GetExecutingAssembly().GetManifestResourceStream("Blueprints.image_useblueprint_visualizer.dds"), 256, 256);
 
             BlueprintsAssets.BLUEPRINTS_SNAPSHOT_ICON_SPRITE = Utilities.CreateSpriteDXT5(Assembly.GetExecutingAssembly().GetManifestResourceStream("Blueprints.image_snapshot_button.dds"), 32, 32);
             BlueprintsAssets.BLUEPRINTS_SNAPSHOT_ICON_SPRITE.name = BlueprintsAssets.BLUEPRINTS_SNAPSHOT_ICON_NAME;
@@ -38,7 +39,7 @@ namespace Blueprints {
 
             BlueprintsAssets.BLUEPRINTS_CREATE_TOOLCOLLECTION = ToolMenu.CreateToolCollection(BlueprintsAssets.BLUEPRINTS_CREATE_NAME, BlueprintsAssets.BLUEPRINTS_CREATE_ICON_NAME, Action.NumActions, BlueprintsAssets.BLUEPRINTS_CREATE_TOOLNAME, BlueprintsAssets.BLUEPRINTS_CREATE_TOOLTIP, true);
             BlueprintsAssets.BLUEPRINTS_USE_TOOLCOLLECTION = ToolMenu.CreateToolCollection(BlueprintsAssets.BLUEPRINTS_USE_NAME, BlueprintsAssets.BLUEPRINTS_USE_ICON_NAME, Action.NumActions, BlueprintsAssets.BLUEPRINTS_USE_TOOLNAME, BlueprintsAssets.BLUEPRINTS_USE_TOOLTIP, true);
-            BlueprintsAssets.BLUEPRINTS_SNAPSHOT_TOOLCOLLECTION = ToolMenu.CreateToolCollection(BlueprintsAssets.BLUEPRINTS_SNAPSHOT_NAME, BlueprintsAssets.BLUEPRINTS_SNAPSHOT_ICON_NAME, Action.NumActions, BlueprintsAssets.BLUEPRINTS_SNAPSHOT_TOOLNAME, BlueprintsAssets.BLUEPRINTS_SNAPSHOT_TOOLTIP, true);
+            BlueprintsAssets.BLUEPRINTS_SNAPSHOT_TOOLCOLLECTION = ToolMenu.CreateToolCollection(BlueprintsAssets.BLUEPRINTS_SNAPSHOT_NAME, BlueprintsAssets.BLUEPRINTS_SNAPSHOT_ICON_NAME, Action.NumActions, BlueprintsAssets.BLUEPRINTS_SNAPSHOT_TOOLNAME, BlueprintsAssets.BLUEPRINTS_SNAPSHOT_TOOLTIP, false);
 
             Debug.Log("Blueprints Loaded: Version " + currentAssembly.GetName().Version);
         }
@@ -82,7 +83,6 @@ namespace Blueprints {
 
 
                 __instance.tools = interfaceTools.ToArray();
-
             }
         }
 
@@ -93,10 +93,7 @@ namespace Blueprints {
 
                 ___icons.Add(BlueprintsAssets.BLUEPRINTS_CREATE_ICON_SPRITE);
                 ___icons.Add(BlueprintsAssets.BLUEPRINTS_USE_ICON_SPRITE);
-
-                if (BlueprintsAssets.BLUEPRINTS_BOOL_ENABLESNAPSHOTTOOL) {
-                    ___icons.Add(BlueprintsAssets.BLUEPRINTS_SNAPSHOT_ICON_SPRITE);
-                }
+                ___icons.Add(BlueprintsAssets.BLUEPRINTS_SNAPSHOT_ICON_SPRITE);
             }
         }
 
@@ -105,10 +102,7 @@ namespace Blueprints {
             public static void Prefix(ToolMenu __instance) {
                 __instance.basicTools.Add(BlueprintsAssets.BLUEPRINTS_CREATE_TOOLCOLLECTION);
                 __instance.basicTools.Add(BlueprintsAssets.BLUEPRINTS_USE_TOOLCOLLECTION);
-                
-                if (BlueprintsAssets.BLUEPRINTS_BOOL_ENABLESNAPSHOTTOOL) {
-                    __instance.basicTools.Add(BlueprintsAssets.BLUEPRINTS_SNAPSHOT_TOOLCOLLECTION);
-                }
+                __instance.basicTools.Add(BlueprintsAssets.BLUEPRINTS_SNAPSHOT_TOOLCOLLECTION);
 
                 Utilities.ReloadBlueprints(false);
             }
@@ -133,7 +127,7 @@ namespace Blueprints {
             }
         }
 
-        [HarmonyPatch(typeof(Rendering.BlockTileRenderer), "GetCellColour")]
+        [HarmonyPatch(typeof(BlockTileRenderer), "GetCellColour")]
         public static class BlockTileRenderer_GetCellColour {
             public static void Postfix(int cell, SimHashes element, ref Color __result) {
                 if (__result != Color.red && element == SimHashes.Void) {

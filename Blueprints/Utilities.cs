@@ -1,13 +1,10 @@
-﻿using System;
-using System.IO;
-
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-
-using UnityEngine;
-
 using STRINGS;
+using System;
 using System.Collections.Generic;
+using System.IO;
+using UnityEngine;
 
 namespace Blueprints {
     public static class Utilities {
@@ -131,12 +128,6 @@ namespace Blueprints {
                 jsonWriter.WritePropertyName("keybind_createtool");
                 jsonWriter.WriteValue(KeyCode.None.ToString());
 
-                jsonWriter.WritePropertyName("keybind_usetool");
-                jsonWriter.WriteValue(KeyCode.None.ToString());
-
-                jsonWriter.WritePropertyName("keybind_usetool_reload");
-                jsonWriter.WriteValue(KeyCode.LeftShift.ToString());
-
                 jsonWriter.WritePropertyName("keybind_usetool_cycleleft");
                 jsonWriter.WriteValue(KeyCode.LeftArrow.ToString());
 
@@ -161,9 +152,6 @@ namespace Blueprints {
                 jsonWriter.WritePropertyName("compress_blueprints");
                 jsonWriter.WriteValue(true);
 
-                jsonWriter.WritePropertyName("enable_snapshottool");
-                jsonWriter.WriteValue(false);
-
                 jsonWriter.WriteEndObject();
             }
         }
@@ -184,8 +172,6 @@ namespace Blueprints {
                 JObject rootObject = (JObject) JToken.ReadFrom(jsonReader).Root;
 
                 JToken kCreateToolToken = rootObject.SelectToken("keybind_createtool");
-                JToken kUseToolToken = rootObject.SelectToken("keybind_usetool");
-                JToken kReloadToken = rootObject.SelectToken("keybind_usetool_reload");
                 JToken kCycleLeftToken = rootObject.SelectToken("keybind_usetool_cycleleft");
                 JToken kCycleRightToken = rootObject.SelectToken("keybind_usetool_cycleright");
                 JToken kRenameToken = rootObject.SelectToken("keybind_usetool_rename");
@@ -195,21 +181,10 @@ namespace Blueprints {
 
                 JToken bRequireConstructable = rootObject.SelectToken("require_constructable");
                 JToken bCompressBlueprints = rootObject.SelectToken("compress_blueprints");
-                JToken bEnableSnapshotTool = rootObject.SelectToken("enable_snapshottool");
 
                 if (kCreateToolToken != null && kCreateToolToken.Type == JTokenType.String && Utilities.TryParseEnum<KeyCode>(kCreateToolToken.Value<string>(), out KeyCode kCreateTool)) {
                     BlueprintsAssets.BLUEPRINTS_INPUT_KEYBIND_CREATETOOL = kCreateTool;
                     BlueprintsAssets.BLUEPRINTS_CREATE_TOOLTIP = "Create blueprint " + Utilities.GetKeyCodeString(kCreateTool);
-                }
-
-                if (kUseToolToken != null && kUseToolToken.Type == JTokenType.String && Utilities.TryParseEnum<KeyCode>(kUseToolToken.Value<string>(), out KeyCode kUseTool)) {
-                    BlueprintsAssets.BLUEPRINTS_INPUT_KEYBIND_USETOOL = kUseTool;
-                    BlueprintsAssets.BLUEPRINTS_USE_TOOLTIP = "Use blueprint " + Utilities.GetKeyCodeString(kUseTool) + "\n\nWhen selecting the tool hold " + UI.FormatAsHotkey("[SHIFT]") + " to reload blueprints";
-                }
-
-                if (kReloadToken != null && kReloadToken.Type == JTokenType.String && Utilities.TryParseEnum<KeyCode>(kReloadToken.Value<string>(), out KeyCode kReload)) {
-                    BlueprintsAssets.BLUEPRINTS_INPUT_KEYBIND_USETOOL_RELOAD = kReload;
-                    BlueprintsAssets.BLUEPRINTS_USE_TOOLTIP = "Use blueprint " + Utilities.GetKeyCodeString(BlueprintsAssets.BLUEPRINTS_INPUT_KEYBIND_USETOOL) + "\n\nWhen selecting the tool hold " + Utilities.GetKeyCodeString(kReload) + " to reload blueprints";
                 }
 
                 if (kCycleLeftToken != null && kCycleLeftToken.Type == JTokenType.String && Utilities.TryParseEnum<KeyCode>(kCycleLeftToken.Value<string>(), out KeyCode kCycleLeft)) {
@@ -248,10 +223,6 @@ namespace Blueprints {
 
                 if (bCompressBlueprints != null && bCompressBlueprints.Type == JTokenType.Boolean) {
                     BlueprintsAssets.BLUEPRINTS_BOOL_COMPRESBLUEPRINTS = bCompressBlueprints.Value<bool>();
-                }
-
-                if (bEnableSnapshotTool != null && bEnableSnapshotTool.Type == JTokenType.Boolean) {
-                    BlueprintsAssets.BLUEPRINTS_BOOL_ENABLESNAPSHOTTOOL = bEnableSnapshotTool.Value<bool>();
                 }
             }
         }

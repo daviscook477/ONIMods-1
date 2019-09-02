@@ -32,25 +32,22 @@ namespace VersionDisplayer {
         public static void ModsScreen_OnActivate_Prefix() {
             if (!NamesPatched) {
                 foreach (Mod mod in Global.Instance.modManager.mods) {
-                    if ((mod.loaded_content & Content.DLL) == Content.DLL) {
-                        string[] dllFiles = Directory.GetFiles(mod.label.install_path, "*.dll");
+                    string[] dllFiles = Directory.GetFiles(mod.label.install_path, "*.dll");
 
-                        if (dllFiles.Length > 0) {
-                            Assembly assembly = null;
-                            int i = 0;
+                    if (dllFiles.Length > 0) {
+                        Assembly assembly = null;
+                        int i = 0;
 
-                            while ((assembly = Assembly.LoadFrom(dllFiles[i])) == null) {
-                                if (++i >= dllFiles.Length) {
-                                    break;
-                                }
-                            }
-
-                            if (assembly != null) {
-                                mod.label.title += " (" + assembly.GetName().Version + ")";
+                        while ((assembly = Assembly.LoadFrom(dllFiles[i])) == null) {
+                            if (++i >= dllFiles.Length) {
+                                break;
                             }
                         }
-                    }
 
+                        if (assembly != null) {
+                            mod.label.title += " (" + assembly.GetName().Version + ")";
+                        }
+                    }
                 }
 
                 NamesPatched = true;

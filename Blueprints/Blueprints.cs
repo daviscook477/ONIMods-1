@@ -40,8 +40,6 @@ namespace Blueprints {
         public static Color                   BLUEPRINTS_COLOR_BLUEPRINT_DRAG = new Color32(0, 119, 145, 255);
 
         public static KeyCode                 BLUEPRINTS_INPUT_KEYBIND_CREATETOOL = KeyCode.None;
-        public static KeyCode                 BLUEPRINTS_INPUT_KEYBIND_USETOOL = KeyCode.None;
-        public static KeyCode                 BLUEPRINTS_INPUT_KEYBIND_USETOOL_RELOAD = KeyCode.LeftShift;
         public static KeyCode                 BLUEPRINTS_INPUT_KEYBIND_USETOOL_CYCLELEFT = KeyCode.LeftArrow;
         public static KeyCode                 BLUEPRINTS_INPUT_KEYBIND_USETOOL_CYCLERIGHT = KeyCode.RightArrow;
         public static KeyCode                 BLUEPRINTS_INPUT_KEYBIND_USETOOL_RENAME = KeyCode.End;
@@ -59,7 +57,6 @@ namespace Blueprints {
 
         public static bool                    BLUEPRINTS_BOOL_REQUIRECONSTRUCTABLE = true;
         public static bool                    BLUEPRINTS_BOOL_COMPRESBLUEPRINTS = true;
-        public static bool                    BLUEPRINTS_BOOL_ENABLESNAPSHOTTOOL = false;
 
         public static float                   BLUEPRINTS_FXTIME = 0.75F;
     }
@@ -225,11 +222,7 @@ namespace Blueprints {
                 AccessTools.Method(typeof(ToolMenu), "ChooseCollection").Invoke(ToolMenu.Instance, new object[] { BlueprintsAssets.BLUEPRINTS_CREATE_TOOLCOLLECTION, true });
             }
 
-            else if (Input.GetKeyDown(BlueprintsAssets.BLUEPRINTS_INPUT_KEYBIND_USETOOL) && currentlySelectedCollection != BlueprintsAssets.BLUEPRINTS_USE_TOOLCOLLECTION) {
-                AccessTools.Method(typeof(ToolMenu), "ChooseCollection").Invoke(ToolMenu.Instance, new object[] { BlueprintsAssets.BLUEPRINTS_USE_TOOLCOLLECTION, true });
-            }
-
-            else if (BlueprintsAssets.BLUEPRINTS_BOOL_ENABLESNAPSHOTTOOL && Input.GetKeyDown(BlueprintsAssets.BLUEPRINTS_INPUT_KEYBIND_SNAPSHOTTOOL) && currentlySelectedCollection != BlueprintsAssets.BLUEPRINTS_SNAPSHOT_TOOLCOLLECTION) {
+            else if (Input.GetKeyDown(BlueprintsAssets.BLUEPRINTS_INPUT_KEYBIND_SNAPSHOTTOOL) && currentlySelectedCollection != BlueprintsAssets.BLUEPRINTS_SNAPSHOT_TOOLCOLLECTION) {
                 AccessTools.Method(typeof(ToolMenu), "ChooseCollection").Invoke(ToolMenu.Instance, new object[] { BlueprintsAssets.BLUEPRINTS_SNAPSHOT_TOOLCOLLECTION, true });
             }
         }
@@ -487,7 +480,7 @@ namespace Blueprints {
                     }
                 }
 
-                Orientation = (Orientation)binaryReader.ReadInt32();
+                Orientation = (Orientation) binaryReader.ReadInt32();
                 Flags = binaryReader.ReadInt32();
                 return true;
             }
