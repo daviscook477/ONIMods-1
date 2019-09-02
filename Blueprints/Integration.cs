@@ -11,7 +11,7 @@ using Rendering;
 namespace Blueprints {
     public static class Mod_OnLoad {
         public static void OnLoad() {
-            Assembly currentAssembly = Assembly.GetAssembly(typeof(BlueprintsAssets));
+            Assembly currentAssembly = Assembly.GetExecutingAssembly();
             string currentAssemblyDirectory = Path.GetDirectoryName(currentAssembly.Location);
             BlueprintsAssets.BLUEPRINTS_PATH_CONFIGFILE = currentAssemblyDirectory + "/config.json";
             BlueprintsAssets.BLUEPRINTS_PATH_KEYCODESFILE = currentAssemblyDirectory + "/keycodes.txt";
