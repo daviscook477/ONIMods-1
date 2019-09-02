@@ -52,7 +52,15 @@ namespace Blueprints {
             gameObject.GetComponent<UseBlueprintToolInput>().ParentTool = this;
             ToolMenu.Instance.PriorityScreen.Show(true);
 
-            if(BlueprintsState.LoadedBlueprints.Count > 0) {
+            if (Input.GetKey(BlueprintsAssets.BLUEPRINTS_INPUT_KEYBIND_USETOOL_RELOAD) || Input.GetKeyUp(BlueprintsAssets.BLUEPRINTS_INPUT_KEYBIND_USETOOL_RELOAD)) {
+                int oldBlueprintCount = BlueprintsState.LoadedBlueprints.Count;
+                Utilities.ReloadBlueprints(true);
+
+                int blueprintCountDelta = BlueprintsState.LoadedBlueprints.Count - oldBlueprintCount;
+                PopFXManager.Instance.SpawnFX(BlueprintsAssets.BLUEPRINTS_CREATE_ICON_SPRITE, "Loaded " + Mathf.Abs(blueprintCountDelta) + (blueprintCountDelta >= 0 ? " additional" : " fewer") + " blueprints! (" + BlueprintsState.LoadedBlueprints.Count + " total)", null, PlayerController.GetCursorPos(KInputManager.GetMousePos()), BlueprintsAssets.BLUEPRINTS_FXTIME * 4);
+            }
+
+            if (BlueprintsState.LoadedBlueprints.Count > 0) {
                 BlueprintsState.VisualizeBlueprint(Grid.PosToXY(PlayerController.GetCursorPos(KInputManager.GetMousePos())), BlueprintsState.SelectedBlueprint);
                 if (visualizer != null) {
                     Destroy(visualizer);
