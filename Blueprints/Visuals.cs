@@ -240,26 +240,27 @@ namespace Blueprints {
         }
 
         public void Clean() {
-            if (Grid.Objects[DirtyCell, (int) buildingConfig.BuildingDef.TileLayer] == Visualizer) {
-                Grid.Objects[DirtyCell, (int) buildingConfig.BuildingDef.TileLayer] = null;
-            }
-
-            if (hasReplacementLayer && Grid.Objects[DirtyCell, (int) buildingConfig.BuildingDef.ReplacementLayer] == Visualizer) {
-                Grid.Objects[DirtyCell, (int) buildingConfig.BuildingDef.ReplacementLayer] = null;
-            }
-
-            if (buildingConfig.BuildingDef.isKAnimTile) {
-                GameObject tileLayerObject = Grid.Objects[DirtyCell, (int) buildingConfig.BuildingDef.TileLayer];
-                
-                if (tileLayerObject == null || tileLayerObject.GetComponent<Constructable>() == null) {
-                    World.Instance.blockTileRenderer.RemoveBlock(buildingConfig.BuildingDef, false, SimHashes.Void, DirtyCell);
-                    TileVisualizer.RefreshCell(DirtyCell, buildingConfig.BuildingDef.TileLayer, buildingConfig.BuildingDef.ReplacementLayer);
+            if (DirtyCell != -1 && Grid.IsValidBuildingCell(DirtyCell)) {
+                if (Grid.Objects[DirtyCell, (int) buildingConfig.BuildingDef.TileLayer] == Visualizer) {
+                    Grid.Objects[DirtyCell, (int) buildingConfig.BuildingDef.TileLayer] = null;
                 }
 
-                GameObject replacementLayerObject = hasReplacementLayer ? null : Grid.Objects[DirtyCell, (int) buildingConfig.BuildingDef.ReplacementLayer];
-                if (replacementLayerObject == null || replacementLayerObject == Visualizer) {
-                    World.Instance.blockTileRenderer.RemoveBlock(buildingConfig.BuildingDef, true, SimHashes.Void, DirtyCell);
-                    TileVisualizer.RefreshCell(DirtyCell, buildingConfig.BuildingDef.TileLayer, buildingConfig.BuildingDef.ReplacementLayer);
+                if (hasReplacementLayer && Grid.Objects[DirtyCell, (int) buildingConfig.BuildingDef.ReplacementLayer] == Visualizer) {
+                    Grid.Objects[DirtyCell, (int) buildingConfig.BuildingDef.ReplacementLayer] = null;
+                }
+
+                if (buildingConfig.BuildingDef.isKAnimTile) {
+                    GameObject tileLayerObject = Grid.Objects[DirtyCell, (int)buildingConfig.BuildingDef.TileLayer];
+                    if (tileLayerObject == null || tileLayerObject.GetComponent<Constructable>() == null) {
+                        World.Instance.blockTileRenderer.RemoveBlock(buildingConfig.BuildingDef, false, SimHashes.Void, DirtyCell);
+                        TileVisualizer.RefreshCell(DirtyCell, buildingConfig.BuildingDef.TileLayer, buildingConfig.BuildingDef.ReplacementLayer);
+                    }
+
+                    GameObject replacementLayerObject = hasReplacementLayer ? null : Grid.Objects[DirtyCell, (int)buildingConfig.BuildingDef.ReplacementLayer];
+                    if (replacementLayerObject == null || replacementLayerObject == Visualizer) {
+                        World.Instance.blockTileRenderer.RemoveBlock(buildingConfig.BuildingDef, true, SimHashes.Void, DirtyCell);
+                        TileVisualizer.RefreshCell(DirtyCell, buildingConfig.BuildingDef.TileLayer, buildingConfig.BuildingDef.ReplacementLayer);
+                    }
                 }
             }
 
@@ -330,17 +331,17 @@ namespace Blueprints {
 
                             bool replacing = hasReplacementLayer && CanReplace(cell);
                             World.Instance.blockTileRenderer.AddBlock(LayerMask.NameToLayer("Overlay"), buildingConfig.BuildingDef, replacing, SimHashes.Void, cell);
-                            if (!visualizerSeated && replacing && Grid.Objects[DirtyCell, (int) buildingConfig.BuildingDef.ReplacementLayer] == null) {
-                                Grid.Objects[cell, (int) buildingConfig.BuildingDef.ReplacementLayer] = Visualizer;
+                            if (replacing && !visualizerSeated && Grid.Objects[DirtyCell, (int) buildingConfig.BuildingDef.ReplacementLayer] == null) {
+                                Grid.Objects[cell, (int)buildingConfig.BuildingDef.ReplacementLayer] = Visualizer;
                             }
                         }
-
-                        TileVisualizer.RefreshCell(cell, buildingConfig.BuildingDef.TileLayer, buildingConfig.BuildingDef.ReplacementLayer);
                     }
-                }
-            }
 
-            DirtyCell = cell;
+                    TileVisualizer.RefreshCell(cell, buildingConfig.BuildingDef.TileLayer, buildingConfig.BuildingDef.ReplacementLayer);
+                }
+
+                DirtyCell = cell;
+            }
         }
     }
 
