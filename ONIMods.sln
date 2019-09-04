@@ -5,7 +5,7 @@ VisualStudioVersion = 16.0.29209.62
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Blueprints", "Blueprints\Blueprints.csproj", "{2D294E8E-129D-4784-8681-F6843850A598}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WireCutter", "WireCutter\WireCutter.csproj", "{45F4DCC1-AA27-4F98-9247-217B7B547EE6}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Pliers", "WireCutter\Pliers.csproj", "{45F4DCC1-AA27-4F98-9247-217B7B547EE6}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Compatibility", "Compatibility\Compatibility.csproj", "{2613B600-705B-4EAF-9ED7-36B6329AAD9E}"
 EndProject
