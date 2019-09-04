@@ -8,7 +8,7 @@ using UnityEngine;
 
 using STRINGS;
 
-namespace WireCutter {
+namespace Pliers {
     public static class Utilities {
         public static Sprite CreateSpriteDXT5(Stream inputStream, int width, int height) {
             byte[] buffer = new byte[inputStream.Length - 128];
@@ -73,7 +73,7 @@ namespace WireCutter {
 
     public static class IOUtilities {
         public static void CreateDefaultConfig() {
-            using (TextWriter textWriter = File.CreateText(WireCutterAssets.WIRECUTTER_PATH_CONFIGFILE))
+            using (TextWriter textWriter = File.CreateText(PliersAssets.PLIERS_PATH_CONFIGFILE))
             using (JsonTextWriter jsonWriter = new JsonTextWriter(textWriter)) {
                 jsonWriter.Formatting = Formatting.Indented;
 
@@ -85,8 +85,8 @@ namespace WireCutter {
         }
 
         public static void CreateKeycodeHintFile() {
-            if(!File.Exists(WireCutterAssets.WIRECUTTER_PATH_KEYCODESFILE)) {
-                using (TextWriter textWriter = File.CreateText(WireCutterAssets.WIRECUTTER_PATH_KEYCODESFILE)) {
+            if(!File.Exists(PliersAssets.PLIERS_PATH_KEYCODESFILE)) {
+                using (TextWriter textWriter = File.CreateText(PliersAssets.PLIERS_PATH_KEYCODESFILE)) {
                     foreach (KeyCode keycode in Enum.GetValues(typeof(KeyCode))) {
                         textWriter.WriteLine(keycode.ToString());
                     }
@@ -95,15 +95,15 @@ namespace WireCutter {
         }
 
         public static void ReadConfig() {
-            using (StreamReader reader = File.OpenText(WireCutterAssets.WIRECUTTER_PATH_CONFIGFILE))
+            using (StreamReader reader = File.OpenText(PliersAssets.PLIERS_PATH_CONFIGFILE))
             using (JsonTextReader jsonReader = new JsonTextReader(reader)) {
                 JObject rootObject = (JObject) JToken.ReadFrom(jsonReader).Root;
 
                 JToken kWireToolToken = rootObject.SelectToken("keybind_wirecutter");
 
                 if (kWireToolToken != null && kWireToolToken.Type == JTokenType.String && Utilities.TryParseEnum<KeyCode>(kWireToolToken.Value<string>(), out KeyCode kWireTool)) {
-                    WireCutterAssets.WIRECUTTER_INPUT_KEYBIND_TOOL = kWireTool;
-                    WireCutterAssets.WIRECUTTER_TOOLTIP = "Disconnect Utilities " + Utilities.GetKeyCodeString(kWireTool);
+                    PliersAssets.PLIERS_INPUT_KEYBIND_TOOL = kWireTool;
+                    PliersAssets.PLIERS_TOOLTIP = "Disconnect Utilities " + Utilities.GetKeyCodeString(kWireTool);
                 }
             }
         }

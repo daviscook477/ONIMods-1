@@ -5,8 +5,8 @@ using Harmony;
 
 using UnityEngine;
 
-namespace WireCutter {
-    public sealed class WireCutterTool : FilteredDragTool {
+namespace Pliers {
+    public sealed class PliersTool : FilteredDragTool {
         private static readonly UtilityConnections[] connections = {
             UtilityConnections.Left,
             UtilityConnections.Right,
@@ -14,9 +14,9 @@ namespace WireCutter {
             UtilityConnections.Down
         };
 
-        public static WireCutterTool Instance { get; private set; }
+        public static PliersTool Instance { get; private set; }
 
-        public WireCutterTool() {
+        public PliersTool() {
             Instance = this;
         }
 
@@ -27,13 +27,13 @@ namespace WireCutter {
         protected override void OnPrefabInit() {
             base.OnPrefabInit();
 
-            visualizer = new GameObject("WireCutterVisualizer");
+            visualizer = new GameObject("PliersVisualizer");
             visualizer.SetActive(false);
 
             GameObject offsetObject = new GameObject();
             SpriteRenderer spriteRenderer = offsetObject.AddComponent<SpriteRenderer>();
-            spriteRenderer.color = WireCutterAssets.WIRECUTTER_COLOR_DRAG;
-            spriteRenderer.sprite = WireCutterAssets.WIRECUTTER_VISUALIZER_SPRITE;
+            spriteRenderer.color = PliersAssets.PLIERS_COLOR_DRAG;
+            spriteRenderer.sprite = PliersAssets.PLIERS_VISUALIZER_SPRITE;
 
             offsetObject.transform.SetParent(visualizer.transform);
             offsetObject.transform.localPosition = new Vector3(0, Grid.HalfCellSizeInMeters);
@@ -51,15 +51,15 @@ namespace WireCutter {
             GameObject areaVisualizer = Util.KInstantiate((GameObject) AccessTools.Field(typeof(DeconstructTool), "areaVisualizer").GetValue(DeconstructTool.Instance));
             areaVisualizer.SetActive(false);
 
-            areaVisualizer.name = "WireCutterAreaVisualizer";
+            areaVisualizer.name = "PliersAreaVisualizer";
             areaVisualizerSpriteRendererField.SetValue(this, areaVisualizer.GetComponent<SpriteRenderer>());
             areaVisualizer.transform.SetParent(transform);
-            areaVisualizer.GetComponent<SpriteRenderer>().color = WireCutterAssets.WIRECUTTER_COLOR_DRAG;
-            areaVisualizer.GetComponent<SpriteRenderer>().material.color = WireCutterAssets.WIRECUTTER_COLOR_DRAG;
+            areaVisualizer.GetComponent<SpriteRenderer>().color = PliersAssets.PLIERS_COLOR_DRAG;
+            areaVisualizer.GetComponent<SpriteRenderer>().material.color = PliersAssets.PLIERS_COLOR_DRAG;
 
             areaVisualizerField.SetValue(this, areaVisualizer);
 
-            gameObject.AddComponent<WireCutterToolHoverCard>();
+            gameObject.AddComponent<PliersToolHoverCard>();
         }
 
         protected override void GetDefaultFilters(Dictionary<string, ToolParameterMenu.ToggleState> filters) {
@@ -103,7 +103,7 @@ namespace WireCutter {
                                         UtilityConnections buildingConnections = utilityNetworkManager.GetNetworkManager().GetConnections(cell, false);
 
                                         foreach (UtilityConnections utilityConnection in connections) {
-                                            if((buildingConnections & utilityConnection) != utilityConnection) {
+                                            if ((buildingConnections & utilityConnection) != utilityConnection) {
                                                 continue;
                                             }
 
@@ -113,9 +113,9 @@ namespace WireCutter {
 
                                                 if (x2 >= x0 && x2 <= x1 && y2 >= y0 && y2 <= y1) {
                                                     GameObject otherGameObject = Grid.Objects[offsetCell, layer];
-                                                    Building otherBuiilding;
+                                                    Building otherBuilding;
 
-                                                    if (otherGameObject != null && (otherBuiilding = otherGameObject.GetComponent<Building>()) != null && otherBuiilding.Def.BuildingComplete.GetComponent<IHaveUtilityNetworkMgr>() != null && IsActiveLayer(GetFilterLayerFromGameObject(gameObject))) {
+                                                    if (otherGameObject != null && (otherBuilding = otherGameObject.GetComponent<Building>()) != null && otherBuilding.Def.BuildingComplete.GetComponent<IHaveUtilityNetworkMgr>() != null && IsActiveLayer(GetFilterLayerFromGameObject(gameObject))) {
                                                         connectionsToRemove |= utilityConnection;
                                                     }
                                                 }
@@ -129,7 +129,7 @@ namespace WireCutter {
                                             }
 
                                             TileVisualizer.RefreshCell(cell, building.Def.TileLayer, building.Def.ReplacementLayer);
-                                            utilityNetworkManager.GetNetworkManager().ForceRebuildNetworks();
+                                            utilityNetworkManager.GetNetworkManager()?.ForceRebuildNetworks();
                                         }
                                     }
                                 }

@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 
-namespace WireCutter {
-    class WireCutterToolHoverCard : HoverTextConfiguration {
-        public WireCutterToolHoverCard() {
+namespace Pliers {
+    class PliersToolHoverCard : HoverTextConfiguration {
+        public PliersToolHoverCard() {
             ToolName = "WIRE CUTTER";
         }
 
