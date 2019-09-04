@@ -32,6 +32,7 @@ namespace Blueprints {
         public static string GetNewBlueprintLocation(string name) {
             string returnString = GetBlueprintName(name, -1);
             for (int i = 0; File.Exists(returnString); returnString = GetBlueprintName(name, i), ++i) { }
+
             return returnString;
         }
 
@@ -75,7 +76,7 @@ namespace Blueprints {
             FileNameDialog blueprintNameDialog = Util.KInstantiateUI<FileNameDialog>(ScreenPrefabs.Instance.FileNameDialog.gameObject, blueprintNameDialogParent);
             blueprintNameDialog.name = "BlueprintNameDialog";
 
-            Transform titleTransform = blueprintNameDialog.transform?.Find("Panel")?.Find("Title_BG")?.Find("Title");
+            Transform titleTransform = blueprintNameDialog.transform.Find("Panel")?.Find("Title_BG")?.Find("Title");
             if (titleTransform != null && titleTransform.GetComponent<LocText>() != null) {
                 titleTransform.GetComponent<LocText>().text = "NAME BLUEPRINT";
             }
