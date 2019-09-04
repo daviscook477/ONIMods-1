@@ -96,6 +96,6 @@
   </Target>
   <Import Project="..\packages\MSBuild.ILMerge.Task.1.0.5\build\MSBuild.ILMerge.Task.targets" Condition="Exists('..\packages\MSBuild.ILMerge.Task.1.0.5\build\MSBuild.ILMerge.Task.targets')" />
   <PropertyGroup>
-    <PostBuildEvent>move /Y "$(TargetPath)" "%25USERPROFILE%25\Documents\Klei\OxygenNotIncluded\mods\Local\WireCutter LOCAL\"</PostBuildEvent>
+    <PostBuildEvent>move /Y "$(TargetPath)" "%25USERPROFILE%25\Documents\Klei\OxygenNotIncluded\mods\Local\Pliers LOCAL\"</PostBuildEvent>
   </PropertyGroup>
 </Project>
