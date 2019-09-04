@@ -3,7 +3,7 @@
 namespace Pliers {
     class PliersToolHoverCard : HoverTextConfiguration {
         public PliersToolHoverCard() {
-            ToolName = "WIRE CUTTER";
+            ToolName = "PLIERS";
         }
 
         public override void UpdateHoverElements(List<KSelectable> hoveredObjects) {
