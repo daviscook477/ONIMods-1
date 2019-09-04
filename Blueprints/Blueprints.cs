@@ -19,7 +19,7 @@ namespace Blueprints {
         public static ToolMenu.ToolCollection BLUEPRINTS_CREATE_TOOLCOLLECTION;
 
         public static string                  BLUEPRINTS_USE_NAME = "Use Blueprint";
-        public static string                  BLUEPRINTS_USE_TOOLNAME = "useblueprinttool";
+        public static string                  BLUEPRINTS_USE_TOOLNAME = "UseBlueprintTool";
         public static string                  BLUEPRINTS_USE_TOOLTIP = "Use blueprint " + Utilities.GetKeyCodeString(KeyCode.None) + "\n\nWhen selecting the tool hold " + Utilities.GetKeyCodeString(KeyCode.LeftShift) + " to reload blueprints";
         public static string                  BLUEPRINTS_USE_ICON_NAME = "BLUEPRINTS.TOOL.USE_BLUEPRINT.ICON";
         public static Sprite                  BLUEPRINTS_USE_ICON_SPRITE;
@@ -27,7 +27,7 @@ namespace Blueprints {
         public static ToolMenu.ToolCollection BLUEPRINTS_USE_TOOLCOLLECTION;
 
         public static string                  BLUEPRINTS_SNAPSHOT_NAME = "Take Snapshot";
-        public static string                  BLUEPRINTS_SNAPSHOT_TOOLNAME = "snapshottool";
+        public static string                  BLUEPRINTS_SNAPSHOT_TOOLNAME = "SnapshotTool";
         public static string                  BLUEPRINTS_SNAPSHOT_TOOLTIP = "Take snapshot " + Utilities.GetKeyCodeString(KeyCode.None) + "\n\nCreate a blueprint and quickly place it elsewhere while not cluttering your blueprint collection! \nSnapshots do not persist between games.";
         public static string                  BLUEPRINTS_SNAPSHOT_ICON_NAME = "BLUEPRINTS.TOOL.SNAPSHOT.ICON";
         public static Sprite                  BLUEPRINTS_SNAPSHOT_ICON_SPRITE;
