@@ -16,6 +16,7 @@ namespace Pliers {
 
         public static KeyCode                 PLIERS_INPUT_KEYBIND_TOOL = KeyCode.None;
 
+        public static string                  PLIERS_PATH_CONFIGFOLDER;
         public static string                  PLIERS_PATH_CONFIGFILE;
         public static string                  PLIERS_PATH_KEYCODESFILE;
     }

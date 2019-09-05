@@ -49,6 +49,7 @@ namespace Blueprints {
         public static KeyCode                 BLUEPRINTS_INPUT_KEYBIND_SNAPSHOTTOOL = KeyCode.None;
         public static KeyCode                 BLUEPRINTS_INPUT_KEYBIND_SNAPSHOTTOOL_DELETE = KeyCode.Delete;
 
+        public static string                  BLUEPRINTS_PATH_CONFIGFOLDER;
         public static string                  BLUEPRINTS_PATH_CONFIGFILE;
         public static string                  BLUEPRINTS_PATH_KEYCODESFILE;
 

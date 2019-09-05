@@ -73,6 +73,10 @@ namespace Pliers {
 
     public static class IOUtilities {
         public static void CreateDefaultConfig() {
+            if (!Directory.Exists(PliersAssets.PLIERS_PATH_CONFIGFOLDER)) {
+                Directory.CreateDirectory(PliersAssets.PLIERS_PATH_CONFIGFOLDER);
+            }
+
             using (TextWriter textWriter = File.CreateText(PliersAssets.PLIERS_PATH_CONFIGFILE))
             using (JsonTextWriter jsonWriter = new JsonTextWriter(textWriter)) {
                 jsonWriter.Formatting = Formatting.Indented;
@@ -85,6 +89,10 @@ namespace Pliers {
         }
 
         public static void CreateKeycodeHintFile() {
+            if(!Directory.Exists(PliersAssets.PLIERS_PATH_CONFIGFOLDER)) {
+                Directory.CreateDirectory(PliersAssets.PLIERS_PATH_CONFIGFOLDER);
+            }
+
             if(!File.Exists(PliersAssets.PLIERS_PATH_KEYCODESFILE)) {
                 using (TextWriter textWriter = File.CreateText(PliersAssets.PLIERS_PATH_KEYCODESFILE)) {
                     foreach (KeyCode keycode in Enum.GetValues(typeof(KeyCode))) {
@@ -95,6 +103,10 @@ namespace Pliers {
         }
 
         public static void ReadConfig() {
+            if (!Directory.Exists(PliersAssets.PLIERS_PATH_CONFIGFOLDER)) {
+                Directory.CreateDirectory(PliersAssets.PLIERS_PATH_CONFIGFOLDER);
+            }
+
             using (StreamReader reader = File.OpenText(PliersAssets.PLIERS_PATH_CONFIGFILE))
             using (JsonTextReader jsonReader = new JsonTextReader(reader)) {
                 JObject rootObject = (JObject) JToken.ReadFrom(jsonReader).Root;

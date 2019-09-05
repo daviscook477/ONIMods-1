@@ -13,8 +13,10 @@ namespace Blueprints {
         public static void OnLoad() {
             Assembly currentAssembly = Assembly.GetExecutingAssembly();
             string currentAssemblyDirectory = Path.GetDirectoryName(currentAssembly.Location);
-            BlueprintsAssets.BLUEPRINTS_PATH_CONFIGFILE = currentAssemblyDirectory + "/config.json";
-            BlueprintsAssets.BLUEPRINTS_PATH_KEYCODESFILE = currentAssemblyDirectory + "/keycodes.txt";
+
+            BlueprintsAssets.BLUEPRINTS_PATH_CONFIGFOLDER = currentAssemblyDirectory + "/config";
+            BlueprintsAssets.BLUEPRINTS_PATH_CONFIGFILE = BlueprintsAssets.BLUEPRINTS_PATH_CONFIGFOLDER  + "/config.json";
+            BlueprintsAssets.BLUEPRINTS_PATH_KEYCODESFILE = BlueprintsAssets.BLUEPRINTS_PATH_CONFIGFOLDER + "/keycodes.txt";
 
             IOUtilities.CreateKeycodeHintFile();
             if (File.Exists(BlueprintsAssets.BLUEPRINTS_PATH_CONFIGFILE)) {

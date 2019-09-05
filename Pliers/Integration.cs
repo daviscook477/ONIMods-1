@@ -11,8 +11,9 @@ namespace Pliers {
         public static void OnLoad() {
             Assembly currentAssembly = Assembly.GetExecutingAssembly();
             string currentAssemblyDirectory = Path.GetDirectoryName(currentAssembly.Location);
-            PliersAssets.PLIERS_PATH_CONFIGFILE = currentAssemblyDirectory + "/config.json";
-            PliersAssets.PLIERS_PATH_KEYCODESFILE = currentAssemblyDirectory + "/keycodes.txt";
+            PliersAssets.PLIERS_PATH_CONFIGFOLDER = currentAssemblyDirectory + "/config";
+            PliersAssets.PLIERS_PATH_CONFIGFILE = PliersAssets.PLIERS_PATH_CONFIGFOLDER + "/config.json";
+            PliersAssets.PLIERS_PATH_KEYCODESFILE = PliersAssets.PLIERS_PATH_CONFIGFOLDER + "/keycodes.txt";
 
             IOUtilities.CreateKeycodeHintFile();
             if (File.Exists(PliersAssets.PLIERS_PATH_CONFIGFILE)) {

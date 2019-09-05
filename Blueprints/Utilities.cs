@@ -1,11 +1,12 @@
-﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using STRINGS;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.IO;
+using System.Collections.Generic;
+
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 using UnityEngine;
+using STRINGS;
 
 namespace Blueprints {
     public static class Utilities {
@@ -122,6 +123,10 @@ namespace Blueprints {
 
     public static class IOUtilities {
         public static void CreateDefaultConfig() {
+            if (!Directory.Exists(BlueprintsAssets.BLUEPRINTS_PATH_CONFIGFOLDER)) {
+                Directory.CreateDirectory(BlueprintsAssets.BLUEPRINTS_PATH_CONFIGFOLDER);
+            }
+
             using (TextWriter textWriter = File.CreateText(BlueprintsAssets.BLUEPRINTS_PATH_CONFIGFILE))
             using (JsonTextWriter jsonWriter = new JsonTextWriter(textWriter)) {
                 jsonWriter.Formatting = Formatting.Indented;
@@ -159,7 +164,11 @@ namespace Blueprints {
         }
 
         public static void CreateKeycodeHintFile() {
-            if(!File.Exists(BlueprintsAssets.BLUEPRINTS_PATH_KEYCODESFILE)) {
+            if (!Directory.Exists(BlueprintsAssets.BLUEPRINTS_PATH_CONFIGFOLDER)) {
+                Directory.CreateDirectory(BlueprintsAssets.BLUEPRINTS_PATH_CONFIGFOLDER);
+            }
+
+            if (!File.Exists(BlueprintsAssets.BLUEPRINTS_PATH_KEYCODESFILE)) {
                 using (TextWriter textWriter = File.CreateText(BlueprintsAssets.BLUEPRINTS_PATH_KEYCODESFILE)) {
                     foreach (KeyCode keycode in Enum.GetValues(typeof(KeyCode))) {
                         textWriter.WriteLine(keycode.ToString());
@@ -169,6 +178,10 @@ namespace Blueprints {
         }
 
         public static void ReadConfig() {
+            if (!Directory.Exists(BlueprintsAssets.BLUEPRINTS_PATH_CONFIGFOLDER)) {
+                Directory.CreateDirectory(BlueprintsAssets.BLUEPRINTS_PATH_CONFIGFOLDER);
+            }
+
             using (StreamReader reader = File.OpenText(BlueprintsAssets.BLUEPRINTS_PATH_CONFIGFILE))
             using (JsonTextReader jsonReader = new JsonTextReader(reader)) {
                 JObject rootObject = (JObject) JToken.ReadFrom(jsonReader).Root;
