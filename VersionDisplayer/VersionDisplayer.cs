@@ -4,11 +4,11 @@ using System.IO;
 using KMod;
 
 using Harmony;
+using UnityEngine;
+using System.Collections.Generic;
 
 namespace VersionDisplayer {
     public static class VersionDisplayer {
-        private static bool NamesPatched = false;
-
         private static void Patch(HarmonyInstance harmonyInstance) {
             if (harmonyInstance.HasAnyPatches("mod.mayall.versiondisplayer.patches")) {
                 return;
@@ -22,35 +22,49 @@ namespace VersionDisplayer {
             }
 
             else {
-                HarmonyMethod prefix = new HarmonyMethod(typeof(VersionDisplayer), "ModsScreen_OnActivate_Prefix");
-                versionDisplayerInstance.Patch(_ModsScreen_OnActivate, prefix);
+                HarmonyMethod postfix = new HarmonyMethod(typeof(VersionDisplayer), "ModsScreen_BuildDisplay_Prefix");
+                versionDisplayerInstance.Patch(_ModsScreen_OnActivate, null, postfix);
             }
 
             Debug.Log("Successfully applied version displayer patches!");
         }
 
-        public static void ModsScreen_OnActivate_Prefix() {
-            if (!NamesPatched) {
-                foreach (Mod mod in Global.Instance.modManager.mods) {
-                    string[] dllFiles = Directory.GetFiles(mod.label.install_path, "*.dll");
+        public static void ModsScreen_BuildDisplay_Postfix(Transform ___entryParent) {
+            int childCount = ___entryParent.childCount;
 
-                    if (dllFiles.Length > 0) {
-                        Assembly assembly = null;
-                        int i = 0;
+            for(int i = 0; i < childCount; ++i) {
+                Transform child = ___entryParent.GetChild(i);
 
-                        while ((assembly = Assembly.LoadFrom(dllFiles[i])) == null) {
-                            if (++i >= dllFiles.Length) {
-                                break;
+                if (child != null && child.GetComponent<HierarchyReferences>() != null) {
+                    HierarchyReferences hierarchyReferences = child.GetComponent<HierarchyReferences>();
+                    LocText titleLabel = hierarchyReferences.GetReference<LocText>("Label");
+
+                    if (titleLabel != null) {
+                        string title = titleLabel.text;
+                        Mod mod = Global.Instance.modManager.mods.Find(mod0 => mod0.title == title);
+
+                        if (mod != null) {
+                            mod.Unload(Content.DLL);
+                            string[] dllFiles = Directory.GetFiles(mod.label.install_path, "*.dll");
+
+                            if (dllFiles.Length > 0) {
+                                Assembly assembly = null;
+                                int j = 0;
+
+                                while ((assembly = Assembly.LoadFrom(dllFiles[j])) == null) {
+                                    if (++j >= dllFiles.Length) {
+                                        break;
+                                    }
+                                }
+
+                                if (assembly != null) {
+                                    mod.label.title += " (" + assembly.GetName().Version + ")";
+                                }
                             }
-                        }
 
-                        if (assembly != null) {
-                            mod.label.title += " (" + assembly.GetName().Version + ")";
                         }
                     }
                 }
-
-                NamesPatched = true;
             }
         }
 
