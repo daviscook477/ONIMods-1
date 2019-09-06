@@ -646,9 +646,9 @@ namespace Blueprints {
     }
 
     public struct CellColorPayload {
-        public Color Color { get; private set; }
-        public ObjectLayer TileLayer { get; private set; }
-        public ObjectLayer ReplacementLayer { get; private set; }
+        public Color Color { get; set; }
+        public ObjectLayer TileLayer { get; set; }
+        public ObjectLayer ReplacementLayer { get; set; }
 
         public CellColorPayload(Color color, ObjectLayer tileLayer, ObjectLayer replacementLayer) {
             Color = color;

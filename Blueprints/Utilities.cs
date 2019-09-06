@@ -184,7 +184,7 @@ namespace Blueprints {
 
             using (StreamReader reader = File.OpenText(BlueprintsAssets.BLUEPRINTS_PATH_CONFIGFILE))
             using (JsonTextReader jsonReader = new JsonTextReader(reader)) {
-                JObject rootObject = (JObject) JToken.ReadFrom(jsonReader).Root;
+                JObject rootObject = (JObject)JToken.ReadFrom(jsonReader).Root;
 
                 JToken kCreateToolToken = rootObject.SelectToken("keybind_createtool");
                 JToken kUseToolToken = rootObject.SelectToken("keybind_usetool");

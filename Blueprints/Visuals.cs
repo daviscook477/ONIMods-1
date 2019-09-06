@@ -8,10 +8,11 @@ namespace Blueprints {
                 TileVisualizer.RefreshCell(cell, buildingConfig.BuildingDef.TileLayer, buildingConfig.BuildingDef.ReplacementLayer);
             }
 
-            else if (visualizer.GetComponent<KBatchedAnimController>() != null) {
+            if (visualizer.GetComponent<KBatchedAnimController>() != null) {
                 visualizer.GetComponent<KBatchedAnimController>().TintColour = color;
             }
         }
+
     }
 
     public interface IVisual {
