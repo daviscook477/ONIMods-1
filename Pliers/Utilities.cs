@@ -115,7 +115,7 @@ namespace Pliers {
 
                 if (kWireToolToken != null && kWireToolToken.Type == JTokenType.String && Utilities.TryParseEnum<KeyCode>(kWireToolToken.Value<string>(), out KeyCode kWireTool)) {
                     PliersAssets.PLIERS_INPUT_KEYBIND_TOOL = kWireTool;
-                    PliersAssets.PLIERS_TOOLTIP = "Disconnect Utilities " + Utilities.GetKeyCodeString(kWireTool);
+                    PliersAssets.PLIERS_TOOLTIP = "Disconnect utility networks " + Utilities.GetKeyCodeString(kWireTool);
                 }
             }
         }
