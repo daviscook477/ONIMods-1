@@ -54,9 +54,6 @@
     <Reference Include="System">
       <Private>True</Private>
     </Reference>
-    <Reference Include="System.Xml">
-      <Private>True</Private>
-    </Reference>
     <Reference Include="UnityEngine">
       <HintPath>..\..\..\..\..\..\Steam\steamapps\common\OxygenNotIncluded\OxygenNotIncluded_Data\Managed\UnityEngine.dll</HintPath>
       <Private>True</Private>

@@ -57,9 +57,6 @@
     <Reference Include="System">
       <Private>True</Private>
     </Reference>
-    <Reference Include="System.Xml">
-      <Private>True</Private>
-    </Reference>
     <Reference Include="Unity.TextMeshPro">
       <HintPath>..\..\..\..\..\..\Steam\steamapps\common\OxygenNotIncluded\OxygenNotIncluded_Data\Managed\Unity.TextMeshPro.dll</HintPath>
       <Private>True</Private>
