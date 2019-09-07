@@ -122,7 +122,7 @@ namespace Pliers {
                                             }
                                         }
 
-                                        if(connectionsToRemove != 0) {
+                                        if (connectionsToRemove != 0) {
                                             if (building.GetComponent<KAnimGraphTileVisualizer>() != null) {
                                                 building.GetComponent<KAnimGraphTileVisualizer>().UpdateConnections(buildingConnections & ~connectionsToRemove);
                                                 building.GetComponent<KAnimGraphTileVisualizer>().Refresh();
