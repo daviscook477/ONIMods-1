@@ -55,12 +55,16 @@ namespace Blueprints {
                 if (blueprintFile.EndsWith(".blueprint") || blueprintFile.EndsWith(".json")) {
                     Blueprint blueprint = new Blueprint(blueprintFile);
 
-                    if(blueprint.ReadBinary() && !blueprint.IsEmpty()) {
+                    if (blueprint.ReadBinary() && !blueprint.IsEmpty()) {
                         BlueprintsState.LoadedBlueprints.Add(blueprint);
                     }
 
-                    else if (blueprint.ReadJSON() && !blueprint.IsEmpty()) {
-                        BlueprintsState.LoadedBlueprints.Add(blueprint);
+                    else {
+                        blueprint.ReadJSON();
+
+                        if (!blueprint.IsEmpty()) {
+                            BlueprintsState.LoadedBlueprints.Add(blueprint);
+                        }
                     }
                 }
             }
