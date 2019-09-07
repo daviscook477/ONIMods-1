@@ -58,7 +58,7 @@ namespace Blueprints {
                 if (blueprintChanged) {
                     BlueprintsState.ClearVisuals();
 
-                    if(BlueprintsState.LoadedBlueprints.Count > 0) {
+                    if (BlueprintsState.LoadedBlueprints.Count > 0) {
                         BlueprintsState.VisualizeBlueprint(Grid.PosToXY(PlayerController.GetCursorPos(KInputManager.GetMousePos())), BlueprintsState.SelectedBlueprint);
                     }
 

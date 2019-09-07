@@ -141,8 +141,15 @@ namespace Blueprints {
                 return;
             }
 
+            int errors = 0;
             ClearVisuals();
+
             foreach (BuildingConfig buildingConfig in blueprint.BuildingConfiguration) {
+                if (buildingConfig.BuildingDef == null || buildingConfig.SelectedElements.Count == 0) {
+                    ++errors;
+                    continue;
+                }
+
                 if (buildingConfig.BuildingDef.BuildingPreview != null) {
                     int cell = Grid.XYToCell(topLeft.x + buildingConfig.Offset.x, topLeft.y + buildingConfig.Offset.y);
 
@@ -164,6 +171,10 @@ namespace Blueprints {
 
             foreach (Vector2I digLocation in blueprint.DigLocations) {
                 foundationVisuals.Add(new DigVisual(Grid.XYToCell(topLeft.x + digLocation.x, topLeft.y + digLocation.y), digLocation));
+            }
+
+            if (UseBlueprintTool.Instance.GetComponent<UseBlueprintToolHoverCard>() != null) {
+                UseBlueprintTool.Instance.GetComponent<UseBlueprintToolHoverCard>().PrefabErrorCount = errors;
             }
         }
 
@@ -283,7 +294,7 @@ namespace Blueprints {
             return false;
         }
 
-        public bool ReadJSON() {
+        public void ReadJSON() {
             if (File.Exists(FilePath)) {
                 BuildingConfiguration.Clear();
                 DigLocations.Clear();
@@ -307,14 +318,9 @@ namespace Blueprints {
                             if (buildingTokens != null) {
                                 foreach (JToken buildingToken in buildingTokens) {
                                     BuildingConfig buildingConfig = new BuildingConfig();
+                                    buildingConfig.ReadJSON((JObject) buildingToken);
 
-                                    if (buildingConfig.ReadJSON((JObject) buildingToken)) {
-                                        BuildingConfiguration.Add(buildingConfig);
-                                    }
-
-                                    else if(buildingConfig.ReadJSONLegacy((JObject) buildingToken)) {
-                                        BuildingConfiguration.Add(buildingConfig);
-                                    }
+                                    BuildingConfiguration.Add(buildingConfig);
                                 }
                             }
                         }
@@ -333,8 +339,6 @@ namespace Blueprints {
                                 }
                             }
                         }
-
-                        return true;
                     }
                 }
 
@@ -342,8 +346,6 @@ namespace Blueprints {
                     Debug.LogError("Error when loading blueprint: " + FilePath + ",\n" + nameof(exception) + ":" + exception.Message);
                 }
             }
-
-            return false;
         }
 
         public void Write() {
@@ -475,13 +477,12 @@ namespace Blueprints {
         public bool ReadBinary(BinaryReader binaryReader) {
             try {
                 Offset = new Vector2I(binaryReader.ReadInt32(), binaryReader.ReadInt32());
-                if ((BuildingDef = Assets.GetBuildingDef(binaryReader.ReadString())) == null) {
-                    return false;
-                }
+                BuildingDef = Assets.GetBuildingDef(binaryReader.ReadString());
 
                 int selectedElementCount = binaryReader.ReadInt32();
                 for (int i = 0; i < selectedElementCount; ++i) {
                     Tag elementTag;
+
                     if (ElementLoader.GetElement(elementTag = new Tag(binaryReader.ReadInt32())) != null) {
                         SelectedElements.Add(elementTag);
                     }
@@ -497,7 +498,7 @@ namespace Blueprints {
             }
         }
 
-        public bool ReadJSON(JObject rootObject) {
+        public void ReadJSON(JObject rootObject) {
             JToken offsetToken = rootObject.SelectToken("offset");
             JToken buildingDefToken = rootObject.SelectToken("buildingdef");
             JToken selectedElementsToken = rootObject.SelectToken("selected_elements");
@@ -511,34 +512,16 @@ namespace Blueprints {
                 if (xToken != null && xToken.Type == JTokenType.Integer && yToken != null & yToken.Type == JTokenType.Integer) {
                     Offset = new Vector2I(xToken.Value<int>(), yToken.Value<int>());
                 }
-
-                else {
-                    return false;
-                }
-            }
-
-            else {
-                return false;
             }
 
             if (buildingDefToken != null && buildingDefToken.Type == JTokenType.String) {
-                if ((BuildingDef = Assets.GetBuildingDef(buildingDefToken.Value<string>())) == null) {
-                    return false;
-                }
-            }
-
-            else {
-                return false;
+                BuildingDef = Assets.GetBuildingDef(buildingDefToken.Value<string>());
             }
 
             if (selectedElementsToken != null && selectedElementsToken.Type == JTokenType.Array) {
                 JArray selectedElementTokens = selectedElementsToken.Value<JArray>();
 
-                if (selectedElementTokens == null) {
-                    return false;
-                }
-
-                else {
+                if (selectedElementTokens != null) {
                     foreach (JToken selectedElement in selectedElementTokens) {
                         Tag elementTag;
 
@@ -549,95 +532,13 @@ namespace Blueprints {
                 }
             }
 
-            else {
-                return false;
-            }
-
             if (orientationToken != null && orientationToken.Type == JTokenType.Integer) {
                 Orientation = (Orientation) orientationToken.Value<int>();
             }
 
-            else {
-                return false;
-            }
-
             if (flagsToken != null && flagsToken.Type == JTokenType.Integer) {
                 Flags = flagsToken.Value<int>();
             }
-
-            else {
-                return false;
-            }
-
-            return true;
-        }
-
-        public bool ReadJSONLegacy(JObject rootObject) {
-            JToken offsetToken = rootObject.SelectToken("offset");
-            JToken buildingDefToken = rootObject.SelectToken("buildingdef");
-            JToken elementToken = rootObject.SelectToken("element");
-            JToken orientationToken = rootObject.SelectToken("orientation");
-            JToken flagsToken = rootObject.SelectToken("flags");
-
-            if (offsetToken != null && offsetToken.Type == JTokenType.Object) {
-                JToken xToken = offsetToken.SelectToken("x");
-                JToken yToken = offsetToken.SelectToken("y");
-
-                if (xToken != null && xToken.Type == JTokenType.Integer && yToken != null & yToken.Type == JTokenType.Integer) {
-                    Offset = new Vector2I(xToken.Value<int>(), yToken.Value<int>());
-                }
-
-                else {
-                    return false;
-                }
-            }
-
-            else {
-                return false;
-            }
-
-            if (buildingDefToken != null && buildingDefToken.Type == JTokenType.String) {
-                if ((BuildingDef = Assets.GetBuildingDef(buildingDefToken.Value<string>())) == null) {
-                    return false;
-                }
-            }
-
-            else {
-                return false;
-            }
-
-            if (elementToken != null && elementToken.Type == JTokenType.Integer) {
-                Tag elementTag;
-                if (ElementLoader.GetElement(elementTag = new Tag(elementToken.Value<int>())) == null) {
-                    return false;
-                }
-
-                else {
-                    SelectedElements.Add(elementTag);
-                }
-            }
-
-            else {
-                return false;
-            }
-
-            if (orientationToken != null && orientationToken.Type == JTokenType.Integer) {
-                Orientation = (Orientation)orientationToken.Value<int>();
-            }
-
-            else {
-                return false;
-            }
-
-            if (flagsToken != null && flagsToken.Type == JTokenType.Integer) {
-                Flags = flagsToken.Value<int>();
-            }
-
-            else {
-                return false;
-            }
-
-            return true;
         }
 
         public bool Equals(BuildingConfig otherBuildingConfig) {
@@ -646,9 +547,9 @@ namespace Blueprints {
     }
 
     public struct CellColorPayload {
-        public Color Color { get; set; }
-        public ObjectLayer TileLayer { get; set; }
-        public ObjectLayer ReplacementLayer { get; set; }
+        public Color Color { get; private set; }
+        public ObjectLayer TileLayer { get; private set; }
+        public ObjectLayer ReplacementLayer { get; private set; }
 
         public CellColorPayload(Color color, ObjectLayer tileLayer, ObjectLayer replacementLayer) {
             Color = color;

@@ -2,6 +2,8 @@
 
 namespace Blueprints {
     public sealed class UseBlueprintToolHoverCard : HoverTextConfiguration {
+        public int PrefabErrorCount = 0;
+
         public UseBlueprintToolHoverCard() {
             ToolName = "USE BLUEPRINT TOOL";
         }
@@ -30,15 +32,21 @@ namespace Blueprints {
                 drawer.NewLine(20);
 
                 drawer.DrawText(BlueprintsAssets.BLUEPRINTS_STRING_DELETEBLUEPRINT, Styles_Instruction.Standard);
-                drawer.NewLine(32);
 
+                if (PrefabErrorCount > 0) {
+                    drawer.NewLine(32);
+                    drawer.DrawIcon(screenInstance.GetSprite("iconWarning"), 18);
+                    drawer.DrawText("This blueprint contains " + PrefabErrorCount + " misconfigured or missing prefabs which were omitted!", Styles_Instruction.Selected);
+                }
+
+                drawer.NewLine(32);
                 drawer.DrawText("Selected \"" + BlueprintsState.SelectedBlueprint.FriendlyName + "\"    (" + (BlueprintsState.SelectedBlueprintIndex + 1) + "/" + BlueprintsState.LoadedBlueprints.Count + ")", Styles_Instruction.Standard);
             }
 
             else {
                 drawer.DrawText("No blueprints loaded!", Styles_Instruction.Standard);
             }
-                
+
             drawer.EndShadowBar();
             drawer.EndDrawing();
         }
