@@ -1,8 +1,7 @@
-*/bin
-*/.vs
-*/obj
-/.vs
-*/ILMerge.props
-*/ILMergeOrder.txt
-*/packages.config
-/packages
+bin/
+*.vs
+obj/
+ILMerge.props
+ILMergeOrder.txt
+packages.config
+packages/
