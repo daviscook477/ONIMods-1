@@ -5,9 +5,9 @@ namespace Blueprints {
         public SnapshotTool ParentTool { get; set; }
 
         public void Update() {
-            if ((ParentTool?.hasFocus ?? false) && Input.GetKeyDown(BlueprintsAssets.BLUEPRINTS_INPUT_KEYBIND_SNAPSHOTTOOL_DELETE)) {
+            if ((ParentTool?.hasFocus ?? false) && Input.GetKeyDown(BlueprintsAssets.BLUEPRINTS_KEYBIND_SNAPSHOT_NEWSNAPSHOT)) {
                 ParentTool.DeleteBlueprint();
-            } 
+            }
         }
     }
 }

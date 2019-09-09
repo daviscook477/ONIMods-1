@@ -1,22 +1,21 @@
-﻿using System.Collections.Generic;
-using System.Reflection;
-using System.IO;
-
-using Harmony;
-
-using UnityEngine;
-using TMPro;
+﻿using Harmony;
+using ModFramework;
 using Rendering;
+using System.Collections.Generic;
+using System.IO;
+using System.Reflection;
+using TMPro;
+using UnityEngine;
 
 namespace Blueprints {
-    public static class Mod_OnLoad {
+    public static class Integration {
         public static void OnLoad() {
             Assembly currentAssembly = Assembly.GetExecutingAssembly();
             string currentAssemblyDirectory = Path.GetDirectoryName(currentAssembly.Location);
 
-            BlueprintsAssets.BLUEPRINTS_PATH_CONFIGFOLDER = currentAssemblyDirectory + "/config";
-            BlueprintsAssets.BLUEPRINTS_PATH_CONFIGFILE = BlueprintsAssets.BLUEPRINTS_PATH_CONFIGFOLDER  + "/config.json";
-            BlueprintsAssets.BLUEPRINTS_PATH_KEYCODESFILE = BlueprintsAssets.BLUEPRINTS_PATH_CONFIGFOLDER + "/keycodes.txt";
+            BlueprintsAssets.BLUEPRINTS_PATH_CONFIGFOLDER = Path.Combine(currentAssemblyDirectory, "config");
+            BlueprintsAssets.BLUEPRINTS_PATH_CONFIGFILE = Path.Combine(BlueprintsAssets.BLUEPRINTS_PATH_CONFIGFOLDER, "config.json");
+            BlueprintsAssets.BLUEPRINTS_PATH_KEYCODESFILE = Path.Combine(BlueprintsAssets.BLUEPRINTS_PATH_CONFIGFOLDER, "keycodes.txt");
 
             IOUtilities.CreateKeycodeHintFile();
             if (File.Exists(BlueprintsAssets.BLUEPRINTS_PATH_CONFIGFILE)) {
@@ -39,13 +38,78 @@ namespace Blueprints {
             BlueprintsAssets.BLUEPRINTS_SNAPSHOT_ICON_SPRITE.name = BlueprintsAssets.BLUEPRINTS_SNAPSHOT_ICON_NAME;
             BlueprintsAssets.BLUEPRINTS_SNAPSHOT_VISUALIZER_SPRITE = Utilities.CreateSpriteDXT5(Assembly.GetExecutingAssembly().GetManifestResourceStream("Blueprints.image_snapshot_visualizer.dds"), 256, 256);
 
-            BlueprintsAssets.BLUEPRINTS_CREATE_TOOLCOLLECTION = ToolMenu.CreateToolCollection(BlueprintsAssets.BLUEPRINTS_CREATE_NAME, BlueprintsAssets.BLUEPRINTS_CREATE_ICON_NAME, Action.NumActions, BlueprintsAssets.BLUEPRINTS_CREATE_TOOLNAME, BlueprintsAssets.BLUEPRINTS_CREATE_TOOLTIP, true);
-            BlueprintsAssets.BLUEPRINTS_USE_TOOLCOLLECTION = ToolMenu.CreateToolCollection(BlueprintsAssets.BLUEPRINTS_USE_NAME, BlueprintsAssets.BLUEPRINTS_USE_ICON_NAME, Action.NumActions, BlueprintsAssets.BLUEPRINTS_USE_TOOLNAME, BlueprintsAssets.BLUEPRINTS_USE_TOOLTIP, true);
-            BlueprintsAssets.BLUEPRINTS_SNAPSHOT_TOOLCOLLECTION = ToolMenu.CreateToolCollection(BlueprintsAssets.BLUEPRINTS_SNAPSHOT_NAME, BlueprintsAssets.BLUEPRINTS_SNAPSHOT_ICON_NAME, Action.NumActions, BlueprintsAssets.BLUEPRINTS_SNAPSHOT_TOOLNAME, BlueprintsAssets.BLUEPRINTS_SNAPSHOT_TOOLTIP, false);
+            ModLocalization.LocalizationCompleteEvent += ModLocalizedHandler;
+            ModLocalization.DefaultLocalization = new string[] {
+                BlueprintsStrings.STRING_BLUEPRINTS_CREATE_NAME, "New Blueprint",
+                BlueprintsStrings.STRING_BLUEPRINTS_CREATE_TOOLTIP, "Create blueprint {0}",
+                BlueprintsStrings.STRING_BLUEPRINTS_CREATE_EMPTY, "Blueprint would have been empty!",
+                BlueprintsStrings.STRING_BLUEPRINTS_CREATE_CREATED, "Created blueprint!",
+                BlueprintsStrings.STRING_BLUEPRINTS_CREATE_CANCELLED, "Cancelled blueprint!",
+                BlueprintsStrings.STRING_BLUEPRINTS_CREATE_TOOLTIP_TITLE, "CREATE BLUEPRINT TOOL",
+                BlueprintsStrings.STRING_BLUEPRINTS_CREATE_ACTION_DRAG, "DRAG",
+                BlueprintsStrings.STRING_BLUEPRINTS_CREATE_ACTION_BACK, "BACK",
+
+                BlueprintsStrings.STRING_BLUEPRINTS_USE_NAME, "Use Blueprint",
+                BlueprintsStrings.STRING_BLUEPRINTS_USE_TOOLTIP, "Use blueprint {0} \n\nWhen selecting the tool hold {1} to reload blueprints",
+                BlueprintsStrings.STRING_BLUEPRINTS_USE_LOADEDBLUEPRINTS, "Loaded {0} blueprints! ({1} total)",
+                BlueprintsStrings.STRING_BLUEPRINTS_USE_LOADEDBLUEPRINTS_ADDITIONAL, "additional",
+                BlueprintsStrings.STRING_BLUEPRINTS_USE_LOADEDBLUEPRINTS_FEWER, "fewer",
+                BlueprintsStrings.STRING_BLUEPRINTS_USE_TOOLTIP_TITLE, "USE BLUEPRINT TOOL",
+                BlueprintsStrings.STRING_BLUEPRINTS_USE_ACTION_CLICK, "CLICK",
+                BlueprintsStrings.STRING_BLUEPRINTS_USE_ACTION_BACK, "BACK",
+                BlueprintsStrings.STRING_BLUEPRINTS_USE_CYCLEBLUEPRINTS, "Use {0} and {1} to cycle blueprints.",
+                BlueprintsStrings.STRING_BLUEPRINTS_USE_NAMEBLUEPRINT, "Press {0} to rename blueprint.",
+                BlueprintsStrings.STRING_BLUEPRINTS_USE_DELETEBLUEPRINT, "Press {0} to delete blueprint.",
+                BlueprintsStrings.STRING_BLUEPRINTS_USE_ERRORMESSAGE, "This blueprint contained {0} misconfigured or missing prefabs which have been omitted!",
+                BlueprintsStrings.STRING_BLUEPRINTS_USE_SELECTEDBLUEPRINT, "Selected \"{0}\" ({1}/{2})",
+                BlueprintsStrings.STRING_BLUEPRINTS_USE_NOBLUEPRINTS, "No blueprints loaded!",
+
+                BlueprintsStrings.STRING_BLUEPRINTS_SNAPSHOT_NAME, "Take Snapshot",
+                BlueprintsStrings.STRING_BLUEPRINTS_SNAPSHOT_TOOLTIP, "Take snapshot {0} \n\nCreate a blueprint and quickly place it elsewhere while not cluttering your blueprint collection! \nSnapshots do not persist between games or worlds.",
+                BlueprintsStrings.STRING_BLUEPRINTS_SNAPSHOT_EMPTY, "Snapshot would have been empty!",
+                BlueprintsStrings.STRING_BLUEPRINTS_SNAPSHOT_TAKEN, "Snapshot taken!",
+                BlueprintsStrings.STRING_BLUEPRINTS_SNAPSHOT_TOOLTIP_TITLE, "SNAPSHOT TOOL",
+                BlueprintsStrings.STRING_BLUEPRINTS_SNAPSHOT_ACTION_CLICK, "CLICK",
+                BlueprintsStrings.STRING_BLUEPRINTS_SNAPSHOT_ACTION_DRAG, "DRAG",
+                BlueprintsStrings.STRING_BLUEPRINTS_SNAPSHOT_ACTION_BACK, "BACK",
+                BlueprintsStrings.STRING_BLUEPRINTS_SNAPSHOT_NEWSNAPSHOT, "Press {0} to take new snapshot.",
+
+                BlueprintsStrings.STRING_BLUEPRINTS_NAMEBLUEPRINT_TITLE, "NAME BLUEPRINT"
+            };
 
             Debug.Log("Blueprints Loaded: Version " + currentAssembly.GetName().Version);
         }
+
+        private static void ModLocalizedHandler(string languageCode) {
+            BlueprintsAssets.BLUEPRINTS_CREATE_TOOLCOLLECTION = ToolMenu.CreateToolCollection(
+                Strings.Get(BlueprintsStrings.STRING_BLUEPRINTS_CREATE_NAME).String,
+                BlueprintsAssets.BLUEPRINTS_CREATE_ICON_NAME,
+                Action.NumActions,
+                BlueprintsAssets.BLUEPRINTS_CREATE_TOOLNAME,
+                string.Format(Strings.Get(BlueprintsStrings.STRING_BLUEPRINTS_CREATE_TOOLTIP), Utilities.GetKeyCodeString(BlueprintsAssets.BLUEPRINTS_KEYBIND_CREATE)),
+                true
+            );
+
+            BlueprintsAssets.BLUEPRINTS_USE_TOOLCOLLECTION = ToolMenu.CreateToolCollection(
+                Strings.Get(BlueprintsStrings.STRING_BLUEPRINTS_USE_NAME).String,
+                BlueprintsAssets.BLUEPRINTS_USE_ICON_NAME,
+                Action.NumActions,
+                BlueprintsAssets.BLUEPRINTS_USE_TOOLNAME,
+                string.Format(Strings.Get(BlueprintsStrings.STRING_BLUEPRINTS_USE_TOOLTIP), Utilities.GetKeyCodeString(BlueprintsAssets.BLUEPRINTS_KEYBIND_USE), Utilities.GetKeyCodeString(BlueprintsAssets.BLUEPRINTS_KEYBIND_USE_RELOAD)),
+                true
+            );
+
+            BlueprintsAssets.BLUEPRINTS_SNAPSHOT_TOOLCOLLECTION = ToolMenu.CreateToolCollection(
+                Strings.Get(BlueprintsStrings.STRING_BLUEPRINTS_SNAPSHOT_NAME).String,
+                BlueprintsAssets.BLUEPRINTS_SNAPSHOT_ICON_NAME,
+                Action.NumActions,
+                BlueprintsAssets.BLUEPRINTS_SNAPSHOT_TOOLNAME,
+                string.Format(Strings.Get(BlueprintsStrings.STRING_BLUEPRINTS_SNAPSHOT_TOOLTIP), Utilities.GetKeyCodeString(BlueprintsAssets.BLUEPRINTS_KEYBIND_SNAPSHOT)),
+                false
+           );
+        }
     }
+
 
     namespace Patches {
         [HarmonyPatch(typeof(PlayerController), "OnPrefabInit")]
@@ -109,7 +173,7 @@ namespace Blueprints {
                 Utilities.ReloadBlueprints(false);
             }
         }
-        
+
         [HarmonyPatch(typeof(FileNameDialog), "OnSpawn")]
         public static class FileNameDialog_OnSpawn {
             public static void Postfix(FileNameDialog __instance, TMP_InputField ___inputField) {

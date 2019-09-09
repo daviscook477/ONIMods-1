@@ -1,81 +1,104 @@
-﻿using System.Collections.Generic;
-using System.IO;
-
-using Harmony;
-
-using UnityEngine;
-
+﻿using Harmony;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using System.Collections.Generic;
+using System.IO;
+using UnityEngine;
 
 namespace Blueprints {
+    public static class BlueprintsStrings {
+        public const string STRING_BLUEPRINTS_CREATE_NAME = "BLUEPRINTS.CREATE.NAME";
+        public const string STRING_BLUEPRINTS_CREATE_TOOLTIP = "BLUEPRINTS.CREATE.TOOLTIP";
+        public const string STRING_BLUEPRINTS_CREATE_EMPTY = "BLUEPRINTS.CREATE.EMPTY";
+        public const string STRING_BLUEPRINTS_CREATE_CREATED = "BLUEPRINTS.CREATE.CREATED";
+        public const string STRING_BLUEPRINTS_CREATE_CANCELLED = "BLUEPRINTS.CREATE.CANCELLED";
+        public const string STRING_BLUEPRINTS_CREATE_TOOLTIP_TITLE = "BLUEPRINTS.CREATE.TOOLTIP.TITLE";
+        public const string STRING_BLUEPRINTS_CREATE_ACTION_DRAG = "BLUEPRINTS.CREATE.ACTION.DRAG";
+        public const string STRING_BLUEPRINTS_CREATE_ACTION_BACK = "BLUEPRINTS.CREATE.ACTION.BACK";
+
+        public const string STRING_BLUEPRINTS_USE_NAME = "BLUEPRINTS.USE.NAME";
+        public const string STRING_BLUEPRINTS_USE_TOOLTIP = "BLUEPRINTS.USE.TOOLTIP";
+        public const string STRING_BLUEPRINTS_USE_LOADEDBLUEPRINTS = "BLUEPRINTS.USE.LOADEDBLUEPRINTS";
+        public const string STRING_BLUEPRINTS_USE_LOADEDBLUEPRINTS_ADDITIONAL = "BLUEPRINTS.USE.LOADEDBLUEPRINTS.ADDITIONAL";
+        public const string STRING_BLUEPRINTS_USE_LOADEDBLUEPRINTS_FEWER = "BLUEPRINTS.USE.LOADEDBLUEPRINTS.FEWER";
+        public const string STRING_BLUEPRINTS_USE_TOOLTIP_TITLE = "BLUEPRINTS.USE.TOOLTIP.TITLE";
+        public const string STRING_BLUEPRINTS_USE_ACTION_CLICK = "BLUEPRINTS.USE.ACTION.CLICK";
+        public const string STRING_BLUEPRINTS_USE_ACTION_BACK = "BLUEPRINTS.USE.ACTION.BACK";
+        public const string STRING_BLUEPRINTS_USE_CYCLEBLUEPRINTS = "BLUEPRINTS.USE.CYCLEBLUEPRINTS";
+        public const string STRING_BLUEPRINTS_USE_NAMEBLUEPRINT = "BLUEPRINTS.USE.NAMEBLUEPRINT";
+        public const string STRING_BLUEPRINTS_USE_DELETEBLUEPRINT = "BLUEPRINTS.USE.DELETEBLUEPRINT";
+        public const string STRING_BLUEPRINTS_USE_ERRORMESSAGE = "BLUEPRINTS.USE.ERRORMESSAGE";
+        public const string STRING_BLUEPRINTS_USE_SELECTEDBLUEPRINT = "BLUEPRINTS.USE.SELECTEDBLUEPRINT";
+        public const string STRING_BLUEPRINTS_USE_NOBLUEPRINTS = "BLUEPRINTS.USE.NOBLUEPRINTS";
+
+        public const string STRING_BLUEPRINTS_SNAPSHOT_NAME = "BLUEPRINTS.SNAPSHOT.NAME";
+        public const string STRING_BLUEPRINTS_SNAPSHOT_TOOLTIP = "BLUEPRINTS.SNAPSHOT.TOOLTIP";
+        public const string STRING_BLUEPRINTS_SNAPSHOT_EMPTY = "BLUEPRINTS.SNAPSHOT.EMPTY";
+        public const string STRING_BLUEPRINTS_SNAPSHOT_TAKEN = "BLUEPRINTS.SNAPSHOT.TAKEN";
+        public const string STRING_BLUEPRINTS_SNAPSHOT_TOOLTIP_TITLE = "BLUEPRINTS.SNAPSHOT.TOOLTIP.TITLE";
+        public const string STRING_BLUEPRINTS_SNAPSHOT_ACTION_CLICK = "BLUEPRINTS.SNAPSHOT.ACTION.CLICK";
+        public const string STRING_BLUEPRINTS_SNAPSHOT_ACTION_DRAG = "BLUEPRINTS.SNAPSHOT.ACTION.DRAG";
+        public const string STRING_BLUEPRINTS_SNAPSHOT_ACTION_BACK = "BLUEPRINTS.SNAPSHOT.ACTION.BACK";
+        public const string STRING_BLUEPRINTS_SNAPSHOT_NEWSNAPSHOT = "BLUEPRINTS.SNAPSHOT.NEWSNAPSHOT";
+
+        public const string STRING_BLUEPRINTS_NAMEBLUEPRINT_TITLE = "BLUEPRINTS.NAMEBLUEPRINT.TITLE";
+    }
+
     public static class BlueprintsAssets {
-        public static string                  BLUEPRINTS_CREATE_NAME = "New Blueprint";
-        public static string                  BLUEPRINTS_CREATE_TOOLNAME = "CreateBlueprintTool";
-        public static string                  BLUEPRINTS_CREATE_TOOLTIP = "Create blueprint " + Utilities.GetKeyCodeString(KeyCode.None);
-        public static string                  BLUEPRINTS_CREATE_ICON_NAME = "BLUEPRINTS.TOOL.CREATE_BLUEPRINT.ICON";
-        public static Sprite                  BLUEPRINTS_CREATE_ICON_SPRITE;
-        public static Sprite                  BLUEPRINTS_CREATE_VISUALIZER_SPRITE;
+        public static string BLUEPRINTS_CREATE_TOOLNAME = "CreateBlueprintTool";
+        public static string BLUEPRINTS_CREATE_ICON_NAME = "BLUEPRINTS.TOOL.CREATE_BLUEPRINT.ICON";
+        public static Sprite BLUEPRINTS_CREATE_ICON_SPRITE;
+        public static Sprite BLUEPRINTS_CREATE_VISUALIZER_SPRITE;
         public static ToolMenu.ToolCollection BLUEPRINTS_CREATE_TOOLCOLLECTION;
 
-        public static string                  BLUEPRINTS_USE_NAME = "Use Blueprint";
-        public static string                  BLUEPRINTS_USE_TOOLNAME = "UseBlueprintTool";
-        public static string                  BLUEPRINTS_USE_TOOLTIP = "Use blueprint " + Utilities.GetKeyCodeString(KeyCode.None) + "\n\nWhen selecting the tool hold " + Utilities.GetKeyCodeString(KeyCode.LeftShift) + " to reload blueprints";
-        public static string                  BLUEPRINTS_USE_ICON_NAME = "BLUEPRINTS.TOOL.USE_BLUEPRINT.ICON";
-        public static Sprite                  BLUEPRINTS_USE_ICON_SPRITE;
-        public static Sprite                  BLUEPRINTS_USE_VISUALIZER_SPRITE;
+        public static string BLUEPRINTS_USE_TOOLNAME = "UseBlueprintTool";
+        public static string BLUEPRINTS_USE_ICON_NAME = "BLUEPRINTS.TOOL.USE_BLUEPRINT.ICON";
+        public static Sprite BLUEPRINTS_USE_ICON_SPRITE;
+        public static Sprite BLUEPRINTS_USE_VISUALIZER_SPRITE;
         public static ToolMenu.ToolCollection BLUEPRINTS_USE_TOOLCOLLECTION;
 
-        public static string                  BLUEPRINTS_SNAPSHOT_NAME = "Take Snapshot";
-        public static string                  BLUEPRINTS_SNAPSHOT_TOOLNAME = "SnapshotTool";
-        public static string                  BLUEPRINTS_SNAPSHOT_TOOLTIP = "Take snapshot " + Utilities.GetKeyCodeString(KeyCode.None) + "\n\nCreate a blueprint and quickly place it elsewhere while not cluttering your blueprint collection! \nSnapshots do not persist between games.";
-        public static string                  BLUEPRINTS_SNAPSHOT_ICON_NAME = "BLUEPRINTS.TOOL.SNAPSHOT.ICON";
-        public static Sprite                  BLUEPRINTS_SNAPSHOT_ICON_SPRITE;
-        public static Sprite                  BLUEPRINTS_SNAPSHOT_VISUALIZER_SPRITE;
+        public static string BLUEPRINTS_SNAPSHOT_TOOLNAME = "SnapshotTool";
+        public static string BLUEPRINTS_SNAPSHOT_ICON_NAME = "BLUEPRINTS.TOOL.SNAPSHOT.ICON";
+        public static Sprite BLUEPRINTS_SNAPSHOT_ICON_SPRITE;
+        public static Sprite BLUEPRINTS_SNAPSHOT_VISUALIZER_SPRITE;
         public static ToolMenu.ToolCollection BLUEPRINTS_SNAPSHOT_TOOLCOLLECTION;
 
-        public static Color                   BLUEPRINTS_COLOR_VALIDPLACEMENT = Color.white;
-        public static Color                   BLUEPRINTS_COLOR_INVALIDPLACEMENT = Color.red;
-        public static Color                   BLUEPRINTS_COLOR_NOTECH = new Color32(30, 144, 255, 255);
-        public static Color                   BLUEPRINTS_COLOR_BLUEPRINT_DRAG = new Color32(0, 119, 145, 255);
+        public static Color BLUEPRINTS_COLOR_VALIDPLACEMENT = Color.white;
+        public static Color BLUEPRINTS_COLOR_INVALIDPLACEMENT = Color.red;
+        public static Color BLUEPRINTS_COLOR_NOTECH = new Color32(30, 144, 255, 255);
+        public static Color BLUEPRINTS_COLOR_BLUEPRINT_DRAG = new Color32(0, 119, 145, 255);
 
-        public static KeyCode                 BLUEPRINTS_INPUT_KEYBIND_CREATETOOL = KeyCode.None;
-        public static KeyCode                 BLUEPRINTS_INPUT_KEYBIND_USETOOL = KeyCode.None;
-        public static KeyCode                 BLUEPRINTS_INPUT_KEYBIND_USETOOL_RELOAD = KeyCode.LeftShift;
-        public static KeyCode                 BLUEPRINTS_INPUT_KEYBIND_USETOOL_CYCLELEFT = KeyCode.LeftArrow;
-        public static KeyCode                 BLUEPRINTS_INPUT_KEYBIND_USETOOL_CYCLERIGHT = KeyCode.RightArrow;
-        public static KeyCode                 BLUEPRINTS_INPUT_KEYBIND_USETOOL_RENAME = KeyCode.End;
-        public static KeyCode                 BLUEPRINTS_INPUT_KEYBIND_USETOOL_DELETE = KeyCode.Delete;
-        public static KeyCode                 BLUEPRINTS_INPUT_KEYBIND_SNAPSHOTTOOL = KeyCode.None;
-        public static KeyCode                 BLUEPRINTS_INPUT_KEYBIND_SNAPSHOTTOOL_DELETE = KeyCode.Delete;
+        public static KeyCode BLUEPRINTS_KEYBIND_CREATE = KeyCode.None;
+        public static KeyCode BLUEPRINTS_KEYBIND_USE = KeyCode.None;
+        public static KeyCode BLUEPRINTS_KEYBIND_USE_RELOAD = KeyCode.LeftShift;
+        public static KeyCode BLUEPRINTS_KEYBIND_USE_CYCLELEFT = KeyCode.LeftArrow;
+        public static KeyCode BLUEPRINTS_KEYBIND_USE_CYCLERIGHT = KeyCode.RightArrow;
+        public static KeyCode BLUEPRINTS_KEYBIND_USE_RENAME = KeyCode.End;
+        public static KeyCode BLUEPRINTS_KEYBIND_USE_DELETE = KeyCode.Delete;
+        public static KeyCode BLUEPRINTS_KEYBIND_SNAPSHOT = KeyCode.None;
+        public static KeyCode BLUEPRINTS_KEYBIND_SNAPSHOT_NEWSNAPSHOT = KeyCode.Delete;
 
-        public static string                  BLUEPRINTS_PATH_CONFIGFOLDER;
-        public static string                  BLUEPRINTS_PATH_CONFIGFILE;
-        public static string                  BLUEPRINTS_PATH_KEYCODESFILE;
+        public static string BLUEPRINTS_PATH_CONFIGFOLDER;
+        public static string BLUEPRINTS_PATH_CONFIGFILE;
+        public static string BLUEPRINTS_PATH_KEYCODESFILE;
 
-        public static string                  BLUEPRINTS_STRING_CYCLEBLUEPRINTS = "Use " + Utilities.GetKeyCodeString(KeyCode.LeftArrow) + " and " + Utilities.GetKeyCodeString(KeyCode.RightArrow) + " to cycle between blueprints";
-        public static string                  BLUEPRINTS_STRING_RENAMEBLUEPRINT = "Press " + Utilities.GetKeyCodeString(KeyCode.End) + " to rename blueprint";
-        public static string                  BLUEPRINTS_STRING_DELETEBLUEPRINT = "Press " + Utilities.GetKeyCodeString(KeyCode.Delete) + " to delete selected blueprint";
-        public static string                  BLUEPRINTS_STRING_DELETESNAPSHOT = "Press " + Utilities.GetKeyCodeString(KeyCode.Delete) + " to take new snapshot";
-
-        public static bool                    BLUEPRINTS_BOOL_REQUIRECONSTRUCTABLE = true;
-        public static bool                    BLUEPRINTS_BOOL_COMPRESBLUEPRINTS = true;
-
-        public static float                   BLUEPRINTS_FXTIME = 0.75F;
+        public static bool BLUEPRINTS_CONFIG_REQUIRECONSTRUCTABLE = true;
+        public static bool BLUEPRINTS_CONFIG_COMPRESBLUEPRINTS = true;
+        public static float BLUEPRINTS_CONFIG_FXTIME = 0.75F;
     }
 
     public static class BlueprintsState {
         public static int SelectedBlueprintIndex { get; set; } = 0;
         public static List<Blueprint> LoadedBlueprints { get; } = new List<Blueprint>();
-        public static Blueprint SelectedBlueprint { get { return LoadedBlueprints[SelectedBlueprintIndex]; } }
+        public static Blueprint SelectedBlueprint => LoadedBlueprints[SelectedBlueprintIndex];
 
-        public static bool InstantBuild { get { return DebugHandler.InstantBuildMode || Game.Instance.SandboxModeActive && SandboxToolParameterMenu.instance.settings.InstantBuild; } }
+        public static bool InstantBuild => DebugHandler.InstantBuildMode || Game.Instance.SandboxModeActive && SandboxToolParameterMenu.instance.settings.InstantBuild;
 
-        private static readonly List<IVisual>          foundationVisuals = new List<IVisual>();
-        private static readonly List<IVisual>          dependantVisuals  = new List<IVisual>();
-        private static readonly List<ICleanableVisual> cleanableVisuals  = new List<ICleanableVisual>();
+        private static readonly List<IVisual> foundationVisuals = new List<IVisual>();
+        private static readonly List<IVisual> dependantVisuals = new List<IVisual>();
+        private static readonly List<ICleanableVisual> cleanableVisuals = new List<ICleanableVisual>();
 
-        public static readonly Dictionary<int, CellColorPayload>  ColoredCells = new Dictionary<int, CellColorPayload>();
+        public static readonly Dictionary<int, CellColorPayload> ColoredCells = new Dictionary<int, CellColorPayload>();
 
         public static Blueprint CreateBlueprint(Vector2I topLeft, Vector2I bottomRight, FilteredDragTool originTool = null) {
             Blueprint blueprint = new Blueprint(Utilities.GetNewBlueprintLocation("unnamed"));
@@ -133,7 +156,7 @@ namespace Blueprints {
                 }
             }
 
-            return blueprint; 
+            return blueprint;
         }
 
         public static void VisualizeBlueprint(Vector2I topLeft, Blueprint blueprint) {
@@ -232,15 +255,15 @@ namespace Blueprints {
         public void Update() {
             ToolMenu.ToolCollection currentlySelectedCollection = ToolMenu.Instance.currentlySelectedCollection;
 
-            if (Input.GetKeyDown(BlueprintsAssets.BLUEPRINTS_INPUT_KEYBIND_CREATETOOL) && currentlySelectedCollection != BlueprintsAssets.BLUEPRINTS_CREATE_TOOLCOLLECTION) {
+            if (Input.GetKeyDown(BlueprintsAssets.BLUEPRINTS_KEYBIND_CREATE) && currentlySelectedCollection != BlueprintsAssets.BLUEPRINTS_CREATE_TOOLCOLLECTION) {
                 Traverse.Create(ToolMenu.Instance).Method("ChooseCollection", BlueprintsAssets.BLUEPRINTS_CREATE_TOOLCOLLECTION, true).GetValue();
             }
 
-            else if (Input.GetKeyDown(BlueprintsAssets.BLUEPRINTS_INPUT_KEYBIND_USETOOL) && currentlySelectedCollection != BlueprintsAssets.BLUEPRINTS_USE_TOOLCOLLECTION) {
+            else if (Input.GetKeyDown(BlueprintsAssets.BLUEPRINTS_KEYBIND_USE) && currentlySelectedCollection != BlueprintsAssets.BLUEPRINTS_USE_TOOLCOLLECTION) {
                 Traverse.Create(ToolMenu.Instance).Method("ChooseCollection", BlueprintsAssets.BLUEPRINTS_USE_TOOLCOLLECTION, true).GetValue();
             }
 
-            else if (Input.GetKeyDown(BlueprintsAssets.BLUEPRINTS_INPUT_KEYBIND_SNAPSHOTTOOL) && currentlySelectedCollection != BlueprintsAssets.BLUEPRINTS_SNAPSHOT_TOOLCOLLECTION) {
+            else if (Input.GetKeyDown(BlueprintsAssets.BLUEPRINTS_KEYBIND_SNAPSHOT) && currentlySelectedCollection != BlueprintsAssets.BLUEPRINTS_SNAPSHOT_TOOLCOLLECTION) {
                 Traverse.Create(ToolMenu.Instance).Method("ChooseCollection", BlueprintsAssets.BLUEPRINTS_SNAPSHOT_TOOLCOLLECTION, true).GetValue();
             }
         }
@@ -268,7 +291,7 @@ namespace Blueprints {
                         FriendlyName = reader.ReadString();
 
                         int buildingCount = reader.ReadInt32();
-                        for(int i = 0; i < buildingCount; ++i) {
+                        for (int i = 0; i < buildingCount; ++i) {
                             BuildingConfig buildingConfig = new BuildingConfig();
                             if (!buildingConfig.ReadBinary(reader)) {
                                 return false;
@@ -302,7 +325,7 @@ namespace Blueprints {
                 try {
                     using (StreamReader reader = File.OpenText(FilePath))
                     using (JsonTextReader jsonReader = new JsonTextReader(reader)) {
-                        JObject rootObject = (JObject) JToken.ReadFrom(jsonReader).Root;
+                        JObject rootObject = (JObject)JToken.ReadFrom(jsonReader).Root;
 
                         JToken friendlyNameToken = rootObject.SelectToken("friendlyname");
                         JToken buildingsToken = rootObject.SelectToken("buildings");
@@ -349,7 +372,7 @@ namespace Blueprints {
         }
 
         public void Write() {
-            if (BlueprintsAssets.BLUEPRINTS_BOOL_COMPRESBLUEPRINTS) {
+            if (BlueprintsAssets.BLUEPRINTS_CONFIG_COMPRESBLUEPRINTS) {
                 WriteBinary();
             }
 

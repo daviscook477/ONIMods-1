@@ -1,5 +1,4 @@
-﻿using System;
-
+﻿
 using UnityEngine;
 
 namespace Blueprints {
@@ -10,11 +9,11 @@ namespace Blueprints {
             if ((ParentTool?.hasFocus ?? false) && BlueprintsState.LoadedBlueprints.Count > 0) {
                 bool blueprintChanged = false;
 
-                if (Input.GetKeyDown(BlueprintsAssets.BLUEPRINTS_INPUT_KEYBIND_USETOOL_RENAME)) {
+                if (Input.GetKeyDown(BlueprintsAssets.BLUEPRINTS_KEYBIND_USE_RENAME)) {
                     FileNameDialog blueprintNameDialog = Utilities.CreateBlueprintRenameDialog();
                     SpeedControlScreen.Instance.Pause(false);
 
-                    blueprintNameDialog.onConfirm = delegate(string blueprintName) {
+                    blueprintNameDialog.onConfirm = delegate (string blueprintName) {
                         BlueprintsState.SelectedBlueprint.Rename(blueprintName.Substring(0, blueprintName.Length - 4));
                         BlueprintsState.SelectedBlueprint.Write();
 
@@ -25,10 +24,8 @@ namespace Blueprints {
                     blueprintNameDialog.Activate();
                 }
 
-                else if (Input.GetKeyDown(BlueprintsAssets.BLUEPRINTS_INPUT_KEYBIND_USETOOL_DELETE)) {
+                else if (Input.GetKeyDown(BlueprintsAssets.BLUEPRINTS_KEYBIND_USE_DELETE)) {
                     BlueprintsState.SelectedBlueprint.DeleteFile();
-                    PopFXManager.Instance.SpawnFX(BlueprintsAssets.BLUEPRINTS_USE_ICON_SPRITE, "Deleted \"" + BlueprintsState.SelectedBlueprint.FriendlyName + "\" (" + (BlueprintsState.LoadedBlueprints.Count - 1) + " remaining)", null, PlayerController.GetCursorPos(KInputManager.GetMousePos()), BlueprintsAssets.BLUEPRINTS_FXTIME);
-
                     BlueprintsState.LoadedBlueprints.RemoveAt(BlueprintsState.SelectedBlueprintIndex);
                     if (BlueprintsState.SelectedBlueprintIndex >= BlueprintsState.LoadedBlueprints.Count) {
                         BlueprintsState.SelectedBlueprintIndex = BlueprintsState.LoadedBlueprints.Count - 1;
@@ -38,7 +35,7 @@ namespace Blueprints {
                 }
 
                 if (BlueprintsState.LoadedBlueprints.Count > 1) {
-                    if (Input.GetKeyDown(BlueprintsAssets.BLUEPRINTS_INPUT_KEYBIND_USETOOL_CYCLELEFT)) {
+                    if (Input.GetKeyDown(BlueprintsAssets.BLUEPRINTS_KEYBIND_USE_CYCLELEFT)) {
                         if (--BlueprintsState.SelectedBlueprintIndex < 0) {
                             BlueprintsState.SelectedBlueprintIndex = BlueprintsState.LoadedBlueprints.Count - 1;
                         }
@@ -46,7 +43,7 @@ namespace Blueprints {
                         blueprintChanged = true;
                     }
 
-                    else if (Input.GetKeyDown(BlueprintsAssets.BLUEPRINTS_INPUT_KEYBIND_USETOOL_CYCLERIGHT)) {
+                    else if (Input.GetKeyDown(BlueprintsAssets.BLUEPRINTS_KEYBIND_USE_CYCLERIGHT)) {
                         if (++BlueprintsState.SelectedBlueprintIndex >= BlueprintsState.LoadedBlueprints.Count) {
                             BlueprintsState.SelectedBlueprintIndex = 0;
                         }

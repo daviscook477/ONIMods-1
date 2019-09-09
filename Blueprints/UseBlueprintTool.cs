@@ -1,5 +1,4 @@
-﻿using Harmony;
-
+﻿
 using UnityEngine;
 
 namespace Blueprints {
@@ -52,12 +51,12 @@ namespace Blueprints {
             gameObject.GetComponent<UseBlueprintToolInput>().ParentTool = this;
             ToolMenu.Instance.PriorityScreen.Show(true);
 
-            if (Input.GetKey(BlueprintsAssets.BLUEPRINTS_INPUT_KEYBIND_USETOOL_RELOAD) || Input.GetKeyUp(BlueprintsAssets.BLUEPRINTS_INPUT_KEYBIND_USETOOL_RELOAD)) {
+            if (Input.GetKey(BlueprintsAssets.BLUEPRINTS_KEYBIND_USE_RELOAD) || Input.GetKeyUp(BlueprintsAssets.BLUEPRINTS_KEYBIND_USE_RELOAD)) {
                 int oldBlueprintCount = BlueprintsState.LoadedBlueprints.Count;
                 Utilities.ReloadBlueprints(true);
 
                 int blueprintCountDelta = BlueprintsState.LoadedBlueprints.Count - oldBlueprintCount;
-                PopFXManager.Instance.SpawnFX(BlueprintsAssets.BLUEPRINTS_CREATE_ICON_SPRITE, "Loaded " + Mathf.Abs(blueprintCountDelta) + (blueprintCountDelta >= 0 ? " additional" : " fewer") + " blueprints! (" + BlueprintsState.LoadedBlueprints.Count + " total)", null, PlayerController.GetCursorPos(KInputManager.GetMousePos()), BlueprintsAssets.BLUEPRINTS_FXTIME * 4);
+                PopFXManager.Instance.SpawnFX(BlueprintsAssets.BLUEPRINTS_CREATE_ICON_SPRITE, string.Format(Strings.Get(BlueprintsStrings.STRING_BLUEPRINTS_USE_LOADEDBLUEPRINTS), Mathf.Abs(blueprintCountDelta) + " " + (blueprintCountDelta >= 0 ? Strings.Get(BlueprintsStrings.STRING_BLUEPRINTS_USE_LOADEDBLUEPRINTS_ADDITIONAL) : Strings.Get(BlueprintsStrings.STRING_BLUEPRINTS_USE_LOADEDBLUEPRINTS_FEWER)), BlueprintsState.LoadedBlueprints.Count), null, PlayerController.GetCursorPos(KInputManager.GetMousePos()), BlueprintsAssets.BLUEPRINTS_CONFIG_FXTIME * 4);
             }
 
             if (BlueprintsState.LoadedBlueprints.Count > 0) {
@@ -79,7 +78,7 @@ namespace Blueprints {
             if (gameObject.GetComponent<UseBlueprintToolInput>() != null) {
                 Destroy(gameObject.GetComponent<UseBlueprintToolInput>());
             }
-            
+
             BlueprintsState.ClearVisuals();
             ToolMenu.Instance.PriorityScreen.Show(false);
         }
@@ -95,7 +94,7 @@ namespace Blueprints {
         public override void OnMouseMove(Vector3 cursorPos) {
             base.OnMouseMove(cursorPos);
 
-            if (hasFocus) {               
+            if (hasFocus) {
                 BlueprintsState.UpdateVisual(Grid.PosToXY(cursorPos));
             }
         }

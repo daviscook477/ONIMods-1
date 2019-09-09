@@ -1,8 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using Harmony;
+using System.Collections.Generic;
 using System.Reflection;
-
-using Harmony;
-
 using UnityEngine;
 
 namespace Pliers {
@@ -48,7 +46,7 @@ namespace Pliers {
             FieldInfo areaVisualizerField = AccessTools.Field(typeof(DragTool), "areaVisualizer");
             FieldInfo areaVisualizerSpriteRendererField = AccessTools.Field(typeof(DragTool), "areaVisualizerSpriteRenderer");
 
-            GameObject areaVisualizer = Util.KInstantiate((GameObject) AccessTools.Field(typeof(DeconstructTool), "areaVisualizer").GetValue(DeconstructTool.Instance));
+            GameObject areaVisualizer = Util.KInstantiate((GameObject)AccessTools.Field(typeof(DeconstructTool), "areaVisualizer").GetValue(DeconstructTool.Instance));
             areaVisualizer.SetActive(false);
 
             areaVisualizer.name = "PliersAreaVisualizer";
@@ -92,7 +90,7 @@ namespace Pliers {
 
                         if (Grid.IsVisible(cell)) {
                             for (int layer = 0; layer < Grid.ObjectLayers.Length; ++layer) {
-                                GameObject gameObject = Grid.Objects[cell, layer];                         
+                                GameObject gameObject = Grid.Objects[cell, layer];
                                 Building building;
 
                                 if (gameObject != null && (building = gameObject.GetComponent<Building>()) != null && IsActiveLayer(GetFilterLayerFromGameObject(gameObject))) {

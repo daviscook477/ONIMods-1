@@ -1,7 +1,5 @@
-﻿using System.Reflection;
-
-using Harmony;
-
+﻿using Harmony;
+using System.Reflection;
 using UnityEngine;
 
 namespace Blueprints {
@@ -48,7 +46,7 @@ namespace Blueprints {
             Destroy(visualizer);
             visualizer = null;
         }
-        
+
         public void DeleteBlueprint() {
             blueprint = null;
 
@@ -101,7 +99,7 @@ namespace Blueprints {
             blueprint = null;
 
             ToolMenu.Instance.toolParameterMenu.gameObject.SetActive(true);
-            ToolMenu.Instance.PriorityScreen.Show(false);   
+            ToolMenu.Instance.PriorityScreen.Show(false);
         }
 
         protected override void OnDragComplete(Vector3 cursorDown, Vector3 cursorUp) {
@@ -121,7 +119,7 @@ namespace Blueprints {
 
                 Blueprint blueprint = BlueprintsState.CreateBlueprint(new Vector2I(x0, y0), new Vector2I(x1, y1), this);
                 if (blueprint.IsEmpty()) {
-                    PopFXManager.Instance.SpawnFX(BlueprintsAssets.BLUEPRINTS_CREATE_ICON_SPRITE, "Snapshot would have been empty!", null, PlayerController.GetCursorPos(KInputManager.GetMousePos()), BlueprintsAssets.BLUEPRINTS_FXTIME);
+                    PopFXManager.Instance.SpawnFX(BlueprintsAssets.BLUEPRINTS_CREATE_ICON_SPRITE, Strings.Get(BlueprintsStrings.STRING_BLUEPRINTS_SNAPSHOT_EMPTY), null, PlayerController.GetCursorPos(KInputManager.GetMousePos()), BlueprintsAssets.BLUEPRINTS_CONFIG_FXTIME);
                 }
 
                 else {
@@ -136,7 +134,7 @@ namespace Blueprints {
                     gameObject.GetComponent<SnapshotToolInput>().ParentTool = this;
                     DestroyVisualizer();
 
-                    PopFXManager.Instance.SpawnFX(BlueprintsAssets.BLUEPRINTS_CREATE_ICON_SPRITE, "Snapshot taken!", null, PlayerController.GetCursorPos(KInputManager.GetMousePos()), BlueprintsAssets.BLUEPRINTS_FXTIME);
+                    PopFXManager.Instance.SpawnFX(BlueprintsAssets.BLUEPRINTS_CREATE_ICON_SPRITE, Strings.Get(BlueprintsStrings.STRING_BLUEPRINTS_SNAPSHOT_TAKEN), null, PlayerController.GetCursorPos(KInputManager.GetMousePos()), BlueprintsAssets.BLUEPRINTS_CONFIG_FXTIME);
                     this.blueprint = blueprint;
                 }
             }

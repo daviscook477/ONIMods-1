@@ -1,8 +1,5 @@
-﻿using System;
+﻿using Harmony;
 using System.Reflection;
-
-using Harmony;
-
 using UnityEngine;
 
 namespace Blueprints {
@@ -49,7 +46,7 @@ namespace Blueprints {
             areaVisualizer.transform.SetParent(transform);
             areaVisualizer.GetComponent<SpriteRenderer>().color = BlueprintsAssets.BLUEPRINTS_COLOR_BLUEPRINT_DRAG;
             areaVisualizer.GetComponent<SpriteRenderer>().material.color = BlueprintsAssets.BLUEPRINTS_COLOR_BLUEPRINT_DRAG;
-   
+
             areaVisualizerField.SetValue(this, areaVisualizer);
 
             gameObject.AddComponent<CreateBlueprintToolHoverCard>();
@@ -72,20 +69,20 @@ namespace Blueprints {
 
                 Blueprint blueprint = BlueprintsState.CreateBlueprint(new Vector2I(x0, y0), new Vector2I(x1, y1), this);
                 if (blueprint.IsEmpty()) {
-                    PopFXManager.Instance.SpawnFX(BlueprintsAssets.BLUEPRINTS_CREATE_ICON_SPRITE, "Blueprint would have been empty!", null, PlayerController.GetCursorPos(KInputManager.GetMousePos()), BlueprintsAssets.BLUEPRINTS_FXTIME);
+                    PopFXManager.Instance.SpawnFX(BlueprintsAssets.BLUEPRINTS_CREATE_ICON_SPRITE, Strings.Get(BlueprintsStrings.STRING_BLUEPRINTS_CREATE_EMPTY), null, PlayerController.GetCursorPos(KInputManager.GetMousePos()), BlueprintsAssets.BLUEPRINTS_CONFIG_FXTIME);
                 }
 
                 else {
                     FileNameDialog blueprintNameDialog = Utilities.CreateBlueprintRenameDialog();
                     SpeedControlScreen.Instance.Pause(false);
 
-                    blueprintNameDialog.onConfirm = delegate(string blueprintName) {
+                    blueprintNameDialog.onConfirm = delegate (string blueprintName) {
                         blueprint.Rename(blueprintName.Substring(0, blueprintName.Length - 4));
                         SpeedControlScreen.Instance.Unpause(false);
 
                         blueprintNameDialog.Deactivate();
                         blueprint.Write();
-                        PopFXManager.Instance.SpawnFX(BlueprintsAssets.BLUEPRINTS_CREATE_ICON_SPRITE, "Blueprint created!", null, PlayerController.GetCursorPos(KInputManager.GetMousePos()), BlueprintsAssets.BLUEPRINTS_FXTIME);
+                        PopFXManager.Instance.SpawnFX(BlueprintsAssets.BLUEPRINTS_CREATE_ICON_SPRITE, Strings.Get(BlueprintsStrings.STRING_BLUEPRINTS_CREATE_CREATED), null, PlayerController.GetCursorPos(KInputManager.GetMousePos()), BlueprintsAssets.BLUEPRINTS_CONFIG_FXTIME);
 
                         BlueprintsState.LoadedBlueprints.Add(blueprint);
                         BlueprintsState.SelectedBlueprintIndex = BlueprintsState.LoadedBlueprints.Count - 1;
@@ -94,7 +91,7 @@ namespace Blueprints {
                     blueprintNameDialog.onCancel = delegate {
                         SpeedControlScreen.Instance.Unpause(false);
 
-                        PopFXManager.Instance.SpawnFX(BlueprintsAssets.BLUEPRINTS_CREATE_ICON_SPRITE, "Blueprint cancelled!", null, PlayerController.GetCursorPos(KInputManager.GetMousePos()), BlueprintsAssets.BLUEPRINTS_FXTIME);
+                        PopFXManager.Instance.SpawnFX(BlueprintsAssets.BLUEPRINTS_CREATE_ICON_SPRITE, Strings.Get(BlueprintsStrings.STRING_BLUEPRINTS_CREATE_CANCELLED), null, PlayerController.GetCursorPos(KInputManager.GetMousePos()), BlueprintsAssets.BLUEPRINTS_CONFIG_FXTIME);
                         blueprintNameDialog.Deactivate();
                     };
 

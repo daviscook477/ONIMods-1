@@ -5,7 +5,7 @@ namespace Blueprints {
         public bool UsingSnapshot { get; set; } = false;
 
         public SnapshotToolHoverCard() {
-            ToolName = "SNAPSHOT TOOL";
+            ToolName = Strings.Get(BlueprintsStrings.STRING_BLUEPRINTS_SNAPSHOT_TOOLTIP_TITLE);
         }
 
         public override void UpdateHoverElements(List<KSelectable> hoveredObjects) {
@@ -17,17 +17,17 @@ namespace Blueprints {
             drawer.NewLine(26);
 
             drawer.DrawIcon(screenInstance.GetSprite("icon_mouse_left"), 20);
-            drawer.DrawText(UsingSnapshot ? "CLICK" : "DRAG", Styles_Instruction.Standard);
+            drawer.DrawText(UsingSnapshot ? Strings.Get(BlueprintsStrings.STRING_BLUEPRINTS_SNAPSHOT_ACTION_CLICK) : Strings.Get(BlueprintsStrings.STRING_BLUEPRINTS_CREATE_ACTION_DRAG), Styles_Instruction.Standard);
             drawer.AddIndent(8);
 
             drawer.DrawIcon(screenInstance.GetSprite("icon_mouse_right"), 20);
-            drawer.DrawText("BACK", Styles_Instruction.Standard);
+            drawer.DrawText(Strings.Get(BlueprintsStrings.STRING_BLUEPRINTS_SNAPSHOT_ACTION_BACK), Styles_Instruction.Standard);
 
             if (UsingSnapshot) {
                 drawer.NewLine(32);
-                drawer.DrawText(BlueprintsAssets.BLUEPRINTS_STRING_DELETESNAPSHOT, Styles_Instruction.Standard);
+                drawer.DrawText(string.Format(Strings.Get(BlueprintsStrings.STRING_BLUEPRINTS_SNAPSHOT_NEWSNAPSHOT), Utilities.GetKeyCodeString(BlueprintsAssets.BLUEPRINTS_KEYBIND_SNAPSHOT_NEWSNAPSHOT)), Styles_Instruction.Standard);
             }
- 
+
             drawer.EndShadowBar();
             drawer.EndDrawing();
         }

@@ -102,18 +102,22 @@
     <EmbeddedResource Include="image_snapshot_visualizer.dds" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Compatibility\Compatibility.csproj">
-      <Project>{2613b600-705b-4eaf-9ed7-36b6329aad9e}</Project>
+    <ProjectReference Include="..\Lib\Compatibility\Compatibility.csproj">
+      <Project>{db74753f-d632-4752-bdcc-2411391061c2}</Project>
       <Name>Compatibility</Name>
     </ProjectReference>
-    <ProjectReference Include="..\DisplayVersion\DisplayVersion.csproj">
+    <ProjectReference Include="..\Lib\DisplayVersion\DisplayVersion.csproj">
       <Project>{e0edc434-6d56-40a8-a603-83f0e9d7c60c}</Project>
       <Name>DisplayVersion</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Lib\ModLocalization\ModLocalization.csproj">
+      <Project>{9f4b0a89-b215-4e2d-9680-6576acbdce5c}</Project>
+      <Name>ModLocalization</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>"$(SolutionDir)packages\ILMerge.3.0.29\tools\net452\ILMerge.exe" /out:Blueprints.dll UnmergedBlueprints.dll Compatibility.dll DisplayVersion.dll /targetplatform:v2,C:\Windows\Microsoft.NET\Framework\v2.0.50727
+    <PostBuildEvent>"$(SolutionDir)packages\ILMerge.3.0.29\tools\net452\ILMerge.exe" /out:Blueprints.dll UnmergedBlueprints.dll Compatibility.dll DisplayVersion.dll ModLocalization.dll /targetplatform:v2,C:\Windows\Microsoft.NET\Framework\v2.0.50727
 xcopy /y  "$(TargetDir)Blueprints.dll" "%25USERPROFILE%25\Documents\Klei\OxygenNotIncluded\mods\Local\Blueprints LOCAL\"
 
 </PostBuildEvent>

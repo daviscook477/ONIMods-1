@@ -12,7 +12,6 @@ namespace Blueprints {
                 visualizer.GetComponent<KBatchedAnimController>().TintColour = color;
             }
         }
-
     }
 
     public interface IVisual {
@@ -24,11 +23,11 @@ namespace Blueprints {
         bool TryUse(int cell);
     }
 
-    public interface ICleanableVisual : IVisual { 
+    public interface ICleanableVisual : IVisual {
         int DirtyCell { get; }
 
         void Clean();
-    } 
+    }
 
     public sealed class BuildingVisual : IVisual {
         public GameObject Visualizer { get; private set; }
@@ -129,7 +128,7 @@ namespace Blueprints {
         }
 
         public bool HasTech() {
-            return (BlueprintsState.InstantBuild || !BlueprintsAssets.BLUEPRINTS_BOOL_REQUIRECONSTRUCTABLE || Db.Get().TechItems.IsTechItemComplete(buildingConfig.BuildingDef.PrefabID));
+            return (BlueprintsState.InstantBuild || !BlueprintsAssets.BLUEPRINTS_CONFIG_REQUIRECONSTRUCTABLE || Db.Get().TechItems.IsTechItemComplete(buildingConfig.BuildingDef.PrefabID));
         }
 
         public Color GetVisualizerColor(int cell) {
@@ -273,7 +272,7 @@ namespace Blueprints {
         }
 
         public bool HasTech() {
-            return BlueprintsState.InstantBuild || !BlueprintsAssets.BLUEPRINTS_BOOL_REQUIRECONSTRUCTABLE || Db.Get().TechItems.IsTechItemComplete(buildingConfig.BuildingDef.PrefabID);
+            return BlueprintsState.InstantBuild || !BlueprintsAssets.BLUEPRINTS_CONFIG_REQUIRECONSTRUCTABLE || Db.Get().TechItems.IsTechItemComplete(buildingConfig.BuildingDef.PrefabID);
         }
 
         public bool HasTile(int cell) {
@@ -321,11 +320,11 @@ namespace Blueprints {
                 }
 
                 if (buildingConfig.BuildingDef.isKAnimTile) {
-                    GameObject tileLayerObject = Grid.Objects[DirtyCell, (int) buildingConfig.BuildingDef.TileLayer];
-                    GameObject replacementLayerObject = hasReplacementLayer ? Grid.Objects[DirtyCell, (int) buildingConfig.BuildingDef.ReplacementLayer] : null;
+                    GameObject tileLayerObject = Grid.Objects[DirtyCell, (int)buildingConfig.BuildingDef.TileLayer];
+                    GameObject replacementLayerObject = hasReplacementLayer ? Grid.Objects[DirtyCell, (int)buildingConfig.BuildingDef.ReplacementLayer] : null;
 
                     if (tileLayerObject == null || tileLayerObject.GetComponent<Constructable>() == null && replacementLayerObject == null) {
-                        if (buildingConfig.BuildingDef.BlockTileAtlas != null) {  
+                        if (buildingConfig.BuildingDef.BlockTileAtlas != null) {
                             if (!ValidCell(cell)) {
                                 VisualsUtilities.SetVisualizerColor(cell, BlueprintsAssets.BLUEPRINTS_COLOR_INVALIDPLACEMENT, Visualizer, buildingConfig);
                             }
@@ -333,7 +332,7 @@ namespace Blueprints {
                             bool replacing = hasReplacementLayer && CanReplace(cell);
                             World.Instance.blockTileRenderer.AddBlock(LayerMask.NameToLayer("Overlay"), buildingConfig.BuildingDef, replacing, SimHashes.Void, cell);
                             if (replacing && !visualizerSeated && Grid.Objects[DirtyCell, (int) buildingConfig.BuildingDef.ReplacementLayer] == null) {
-                                Grid.Objects[cell, (int)buildingConfig.BuildingDef.ReplacementLayer] = Visualizer;
+                                Grid.Objects[cell, (int) buildingConfig.BuildingDef.ReplacementLayer] = Visualizer;
                             }
                         }
                     }
@@ -364,13 +363,13 @@ namespace Blueprints {
             if (Visualizer.GetComponent<Rotatable>() != null) {
                 Visualizer.GetComponent<Rotatable>().SetOrientation(buildingConfig.Orientation);
             }
-  
+
             KBatchedAnimController batchedAnimController = Visualizer.GetComponent<KBatchedAnimController>();
             if (batchedAnimController != null) {
                 IUtilityNetworkMgr utilityNetworkManager = buildingConfig.BuildingDef.BuildingComplete.GetComponent<IHaveUtilityNetworkMgr>().GetNetworkManager();
 
                 if (utilityNetworkManager != null) {
-                    string animation = utilityNetworkManager.GetVisualizerString((UtilityConnections)buildingConfig.Flags) + "_place";
+                    string animation = utilityNetworkManager.GetVisualizerString((UtilityConnections) buildingConfig.Flags) + "_place";
 
                     if (batchedAnimController.HasAnimation(animation)) {
                         batchedAnimController.Play(animation);
@@ -423,15 +422,15 @@ namespace Blueprints {
                 GameObject building = buildingConfig.BuildingDef.Instantiate(positionCBC, buildingConfig.Orientation, buildingConfig.SelectedElements);
 
                 if (building == null) {
-                    return false; 
-                }                
+                    return false;
+                }
 
                 if (building.GetComponent<Rotatable>() != null) {
                     building.GetComponent<Rotatable>().SetOrientation(buildingConfig.Orientation);
                 }
 
                 if (buildingConfig.BuildingDef.BuildingComplete.GetComponent<IHaveUtilityNetworkMgr>() != null && building.GetComponent<KAnimGraphTileVisualizer>() != null) {
-                    building.GetComponent<KAnimGraphTileVisualizer>().UpdateConnections((UtilityConnections)buildingConfig.Flags);
+                    building.GetComponent<KAnimGraphTileVisualizer>().UpdateConnections((UtilityConnections) buildingConfig.Flags);
                 }
 
                 if (ToolMenu.Instance != null) {
@@ -450,11 +449,11 @@ namespace Blueprints {
         }
 
         public bool HasTech() {
-            return (BlueprintsState.InstantBuild || !BlueprintsAssets.BLUEPRINTS_BOOL_REQUIRECONSTRUCTABLE || Db.Get().TechItems.IsTechItemComplete(buildingConfig.BuildingDef.PrefabID));
+            return (BlueprintsState.InstantBuild || !BlueprintsAssets.BLUEPRINTS_CONFIG_REQUIRECONSTRUCTABLE || Db.Get().TechItems.IsTechItemComplete(buildingConfig.BuildingDef.PrefabID));
         }
 
         public bool HasUtility(int cell) {
-            return Grid.Objects[cell, (int)buildingConfig.BuildingDef.TileLayer] != null;
+            return Grid.Objects[cell, (int) buildingConfig.BuildingDef.TileLayer] != null;
         }
 
         public Color GetVisualizerColor(int cell) {
@@ -498,7 +497,7 @@ namespace Blueprints {
                 }
 
                 else {
-                    GameObject digVisualizer = Util.KInstantiate(Assets.GetPrefab(new Tag("DigPlacer")), null, null);
+                    GameObject digVisualizer = Util.KInstantiate(Assets.GetPrefab(new Tag("DigPlacer")));
                     digVisualizer.transform.SetPosition(Grid.CellToPosCBC(cell, DigTool.Instance.visualizerLayer) - new Vector3(0F, 0F, 0.15F));
                     digVisualizer.GetComponent<Prioritizable>().SetMasterPriority(ToolMenu.Instance.PriorityScreen.GetLastSelectedPriority());
                     digVisualizer.SetActive(true);

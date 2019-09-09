@@ -1,12 +1,10 @@
-﻿using System;
-using System.IO;
-using System.Collections.Generic;
-
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-
-using UnityEngine;
 using STRINGS;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using UnityEngine;
 
 namespace Blueprints {
     public static class Utilities {
@@ -22,7 +20,7 @@ namespace Blueprints {
         }
 
         public static string GetBlueprintDirectory() {
-            string folderLocation = Util.RootFolder() + "/blueprints";
+            string folderLocation = Path.Combine(Util.RootFolder(), "blueprints");
             if (!Directory.Exists(folderLocation)) {
                 Directory.CreateDirectory(folderLocation);
             }
@@ -39,11 +37,11 @@ namespace Blueprints {
 
         public static string GetBlueprintName(string name, int index) {
             if (index == -1) {
-                return GetBlueprintDirectory() + "/" + name + ".blueprint";
+                return Path.Combine(GetBlueprintDirectory(), name + ".blueprint");
             }
 
             else {
-                return GetBlueprintDirectory() + "/" + name + "-" + index + ".blueprint";
+                return Path.Combine(GetBlueprintDirectory(), name + "-" + index + ".blueprint");
             }
         }
 
@@ -83,7 +81,7 @@ namespace Blueprints {
 
             Transform titleTransform = blueprintNameDialog.transform.Find("Panel")?.Find("Title_BG")?.Find("Title");
             if (titleTransform != null && titleTransform.GetComponent<LocText>() != null) {
-                titleTransform.GetComponent<LocText>().text = "NAME BLUEPRINT";
+                titleTransform.GetComponent<LocText>().text = Strings.Get(BlueprintsStrings.STRING_BLUEPRINTS_NAMEBLUEPRINT_TITLE);
             }
 
             return blueprintNameDialog;
@@ -107,7 +105,7 @@ namespace Blueprints {
         }
 
         public static bool IsBuildable(this BuildingDef buildingDef) {
-            if (!BlueprintsAssets.BLUEPRINTS_BOOL_REQUIRECONSTRUCTABLE) {
+            if (!BlueprintsAssets.BLUEPRINTS_CONFIG_REQUIRECONSTRUCTABLE) {
                 return true;
             }
 
@@ -154,7 +152,7 @@ namespace Blueprints {
                 jsonWriter.WritePropertyName("keybind_snapshottool");
                 jsonWriter.WriteValue(KeyCode.None.ToString());
 
-                jsonWriter.WritePropertyName("keybind_snapshottool_delete");
+                jsonWriter.WritePropertyName("keybind_snapshottool_newsnapshot");
                 jsonWriter.WriteValue(KeyCode.Delete.ToString());
 
                 jsonWriter.WritePropertyName("require_constructable");
@@ -184,6 +182,7 @@ namespace Blueprints {
         public static void ReadConfig() {
             if (!Directory.Exists(BlueprintsAssets.BLUEPRINTS_PATH_CONFIGFOLDER)) {
                 Directory.CreateDirectory(BlueprintsAssets.BLUEPRINTS_PATH_CONFIGFOLDER);
+                return;
             }
 
             using (StreamReader reader = File.OpenText(BlueprintsAssets.BLUEPRINTS_PATH_CONFIGFILE))
@@ -198,62 +197,53 @@ namespace Blueprints {
                 JToken kRenameToken = rootObject.SelectToken("keybind_usetool_rename");
                 JToken kUseDeleteToken = rootObject.SelectToken("keybind_usetool_delete");
                 JToken kSnapshotToolToken = rootObject.SelectToken("keybind_snapshottool");
-                JToken kSnapshotDeleteToken = rootObject.SelectToken("keybind_snapshottool_delete");
+                JToken kSnapshotNewSnapshotToken = rootObject.SelectToken("keybind_snapshottool_newsnapshot");
 
                 JToken bRequireConstructable = rootObject.SelectToken("require_constructable");
                 JToken bCompressBlueprints = rootObject.SelectToken("compress_blueprints");
 
                 if (kCreateToolToken != null && kCreateToolToken.Type == JTokenType.String && Utilities.TryParseEnum<KeyCode>(kCreateToolToken.Value<string>(), out KeyCode kCreateTool)) {
-                    BlueprintsAssets.BLUEPRINTS_INPUT_KEYBIND_CREATETOOL = kCreateTool;
-                    BlueprintsAssets.BLUEPRINTS_CREATE_TOOLTIP = "Create blueprint " + Utilities.GetKeyCodeString(kCreateTool);
+                    BlueprintsAssets.BLUEPRINTS_KEYBIND_CREATE = kCreateTool;
                 }
 
                 if (kUseToolToken != null && kUseToolToken.Type == JTokenType.String && Utilities.TryParseEnum<KeyCode>(kUseToolToken.Value<string>(), out KeyCode kUseTool)) {
-                    BlueprintsAssets.BLUEPRINTS_INPUT_KEYBIND_USETOOL = kUseTool;
-                    BlueprintsAssets.BLUEPRINTS_USE_TOOLTIP = "Use blueprint " + Utilities.GetKeyCodeString(kUseTool) + "\n\nWhen activating the tool hold " + Utilities.GetKeyCodeString(KeyCode.LeftShift) + " to reload blueprints";
+                    BlueprintsAssets.BLUEPRINTS_KEYBIND_USE = kUseTool;
                 }
 
                 if (kReloadToken != null && kReloadToken.Type == JTokenType.String && Utilities.TryParseEnum<KeyCode>(kReloadToken.Value<string>(), out KeyCode kReload)) {
-                    BlueprintsAssets.BLUEPRINTS_INPUT_KEYBIND_USETOOL_RELOAD = kReload;
-                    BlueprintsAssets.BLUEPRINTS_USE_TOOLTIP = "Use blueprint " + Utilities.GetKeyCodeString(BlueprintsAssets.BLUEPRINTS_INPUT_KEYBIND_USETOOL) + "\n\nWhen activating the tool hold " + Utilities.GetKeyCodeString(kReload) + " to reload blueprints";
+                    BlueprintsAssets.BLUEPRINTS_KEYBIND_USE_RELOAD = kReload;
                 }
 
                 if (kCycleLeftToken != null && kCycleLeftToken.Type == JTokenType.String && Utilities.TryParseEnum<KeyCode>(kCycleLeftToken.Value<string>(), out KeyCode kCycleLeft)) {
-                    BlueprintsAssets.BLUEPRINTS_INPUT_KEYBIND_USETOOL_CYCLELEFT = kCycleLeft;
-                    BlueprintsAssets.BLUEPRINTS_STRING_CYCLEBLUEPRINTS = "Use " + Utilities.GetKeyCodeString(kCycleLeft) + " and " + Utilities.GetKeyCodeString(KeyCode.RightArrow) + " to cycle between blueprints";
+                    BlueprintsAssets.BLUEPRINTS_KEYBIND_USE_CYCLELEFT = kCycleLeft;
                 }
 
                 if (kCycleRightToken != null && kCycleRightToken.Type == JTokenType.String && Utilities.TryParseEnum<KeyCode>(kCycleRightToken.Value<string>(), out KeyCode kCycleRight)) {
-                    BlueprintsAssets.BLUEPRINTS_INPUT_KEYBIND_USETOOL_CYCLERIGHT = kCycleRight;
-                    BlueprintsAssets.BLUEPRINTS_STRING_CYCLEBLUEPRINTS = "Use " + Utilities.GetKeyCodeString(BlueprintsAssets.BLUEPRINTS_INPUT_KEYBIND_USETOOL_CYCLELEFT) + " and " + Utilities.GetKeyCodeString(kCycleRight) + " to cycle between blueprints";
+                    BlueprintsAssets.BLUEPRINTS_KEYBIND_USE_CYCLERIGHT = kCycleRight;
                 }
 
                 if (kRenameToken != null && kRenameToken.Type == JTokenType.String && Utilities.TryParseEnum<KeyCode>(kRenameToken.Value<string>(), out KeyCode kRename)) {
-                    BlueprintsAssets.BLUEPRINTS_INPUT_KEYBIND_USETOOL_RENAME = kRename;
-                    BlueprintsAssets.BLUEPRINTS_STRING_RENAMEBLUEPRINT = "Press " + Utilities.GetKeyCodeString(kRename) + " to rename selected blueprint";
+                    BlueprintsAssets.BLUEPRINTS_KEYBIND_USE_RENAME = kRename;
                 }
 
                 if (kUseDeleteToken != null && kUseDeleteToken.Type == JTokenType.String && Utilities.TryParseEnum<KeyCode>(kUseDeleteToken.Value<string>(), out KeyCode kUseDelete)) {
-                    BlueprintsAssets.BLUEPRINTS_INPUT_KEYBIND_USETOOL_DELETE = kUseDelete;
-                    BlueprintsAssets.BLUEPRINTS_STRING_DELETEBLUEPRINT = "Press " + Utilities.GetKeyCodeString(kUseDelete) + " to delete selected blueprint";
+                    BlueprintsAssets.BLUEPRINTS_KEYBIND_USE_DELETE = kUseDelete;
                 }
 
                 if (kSnapshotToolToken != null && kSnapshotToolToken.Type == JTokenType.String && Utilities.TryParseEnum<KeyCode>(kSnapshotToolToken.Value<string>(), out KeyCode kSnapshotTool)) {
-                    BlueprintsAssets.BLUEPRINTS_INPUT_KEYBIND_SNAPSHOTTOOL = kSnapshotTool;
-                    BlueprintsAssets.BLUEPRINTS_SNAPSHOT_TOOLTIP = "Take a snapshot " + Utilities.GetKeyCodeString(KeyCode.None) + "\n\nCreate a blueprint and quickly place it elsewhere while not cluttering your blueprint collection! \nSnapshots do not persist between games.";
+                    BlueprintsAssets.BLUEPRINTS_KEYBIND_SNAPSHOT = kSnapshotTool;
                 }
 
-                if (kSnapshotDeleteToken != null && kSnapshotDeleteToken.Type == JTokenType.String && Utilities.TryParseEnum<KeyCode>(kSnapshotDeleteToken.Value<string>(), out KeyCode kSnapshotDelete)) {
-                    BlueprintsAssets.BLUEPRINTS_INPUT_KEYBIND_SNAPSHOTTOOL_DELETE = kSnapshotDelete;
-                    BlueprintsAssets.BLUEPRINTS_STRING_DELETESNAPSHOT = "Press " + Utilities.GetKeyCodeString(kSnapshotDelete) + " to take new snapshot";
+                if (kSnapshotNewSnapshotToken != null && kSnapshotNewSnapshotToken.Type == JTokenType.String && Utilities.TryParseEnum<KeyCode>(kSnapshotNewSnapshotToken.Value<string>(), out KeyCode kSnapshotDelete)) {
+                    BlueprintsAssets.BLUEPRINTS_KEYBIND_SNAPSHOT_NEWSNAPSHOT = kSnapshotDelete;
                 }
 
                 if (bRequireConstructable != null && bRequireConstructable.Type == JTokenType.Boolean) {
-                    BlueprintsAssets.BLUEPRINTS_BOOL_REQUIRECONSTRUCTABLE = bRequireConstructable.Value<bool>();
+                    BlueprintsAssets.BLUEPRINTS_CONFIG_REQUIRECONSTRUCTABLE = bRequireConstructable.Value<bool>();
                 }
 
                 if (bCompressBlueprints != null && bCompressBlueprints.Type == JTokenType.Boolean) {
-                    BlueprintsAssets.BLUEPRINTS_BOOL_COMPRESBLUEPRINTS = bCompressBlueprints.Value<bool>();
+                    BlueprintsAssets.BLUEPRINTS_CONFIG_COMPRESBLUEPRINTS = bCompressBlueprints.Value<bool>();
                 }
             }
         }
