@@ -1,12 +1,9 @@
-﻿using System;
-using System.IO;
-
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-
-using UnityEngine;
-
 using STRINGS;
+using System;
+using System.IO;
+using UnityEngine;
 
 namespace Pliers {
     public static class Utilities {
@@ -89,11 +86,11 @@ namespace Pliers {
         }
 
         public static void CreateKeycodeHintFile() {
-            if(!Directory.Exists(PliersAssets.PLIERS_PATH_CONFIGFOLDER)) {
+            if (!Directory.Exists(PliersAssets.PLIERS_PATH_CONFIGFOLDER)) {
                 Directory.CreateDirectory(PliersAssets.PLIERS_PATH_CONFIGFOLDER);
             }
 
-            if(!File.Exists(PliersAssets.PLIERS_PATH_KEYCODESFILE)) {
+            if (!File.Exists(PliersAssets.PLIERS_PATH_KEYCODESFILE)) {
                 using (TextWriter textWriter = File.CreateText(PliersAssets.PLIERS_PATH_KEYCODESFILE)) {
                     foreach (KeyCode keycode in Enum.GetValues(typeof(KeyCode))) {
                         textWriter.WriteLine(keycode.ToString());
@@ -105,17 +102,17 @@ namespace Pliers {
         public static void ReadConfig() {
             if (!Directory.Exists(PliersAssets.PLIERS_PATH_CONFIGFOLDER)) {
                 Directory.CreateDirectory(PliersAssets.PLIERS_PATH_CONFIGFOLDER);
+                return;
             }
 
             using (StreamReader reader = File.OpenText(PliersAssets.PLIERS_PATH_CONFIGFILE))
             using (JsonTextReader jsonReader = new JsonTextReader(reader)) {
-                JObject rootObject = (JObject) JToken.ReadFrom(jsonReader).Root;
+                JObject rootObject = (JObject)JToken.ReadFrom(jsonReader).Root;
 
                 JToken kWireToolToken = rootObject.SelectToken("keybind_wirecutter");
 
                 if (kWireToolToken != null && kWireToolToken.Type == JTokenType.String && Utilities.TryParseEnum<KeyCode>(kWireToolToken.Value<string>(), out KeyCode kWireTool)) {
                     PliersAssets.PLIERS_INPUT_KEYBIND_TOOL = kWireTool;
-                    PliersAssets.PLIERS_TOOLTIP = "Disconnect utility networks " + Utilities.GetKeyCodeString(kWireTool);
                 }
             }
         }

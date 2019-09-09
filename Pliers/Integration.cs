@@ -1,9 +1,8 @@
-﻿using System.Collections.Generic;
-using System.Reflection;
+﻿using Harmony;
+using ModFramework;
+using System.Collections.Generic;
 using System.IO;
-
-using Harmony;
-
+using System.Reflection;
 using UnityEngine;
 
 namespace Pliers {
@@ -11,6 +10,7 @@ namespace Pliers {
         public static void OnLoad() {
             Assembly currentAssembly = Assembly.GetExecutingAssembly();
             string currentAssemblyDirectory = Path.GetDirectoryName(currentAssembly.Location);
+
             PliersAssets.PLIERS_PATH_CONFIGFOLDER = currentAssemblyDirectory + "/config";
             PliersAssets.PLIERS_PATH_CONFIGFILE = PliersAssets.PLIERS_PATH_CONFIGFOLDER + "/config.json";
             PliersAssets.PLIERS_PATH_KEYCODESFILE = PliersAssets.PLIERS_PATH_CONFIGFOLDER + "/keycodes.txt";
@@ -28,9 +28,27 @@ namespace Pliers {
             PliersAssets.PLIERS_ICON_SPRITE.name = PliersAssets.PLIERS_ICON_NAME;
             PliersAssets.PLIERS_VISUALIZER_SPRITE = Utilities.CreateSpriteDXT5(Assembly.GetExecutingAssembly().GetManifestResourceStream("Pliers.image_wirecutter_visualizer.dds"), 256, 256);
 
-            PliersAssets.PLIERS_TOOLCOLLECTION = ToolMenu.CreateToolCollection(PliersAssets.PLIERS_NAME, PliersAssets.PLIERS_ICON_NAME, Action.NumActions, PliersAssets.PLIERS_TOOLNAME, PliersAssets.PLIERS_TOOLTIP, false);
+            ModLocalization.LocalizationCompleteEvent += ModLocalizedHandler;
+            ModLocalization.DefaultLocalization = new string[] {
+                PliersStrings.STRING_PLIERS_NAME, "Pliers",
+                PliersStrings.STRING_PLIERS_TOOLTIP, "Disconnect utility networks {0}",
+                PliersStrings.STRING_PLIERS_TOOLTIP_TITLE, "PLIERS",
+                PliersStrings.STRING_PLIERS_ACTION_DRAG, "DRAG",
+                PliersStrings.STRING_PLIERS_ACTION_BACK, "BACK"
+            };
 
             Debug.Log("Pliers Loaded: Version " + currentAssembly.GetName().Version);
+        }
+
+        private static void ModLocalizedHandler(string languageCode) {
+            PliersAssets.PLIERS_TOOLCOLLECTION = ToolMenu.CreateToolCollection(
+                Strings.Get(PliersStrings.STRING_PLIERS_NAME).String,
+                PliersAssets.PLIERS_ICON_NAME,
+                Action.NumActions,
+                PliersAssets.PLIERS_TOOLNAME,
+                string.Format(Strings.Get(PliersStrings.STRING_PLIERS_TOOLTIP).String, Utilities.GetKeyCodeString(PliersAssets.PLIERS_INPUT_KEYBIND_TOOL)),
+                false
+           );
         }
     }
 
