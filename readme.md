@@ -10,7 +10,7 @@
 ## Mod Component Downloads
 
 | Component | Direct Download |
-|-|-|-|
+|-|-|
 | Compatibility | [Direct Download](https://www.dropbox.com/s/pm6hujkvkkhthf5/Compatibility.dll?dl=1) |
 | Display Version | [Direct Download](https://www.dropbox.com/s/t9pqq4u46v2zxio/DisplayVersion.dll?dl=1) |
 | Mod Localization | [Direct Download](https://www.dropbox.com/s/2gxy7hf7hkqdeq4/ModLocalization.dll?dl=1) |
