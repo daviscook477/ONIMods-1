@@ -1,11 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using Harmony;
 using System.IO;
 using System.Reflection;
-
-using Harmony;
 using UnityEngine;
 
-namespace DisplayVersion {
+namespace ModFramework {
     [HarmonyPatch(typeof(ModsScreen), "BuildDisplay")]
     public static class ModsScreen_BuildDisplay {
         public static LocText versionLocText;

@@ -1,10 +1,9 @@
-﻿using System;
+﻿using Harmony;
+using System;
 using System.Collections.Generic;
 using System.Reflection;
 
-using Harmony;
-
-namespace Compatibility {
+namespace ModFramework {
     public static class Compatibility {
         private static void Patch(HarmonyInstance harmonyInstance) {
             if (harmonyInstance.HasAnyPatches("mod.mayall.compatibility.patches")) {
