@@ -24,7 +24,7 @@ namespace ModFramework {
                             LocText titleReference = hierarchyReferences.GetReference<LocText>("Title");
 
                             if (titleReference != null && titleReference.text == modTitle) {
-                                titleReference.text = "<align=left>" + titleReference.text + " <line-height=0.000000001>\n<align=right>(" + Assembly.GetExecutingAssembly().GetName().Version + ")";
+                                titleReference.text = "<align=left>" + titleReference.text + " <line-height=0.000000001>\n<size=85%><align=right>(" + Assembly.GetExecutingAssembly().GetName().Version + ")";
                                 titleReference.autoSizeTextContainer = false;
 
                                 break;
