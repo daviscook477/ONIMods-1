@@ -10,7 +10,7 @@ namespace Blueprints {
                 bool blueprintChanged = false;
 
                 if (Input.GetKeyDown(BlueprintsAssets.BLUEPRINTS_KEYBIND_USE_RENAME)) {
-                    FileNameDialog blueprintNameDialog = Utilities.CreateBlueprintRenameDialog();
+                    FileNameDialog blueprintNameDialog = UIUtilities.CreateTextEntryDialog("BlueprintNameDialog", Strings.Get(BlueprintsStringIDs.STRING_BLUEPRINTS_NAMEBLUEPRINT_TITLE));
                     SpeedControlScreen.Instance.Pause(false);
 
                     blueprintNameDialog.onConfirm = delegate (string blueprintName) {

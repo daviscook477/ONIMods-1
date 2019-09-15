@@ -16,6 +16,7 @@ namespace Blueprints {
             BlueprintsAssets.BLUEPRINTS_PATH_CONFIGFOLDER = Path.Combine(currentAssemblyDirectory, "config");
             BlueprintsAssets.BLUEPRINTS_PATH_CONFIGFILE = Path.Combine(BlueprintsAssets.BLUEPRINTS_PATH_CONFIGFOLDER, "config.json");
             BlueprintsAssets.BLUEPRINTS_PATH_KEYCODESFILE = Path.Combine(BlueprintsAssets.BLUEPRINTS_PATH_CONFIGFOLDER, "keycodes.txt");
+            BlueprintsAssets.BLUEPRINTS_PATH_ACCOUNTIDFILE = Path.Combine(BlueprintsAssets.BLUEPRINTS_PATH_CONFIGFOLDER, "accountid.txt");
 
             IOUtilities.CreateKeycodeHintFile();
             if (File.Exists(BlueprintsAssets.BLUEPRINTS_PATH_CONFIGFILE)) {
@@ -24,6 +25,14 @@ namespace Blueprints {
 
             else {
                 IOUtilities.CreateDefaultConfig();
+            }
+
+            if (File.Exists(BlueprintsAssets.BLUEPRINTS_PATH_ACCOUNTIDFILE)) {
+                IOUtilities.ReadAccountID();
+            }
+
+            else {
+                IOUtilities.CreateAccountIDFile();
             }
 
             BlueprintsAssets.BLUEPRINTS_CREATE_ICON_SPRITE = Utilities.CreateSpriteDXT5(Assembly.GetExecutingAssembly().GetManifestResourceStream("Blueprints.image_createblueprint_button.dds"), 32, 32);
@@ -40,41 +49,41 @@ namespace Blueprints {
 
             ModLocalization.LocalizationCompleteEvent += ModLocalizedHandler;
             ModLocalization.DefaultLocalization = new string[] {
-                BlueprintsStrings.STRING_BLUEPRINTS_CREATE_NAME, "New Blueprint",
-                BlueprintsStrings.STRING_BLUEPRINTS_CREATE_TOOLTIP, "Create blueprint {0}",
-                BlueprintsStrings.STRING_BLUEPRINTS_CREATE_EMPTY, "Blueprint would have been empty!",
-                BlueprintsStrings.STRING_BLUEPRINTS_CREATE_CREATED, "Created blueprint!",
-                BlueprintsStrings.STRING_BLUEPRINTS_CREATE_CANCELLED, "Cancelled blueprint!",
-                BlueprintsStrings.STRING_BLUEPRINTS_CREATE_TOOLTIP_TITLE, "CREATE BLUEPRINT TOOL",
-                BlueprintsStrings.STRING_BLUEPRINTS_CREATE_ACTION_DRAG, "DRAG",
-                BlueprintsStrings.STRING_BLUEPRINTS_CREATE_ACTION_BACK, "BACK",
+                BlueprintsStringIDs.STRING_BLUEPRINTS_CREATE_NAME, "New Blueprint",
+                BlueprintsStringIDs.STRING_BLUEPRINTS_CREATE_TOOLTIP, "Create blueprint {0}",
+                BlueprintsStringIDs.STRING_BLUEPRINTS_CREATE_EMPTY, "Blueprint would have been empty!",
+                BlueprintsStringIDs.STRING_BLUEPRINTS_CREATE_CREATED, "Created blueprint!",
+                BlueprintsStringIDs.STRING_BLUEPRINTS_CREATE_CANCELLED, "Cancelled blueprint!",
+                BlueprintsStringIDs.STRING_BLUEPRINTS_CREATE_TOOLTIP_TITLE, "CREATE BLUEPRINT TOOL",
+                BlueprintsStringIDs.STRING_BLUEPRINTS_CREATE_ACTION_DRAG, "DRAG",
+                BlueprintsStringIDs.STRING_BLUEPRINTS_CREATE_ACTION_BACK, "BACK",
 
-                BlueprintsStrings.STRING_BLUEPRINTS_USE_NAME, "Use Blueprint",
-                BlueprintsStrings.STRING_BLUEPRINTS_USE_TOOLTIP, "Use blueprint {0} \n\nWhen selecting the tool hold {1} to reload blueprints",
-                BlueprintsStrings.STRING_BLUEPRINTS_USE_LOADEDBLUEPRINTS, "Loaded {0} blueprints! ({1} total)",
-                BlueprintsStrings.STRING_BLUEPRINTS_USE_LOADEDBLUEPRINTS_ADDITIONAL, "additional",
-                BlueprintsStrings.STRING_BLUEPRINTS_USE_LOADEDBLUEPRINTS_FEWER, "fewer",
-                BlueprintsStrings.STRING_BLUEPRINTS_USE_TOOLTIP_TITLE, "USE BLUEPRINT TOOL",
-                BlueprintsStrings.STRING_BLUEPRINTS_USE_ACTION_CLICK, "CLICK",
-                BlueprintsStrings.STRING_BLUEPRINTS_USE_ACTION_BACK, "BACK",
-                BlueprintsStrings.STRING_BLUEPRINTS_USE_CYCLEBLUEPRINTS, "Use {0} and {1} to cycle blueprints.",
-                BlueprintsStrings.STRING_BLUEPRINTS_USE_NAMEBLUEPRINT, "Press {0} to rename blueprint.",
-                BlueprintsStrings.STRING_BLUEPRINTS_USE_DELETEBLUEPRINT, "Press {0} to delete blueprint.",
-                BlueprintsStrings.STRING_BLUEPRINTS_USE_ERRORMESSAGE, "This blueprint contained {0} misconfigured or missing prefabs which have been omitted!",
-                BlueprintsStrings.STRING_BLUEPRINTS_USE_SELECTEDBLUEPRINT, "Selected \"{0}\" ({1}/{2})",
-                BlueprintsStrings.STRING_BLUEPRINTS_USE_NOBLUEPRINTS, "No blueprints loaded!",
+                BlueprintsStringIDs.STRING_BLUEPRINTS_USE_NAME, "Use Blueprint",
+                BlueprintsStringIDs.STRING_BLUEPRINTS_USE_TOOLTIP, "Use blueprint {0} \n\nWhen selecting the tool hold {1} to reload blueprints",
+                BlueprintsStringIDs.STRING_BLUEPRINTS_USE_LOADEDBLUEPRINTS, "Loaded {0} blueprints! ({1} total)",
+                BlueprintsStringIDs.STRING_BLUEPRINTS_USE_LOADEDBLUEPRINTS_ADDITIONAL, "additional",
+                BlueprintsStringIDs.STRING_BLUEPRINTS_USE_LOADEDBLUEPRINTS_FEWER, "fewer",
+                BlueprintsStringIDs.STRING_BLUEPRINTS_USE_TOOLTIP_TITLE, "USE BLUEPRINT TOOL",
+                BlueprintsStringIDs.STRING_BLUEPRINTS_USE_ACTION_CLICK, "CLICK",
+                BlueprintsStringIDs.STRING_BLUEPRINTS_USE_ACTION_BACK, "BACK",
+                BlueprintsStringIDs.STRING_BLUEPRINTS_USE_CYCLEBLUEPRINTS, "Use {0} and {1} to cycle blueprints.",
+                BlueprintsStringIDs.STRING_BLUEPRINTS_USE_NAMEBLUEPRINT, "Press {0} to rename blueprint.",
+                BlueprintsStringIDs.STRING_BLUEPRINTS_USE_DELETEBLUEPRINT, "Press {0} to delete blueprint.",
+                BlueprintsStringIDs.STRING_BLUEPRINTS_USE_ERRORMESSAGE, "This blueprint contained {0} misconfigured or missing prefabs which have been omitted!",
+                BlueprintsStringIDs.STRING_BLUEPRINTS_USE_SELECTEDBLUEPRINT, "Selected \"{0}\" ({1}/{2})",
+                BlueprintsStringIDs.STRING_BLUEPRINTS_USE_NOBLUEPRINTS, "No blueprints loaded!",
 
-                BlueprintsStrings.STRING_BLUEPRINTS_SNAPSHOT_NAME, "Take Snapshot",
-                BlueprintsStrings.STRING_BLUEPRINTS_SNAPSHOT_TOOLTIP, "Take snapshot {0} \n\nCreate a blueprint and quickly place it elsewhere while not cluttering your blueprint collection! \nSnapshots do not persist between games or worlds.",
-                BlueprintsStrings.STRING_BLUEPRINTS_SNAPSHOT_EMPTY, "Snapshot would have been empty!",
-                BlueprintsStrings.STRING_BLUEPRINTS_SNAPSHOT_TAKEN, "Snapshot taken!",
-                BlueprintsStrings.STRING_BLUEPRINTS_SNAPSHOT_TOOLTIP_TITLE, "SNAPSHOT TOOL",
-                BlueprintsStrings.STRING_BLUEPRINTS_SNAPSHOT_ACTION_CLICK, "CLICK",
-                BlueprintsStrings.STRING_BLUEPRINTS_SNAPSHOT_ACTION_DRAG, "DRAG",
-                BlueprintsStrings.STRING_BLUEPRINTS_SNAPSHOT_ACTION_BACK, "BACK",
-                BlueprintsStrings.STRING_BLUEPRINTS_SNAPSHOT_NEWSNAPSHOT, "Press {0} to take new snapshot.",
+                BlueprintsStringIDs.STRING_BLUEPRINTS_SNAPSHOT_NAME, "Take Snapshot",
+                BlueprintsStringIDs.STRING_BLUEPRINTS_SNAPSHOT_TOOLTIP, "Take snapshot {0} \n\nCreate a blueprint and quickly place it elsewhere while not cluttering your blueprint collection! \nSnapshots do not persist between games or worlds.",
+                BlueprintsStringIDs.STRING_BLUEPRINTS_SNAPSHOT_EMPTY, "Snapshot would have been empty!",
+                BlueprintsStringIDs.STRING_BLUEPRINTS_SNAPSHOT_TAKEN, "Snapshot taken!",
+                BlueprintsStringIDs.STRING_BLUEPRINTS_SNAPSHOT_TOOLTIP_TITLE, "SNAPSHOT TOOL",
+                BlueprintsStringIDs.STRING_BLUEPRINTS_SNAPSHOT_ACTION_CLICK, "CLICK",
+                BlueprintsStringIDs.STRING_BLUEPRINTS_SNAPSHOT_ACTION_DRAG, "DRAG",
+                BlueprintsStringIDs.STRING_BLUEPRINTS_SNAPSHOT_ACTION_BACK, "BACK",
+                BlueprintsStringIDs.STRING_BLUEPRINTS_SNAPSHOT_NEWSNAPSHOT, "Press {0} to take new snapshot.",
 
-                BlueprintsStrings.STRING_BLUEPRINTS_NAMEBLUEPRINT_TITLE, "NAME BLUEPRINT"
+                BlueprintsStringIDs.STRING_BLUEPRINTS_NAMEBLUEPRINT_TITLE, "NAME BLUEPRINT"
             };
 
             Debug.Log("Blueprints Loaded: Version " + currentAssembly.GetName().Version);
@@ -82,29 +91,29 @@ namespace Blueprints {
 
         private static void ModLocalizedHandler(string languageCode) {
             BlueprintsAssets.BLUEPRINTS_CREATE_TOOLCOLLECTION = ToolMenu.CreateToolCollection(
-                Strings.Get(BlueprintsStrings.STRING_BLUEPRINTS_CREATE_NAME).String,
+                Strings.Get(BlueprintsStringIDs.STRING_BLUEPRINTS_CREATE_NAME).String,
                 BlueprintsAssets.BLUEPRINTS_CREATE_ICON_NAME,
                 Action.NumActions,
                 BlueprintsAssets.BLUEPRINTS_CREATE_TOOLNAME,
-                string.Format(Strings.Get(BlueprintsStrings.STRING_BLUEPRINTS_CREATE_TOOLTIP), Utilities.GetKeyCodeString(BlueprintsAssets.BLUEPRINTS_KEYBIND_CREATE)),
+                string.Format(Strings.Get(BlueprintsStringIDs.STRING_BLUEPRINTS_CREATE_TOOLTIP), Utilities.GetKeyCodeString(BlueprintsAssets.BLUEPRINTS_KEYBIND_CREATE)),
                 true
             );
 
             BlueprintsAssets.BLUEPRINTS_USE_TOOLCOLLECTION = ToolMenu.CreateToolCollection(
-                Strings.Get(BlueprintsStrings.STRING_BLUEPRINTS_USE_NAME).String,
+                Strings.Get(BlueprintsStringIDs.STRING_BLUEPRINTS_USE_NAME).String,
                 BlueprintsAssets.BLUEPRINTS_USE_ICON_NAME,
                 Action.NumActions,
                 BlueprintsAssets.BLUEPRINTS_USE_TOOLNAME,
-                string.Format(Strings.Get(BlueprintsStrings.STRING_BLUEPRINTS_USE_TOOLTIP), Utilities.GetKeyCodeString(BlueprintsAssets.BLUEPRINTS_KEYBIND_USE), Utilities.GetKeyCodeString(BlueprintsAssets.BLUEPRINTS_KEYBIND_USE_RELOAD)),
+                string.Format(Strings.Get(BlueprintsStringIDs.STRING_BLUEPRINTS_USE_TOOLTIP), Utilities.GetKeyCodeString(BlueprintsAssets.BLUEPRINTS_KEYBIND_USE), Utilities.GetKeyCodeString(BlueprintsAssets.BLUEPRINTS_KEYBIND_USE_RELOAD)),
                 true
             );
 
             BlueprintsAssets.BLUEPRINTS_SNAPSHOT_TOOLCOLLECTION = ToolMenu.CreateToolCollection(
-                Strings.Get(BlueprintsStrings.STRING_BLUEPRINTS_SNAPSHOT_NAME).String,
+                Strings.Get(BlueprintsStringIDs.STRING_BLUEPRINTS_SNAPSHOT_NAME).String,
                 BlueprintsAssets.BLUEPRINTS_SNAPSHOT_ICON_NAME,
                 Action.NumActions,
                 BlueprintsAssets.BLUEPRINTS_SNAPSHOT_TOOLNAME,
-                string.Format(Strings.Get(BlueprintsStrings.STRING_BLUEPRINTS_SNAPSHOT_TOOLTIP), Utilities.GetKeyCodeString(BlueprintsAssets.BLUEPRINTS_KEYBIND_SNAPSHOT)),
+                string.Format(Strings.Get(BlueprintsStringIDs.STRING_BLUEPRINTS_SNAPSHOT_TOOLTIP), Utilities.GetKeyCodeString(BlueprintsAssets.BLUEPRINTS_KEYBIND_SNAPSHOT)),
                 false
            );
         }

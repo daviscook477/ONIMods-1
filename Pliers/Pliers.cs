@@ -3,7 +3,7 @@
 using UnityEngine;
 
 namespace Pliers {
-    public static class PliersStrings {
+    public static class PliersStringIDs {
         public const string STRING_PLIERS_NAME = "PLIERS.NAME";
         public const string STRING_PLIERS_TOOLTIP = "PLIERS.TOOLTIP";
         public const string STRING_PLIERS_TOOLTIP_TITLE = "PLIERS.TOOLTIP.TITLE";

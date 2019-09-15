@@ -6,6 +6,8 @@ namespace Blueprints {
     public sealed class CreateBlueprintTool : FilteredDragTool {
         public static CreateBlueprintTool Instance { get; private set; }
 
+        private bool uploadSelected = false;
+
         public CreateBlueprintTool() {
             Instance = this;
         }
@@ -69,29 +71,52 @@ namespace Blueprints {
 
                 Blueprint blueprint = BlueprintsState.CreateBlueprint(new Vector2I(x0, y0), new Vector2I(x1, y1), this);
                 if (blueprint.IsEmpty()) {
-                    PopFXManager.Instance.SpawnFX(BlueprintsAssets.BLUEPRINTS_CREATE_ICON_SPRITE, Strings.Get(BlueprintsStrings.STRING_BLUEPRINTS_CREATE_EMPTY), null, PlayerController.GetCursorPos(KInputManager.GetMousePos()), BlueprintsAssets.BLUEPRINTS_CONFIG_FXTIME);
+                    PopFXManager.Instance.SpawnFX(BlueprintsAssets.BLUEPRINTS_CREATE_ICON_SPRITE, Strings.Get(BlueprintsStringIDs.STRING_BLUEPRINTS_CREATE_EMPTY), null, PlayerController.GetCursorPos(KInputManager.GetMousePos()), BlueprintsAssets.BLUEPRINTS_CONFIG_FXTIME);
                 }
 
                 else {
-                    FileNameDialog blueprintNameDialog = Utilities.CreateBlueprintRenameDialog();
-                    SpeedControlScreen.Instance.Pause(false);
+                    FileNameDialog blueprintNameDialog = UIUtilities.CreateTextEntryDialog("BlueprintRenameDialog", Strings.Get(BlueprintsStringIDs.STRING_BLUEPRINTS_NAMEBLUEPRINT_TITLE), true, "Upload Blueprint", delegate(bool value) {
+                        uploadSelected = value;
+                    });
 
+                    SpeedControlScreen.Instance.Pause(false);
                     blueprintNameDialog.onConfirm = delegate (string blueprintName) {
                         blueprint.Rename(blueprintName.Substring(0, blueprintName.Length - 4));
-                        SpeedControlScreen.Instance.Unpause(false);
-
                         blueprintNameDialog.Deactivate();
                         blueprint.Write();
-                        PopFXManager.Instance.SpawnFX(BlueprintsAssets.BLUEPRINTS_CREATE_ICON_SPRITE, Strings.Get(BlueprintsStrings.STRING_BLUEPRINTS_CREATE_CREATED), null, PlayerController.GetCursorPos(KInputManager.GetMousePos()), BlueprintsAssets.BLUEPRINTS_CONFIG_FXTIME);
-
+                       
                         BlueprintsState.LoadedBlueprints.Add(blueprint);
                         BlueprintsState.SelectedBlueprintIndex = BlueprintsState.LoadedBlueprints.Count - 1;
+
+                        if (uploadSelected) {
+                            if(IOUtilities.IsValidAccountKey(BlueprintsAssets.BLUEPRINTS_ACCOUNTKEY)) {
+                                //THIS SHOULD PROBABLY GO INTO ITS OWN THREAD TO NOT GRIND THE GAME TO A HALT WHILE IT'S UPLOADING/IF THERE ARE CONNECTION ISSUES..
+
+                                if (IOUtilities.UploadBlueprint(blueprint)) {
+                                    PopFXManager.Instance.SpawnFX(BlueprintsAssets.BLUEPRINTS_CREATE_ICON_SPRITE, "Successfully uploaded blueprint \"" + blueprint.FriendlyName + "\"!", null, PlayerController.GetCursorPos(KInputManager.GetMousePos()), BlueprintsAssets.BLUEPRINTS_CONFIG_FXTIME);
+                                }
+
+                                else {
+                                    //I presume the API will give a response, that could be shown here. make it more useful to the end user.
+                                    PopFXManager.Instance.SpawnFX(BlueprintsAssets.BLUEPRINTS_CREATE_ICON_SPRITE, "Failed to upload blueprint \"" + blueprint.FriendlyName + "\"!", null, PlayerController.GetCursorPos(KInputManager.GetMousePos()), BlueprintsAssets.BLUEPRINTS_CONFIG_FXTIME);
+                                }
+                            }
+
+                            else {
+                                UIUtilities.CreateEnterAccountIDDialog("BlueprintUploadDialog", blueprint);
+                            }                   
+                        }
+
+                        else {
+                            SpeedControlScreen.Instance.Unpause(false);
+                            PopFXManager.Instance.SpawnFX(BlueprintsAssets.BLUEPRINTS_CREATE_ICON_SPRITE, Strings.Get(BlueprintsStringIDs.STRING_BLUEPRINTS_CREATE_CREATED), null, PlayerController.GetCursorPos(KInputManager.GetMousePos()), BlueprintsAssets.BLUEPRINTS_CONFIG_FXTIME);
+                        }
                     };
 
                     blueprintNameDialog.onCancel = delegate {
                         SpeedControlScreen.Instance.Unpause(false);
 
-                        PopFXManager.Instance.SpawnFX(BlueprintsAssets.BLUEPRINTS_CREATE_ICON_SPRITE, Strings.Get(BlueprintsStrings.STRING_BLUEPRINTS_CREATE_CANCELLED), null, PlayerController.GetCursorPos(KInputManager.GetMousePos()), BlueprintsAssets.BLUEPRINTS_CONFIG_FXTIME);
+                        PopFXManager.Instance.SpawnFX(BlueprintsAssets.BLUEPRINTS_CREATE_ICON_SPRITE, Strings.Get(BlueprintsStringIDs.STRING_BLUEPRINTS_CREATE_CANCELLED), null, PlayerController.GetCursorPos(KInputManager.GetMousePos()), BlueprintsAssets.BLUEPRINTS_CONFIG_FXTIME);
                         blueprintNameDialog.Deactivate();
                     };
 
