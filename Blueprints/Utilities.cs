@@ -1,13 +1,10 @@
-﻿using Harmony;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using STRINGS;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Net;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace Blueprints {
     public static class Utilities {
@@ -77,19 +74,17 @@ namespace Blueprints {
             }
         }
 
-        public static void ExplodeTransform(Transform transform, int index = 0) {
-            Debug.Log(new string('#', index) + " " + transform.name + " -> " + transform);
+        public static FileNameDialog CreateBlueprintRenameDialog() {
+            GameObject blueprintNameDialogParent = GameScreenManager.Instance.GetParent(GameScreenManager.UIRenderTarget.ScreenSpaceOverlay);
+            FileNameDialog blueprintNameDialog = Util.KInstantiateUI<FileNameDialog>(ScreenPrefabs.Instance.FileNameDialog.gameObject, blueprintNameDialogParent);
+            blueprintNameDialog.name = "BlueprintNameDialog";
 
-            Component[] components = transform.GetComponents<Component>();
-            for (int i = 0; i < components.Length; ++i) {
-                Debug.Log(new string('#', index) + "> " + components[i]);
+            Transform titleTransform = blueprintNameDialog.transform.Find("Panel")?.Find("Title_BG")?.Find("Title");
+            if (titleTransform != null && titleTransform.GetComponent<LocText>() != null) {
+                titleTransform.GetComponent<LocText>().text = Strings.Get(BlueprintsStrings.STRING_BLUEPRINTS_NAMEBLUEPRINT_TITLE);
             }
 
-            Debug.Log("\n");
-
-            for (int i = 0; i < transform.childCount; ++i) {
-                ExplodeTransform(transform.GetChild(i), index + 1);
-            }
+            return blueprintNameDialog;
         }
 
         public static bool TryParseEnum<T>(string input, out T output) {
@@ -128,128 +123,7 @@ namespace Blueprints {
         }
     }
 
-    public static class UIUtilities {
-        public static FileNameDialog CreateTextEntryDialog(string name, string title, bool createToggle = false, string toggleText = "", Action<bool> valueChangedListener = null) {
-            GameObject blueprintNameDialogParent = GameScreenManager.Instance.GetParent(GameScreenManager.UIRenderTarget.ScreenSpaceOverlay);
-            FileNameDialog blueprintNameDialog = Util.KInstantiateUI<FileNameDialog>(ScreenPrefabs.Instance.FileNameDialog.gameObject, blueprintNameDialogParent);
-
-            blueprintNameDialog.name = name;
-            Transform panelTransform = blueprintNameDialog.transform.Find("Panel");
-
-            if (panelTransform != null) {
-                if (createToggle) {
-                    Transform bodyTransform = panelTransform.Find("Body");
-
-                    if (bodyTransform != null) {
-                        RectTransform textAreaTransform = bodyTransform.Find("LocTextInputField") as RectTransform;
-                        RectTransform confirmButtonTransform = bodyTransform.Find("ConfirmButton") as RectTransform;
-
-                        if (textAreaTransform != null && confirmButtonTransform != null) {
-                            List<OverlayLegend.OverlayInfo> overlayInformation = Traverse.Create(OverlayLegend.Instance).Field("overlayInfoList").GetValue<List<OverlayLegend.OverlayInfo>>();
-                            OverlayLegend.OverlayInfo germOverlay = overlayInformation.Find(overlay => overlay.name == "GERM OVERLAY");
-                            Transform checkbox = null;
-
-                            foreach (GameObject diagram in germOverlay.diagrams) {
-                                checkbox = diagram.transform.Find("Background")?.Find("Contents")?.Find("CheckBoxContainer");
-                                if (checkbox != null) {
-                                    break;
-                                }
-                            }
-
-                            if (checkbox != null) {
-                                RectTransform kToggleTransform = Util.KInstantiateUI<RectTransform>(checkbox.gameObject, bodyTransform.gameObject);
-                                kToggleTransform.gameObject.name = name + "KToggle";
-                                kToggleTransform.position = new Vector3((textAreaTransform.position.x + textAreaTransform.rect.xMin) + 9, (confirmButtonTransform.position.y - confirmButtonTransform.rect.yMin) - (confirmButtonTransform.rect.height - kToggleTransform.rect.height) / 2F, confirmButtonTransform.position.z);
-                                kToggleTransform.sizeDelta = new Vector2(confirmButtonTransform.position.x - ((kToggleTransform.position.x - kToggleTransform.rect.width) + 8), 0);
-
-                                LocText toggleTitle = kToggleTransform.Find("ThresholdPrefix")?.GetComponent<LocText>();
-                                if (toggleTitle != null) {
-                                    toggleTitle.text = toggleText;
-                                    toggleTitle.fontSizeMin *= 1.5F;
-                                }
-
-                                KToggle kToggle = kToggleTransform.Find("Checkbox")?.GetComponent<KToggle>();
-                                if (kToggle != null) {
-                                    kToggle.isOn = false;
-
-                                    if (valueChangedListener != null) {
-                                        kToggle.onValueChanged += valueChangedListener;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-
-                Transform titleTransform = panelTransform.Find("Title_BG")?.Find("Title");
-                if (titleTransform != null && titleTransform.GetComponent<LocText>() != null) {
-                    titleTransform.GetComponent<LocText>().text = title;
-                }
-            }
-
-            return blueprintNameDialog;
-        }
-
-        public static FileNameDialog CreateEnterAccountIDDialog(string name, Blueprint blueprint, int attempt = 1) {
-            GameObject uploadBlueprintDialogParent = GameScreenManager.Instance.GetParent(GameScreenManager.UIRenderTarget.ScreenSpaceOverlay);
-            FileNameDialog uploadBlueprintDialog = Util.KInstantiateUI<FileNameDialog>(ScreenPrefabs.Instance.FileNameDialog.gameObject, uploadBlueprintDialogParent);
-
-            uploadBlueprintDialog.name = name;
-            Transform panelTransform = uploadBlueprintDialog.transform.Find("Panel");
-
-            if (panelTransform != null) {
-                Transform titleTransform = panelTransform.Find("Title_BG")?.Find("Title");
-                LocText confirmButtonText = panelTransform.Find("Body")?.Find("ConfirmButton")?.Find("Text")?.GetComponent<LocText>();
-
-                if (titleTransform != null && titleTransform.GetComponent<LocText>() != null) {
-                    titleTransform.GetComponent<LocText>().text = "ENTER ACCOUNT ID ATTEMPT #" + attempt;
-                }
-
-                if (confirmButtonText != null) {
-                    confirmButtonText.text = "Update ID";
-                }
-            }
-
-            uploadBlueprintDialog.onConfirm = delegate (string accountKey) {
-                accountKey = accountKey.Substring(0, accountKey.Length - 4);
-
-                if (IOUtilities.IsValidAccountKey(accountKey)) {
-                    SpeedControlScreen.Instance.Unpause(false);
-                    BlueprintsAssets.BLUEPRINTS_ACCOUNTKEY = accountKey;
-                    IOUtilities.WriteAccountKey();
-
-                    if (IOUtilities.UploadBlueprint(blueprint)) {
-                        PopFXManager.Instance.SpawnFX(BlueprintsAssets.BLUEPRINTS_CREATE_ICON_SPRITE, "Successfully uploaded blueprint \"" + blueprint.FriendlyName + "\"!", null, PlayerController.GetCursorPos(KInputManager.GetMousePos()), BlueprintsAssets.BLUEPRINTS_CONFIG_FXTIME);
-                    }
-
-                    else {
-                        //I presume the API will give a response, that could be shown here. make it more useful to the end user.
-                        PopFXManager.Instance.SpawnFX(BlueprintsAssets.BLUEPRINTS_CREATE_ICON_SPRITE, "Failed to upload blueprint \"" + blueprint.FriendlyName + "\"!", null, PlayerController.GetCursorPos(KInputManager.GetMousePos()), BlueprintsAssets.BLUEPRINTS_CONFIG_FXTIME);
-                    }
-                }
-
-                else {
-                    CreateEnterAccountIDDialog(name, blueprint, attempt + 1); //try again!
-                }
-            };
-
-            uploadBlueprintDialog.onCancel = delegate {
-                SpeedControlScreen.Instance.Unpause(false);
-
-                PopFXManager.Instance.SpawnFX(BlueprintsAssets.BLUEPRINTS_CREATE_ICON_SPRITE, "Upload cancelled! Blueprint still created.", null, PlayerController.GetCursorPos(KInputManager.GetMousePos()), BlueprintsAssets.BLUEPRINTS_CONFIG_FXTIME);
-                uploadBlueprintDialog.Deactivate();
-            };
-
-            uploadBlueprintDialog.Activate();
-            return uploadBlueprintDialog;
-        }
-    }
-
     public static class IOUtilities {
-        private const string STRING_API_DOMAIN = "http://localhost:8081/api";
-        private const string STRING_API_ACCOUNTKEY = STRING_API_DOMAIN + "/account-key?";
-        private const string STRING_API_ACCOUNTKEY_QUERY = "account-key=";
-
         public static void CreateDefaultConfig() {
             if (!Directory.Exists(BlueprintsAssets.BLUEPRINTS_PATH_CONFIGFOLDER)) {
                 Directory.CreateDirectory(BlueprintsAssets.BLUEPRINTS_PATH_CONFIGFOLDER);
@@ -372,58 +246,6 @@ namespace Blueprints {
                     BlueprintsAssets.BLUEPRINTS_CONFIG_COMPRESBLUEPRINTS = bCompressBlueprints.Value<bool>();
                 }
             }
-        }
-
-        public static void CreateAccountIDFile() {
-            using (File.CreateText(BlueprintsAssets.BLUEPRINTS_PATH_ACCOUNTIDFILE)) { }
-        }
-
-        public static void ReadAccountID() {
-            if (!Directory.Exists(BlueprintsAssets.BLUEPRINTS_PATH_CONFIGFOLDER)) {
-                Directory.CreateDirectory(BlueprintsAssets.BLUEPRINTS_PATH_CONFIGFOLDER);
-                return;
-            }
-
-            using (StreamReader reader = File.OpenText(BlueprintsAssets.BLUEPRINTS_PATH_ACCOUNTIDFILE)) {
-                BlueprintsAssets.BLUEPRINTS_ACCOUNTKEY = reader.ReadToEnd();
-            }
-        }
-
-        public static void WriteAccountKey() {
-            if (!Directory.Exists(BlueprintsAssets.BLUEPRINTS_PATH_CONFIGFOLDER)) {
-                Directory.CreateDirectory(BlueprintsAssets.BLUEPRINTS_PATH_CONFIGFOLDER);
-            }
-
-            using (StreamWriter writer = File.CreateText(BlueprintsAssets.BLUEPRINTS_PATH_ACCOUNTIDFILE)) {
-                writer.WriteLine(BlueprintsAssets.BLUEPRINTS_ACCOUNTKEY);
-            }
-        }
-
-        public static bool IsValidAccountKey(string accountKey) {
-            if (string.IsNullOrEmpty(accountKey) || accountKey.Trim().Length == 0) {
-                return false;
-            }
-
-            try {
-                HttpWebRequest httpWebRequest = (HttpWebRequest) WebRequest.Create(STRING_API_ACCOUNTKEY + STRING_API_ACCOUNTKEY_QUERY + accountKey);
-                httpWebRequest.Method = "GET";
-
-                using (HttpWebResponse httpWebResponse = (HttpWebResponse) httpWebRequest.GetResponse()) {
-                    Debug.Log((int) httpWebResponse.StatusCode);
-                }
-
-                return true;
-            }
-
-            catch (Exception exception) {
-                Debug.LogError("Error when querying account key: " + accountKey + ",\n" + nameof(exception) + ": " + exception.Message);
-                return false;
-            }
-        }
-
-        public static bool UploadBlueprint(Blueprint blueprint) {
-            //SOME API CALL
-            return true;
         }
     }
 }

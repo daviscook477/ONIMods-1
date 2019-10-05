@@ -56,7 +56,7 @@ namespace Blueprints {
                 Utilities.ReloadBlueprints(true);
 
                 int blueprintCountDelta = BlueprintsState.LoadedBlueprints.Count - oldBlueprintCount;
-                PopFXManager.Instance.SpawnFX(BlueprintsAssets.BLUEPRINTS_CREATE_ICON_SPRITE, string.Format(Strings.Get(BlueprintsStringIDs.STRING_BLUEPRINTS_USE_LOADEDBLUEPRINTS), Mathf.Abs(blueprintCountDelta) + " " + (blueprintCountDelta >= 0 ? Strings.Get(BlueprintsStringIDs.STRING_BLUEPRINTS_USE_LOADEDBLUEPRINTS_ADDITIONAL) : Strings.Get(BlueprintsStringIDs.STRING_BLUEPRINTS_USE_LOADEDBLUEPRINTS_FEWER)), BlueprintsState.LoadedBlueprints.Count), null, PlayerController.GetCursorPos(KInputManager.GetMousePos()), BlueprintsAssets.BLUEPRINTS_CONFIG_FXTIME * 4);
+                PopFXManager.Instance.SpawnFX(BlueprintsAssets.BLUEPRINTS_CREATE_ICON_SPRITE, string.Format(Strings.Get(BlueprintsStrings.STRING_BLUEPRINTS_USE_LOADEDBLUEPRINTS), Mathf.Abs(blueprintCountDelta) + " " + (blueprintCountDelta >= 0 ? Strings.Get(BlueprintsStrings.STRING_BLUEPRINTS_USE_LOADEDBLUEPRINTS_ADDITIONAL) : Strings.Get(BlueprintsStrings.STRING_BLUEPRINTS_USE_LOADEDBLUEPRINTS_FEWER)), BlueprintsState.LoadedBlueprints.Count), null, PlayerController.GetCursorPos(KInputManager.GetMousePos()), BlueprintsAssets.BLUEPRINTS_CONFIG_FXTIME * 4);
             }
 
             if (BlueprintsState.LoadedBlueprints.Count > 0) {

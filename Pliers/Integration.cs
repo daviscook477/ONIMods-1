@@ -30,11 +30,11 @@ namespace Pliers {
 
             ModLocalization.LocalizationCompleteEvent += ModLocalizedHandler;
             ModLocalization.DefaultLocalization = new string[] {
-                PliersStringIDs.STRING_PLIERS_NAME, "Pliers",
-                PliersStringIDs.STRING_PLIERS_TOOLTIP, "Disconnect utility networks {0}",
-                PliersStringIDs.STRING_PLIERS_TOOLTIP_TITLE, "PLIERS",
-                PliersStringIDs.STRING_PLIERS_ACTION_DRAG, "DRAG",
-                PliersStringIDs.STRING_PLIERS_ACTION_BACK, "BACK"
+                PliersStrings.STRING_PLIERS_NAME, "Pliers",
+                PliersStrings.STRING_PLIERS_TOOLTIP, "Disconnect utility networks {0}",
+                PliersStrings.STRING_PLIERS_TOOLTIP_TITLE, "PLIERS",
+                PliersStrings.STRING_PLIERS_ACTION_DRAG, "DRAG",
+                PliersStrings.STRING_PLIERS_ACTION_BACK, "BACK"
             };
 
             Debug.Log("Pliers Loaded: Version " + currentAssembly.GetName().Version);
@@ -42,11 +42,11 @@ namespace Pliers {
 
         private static void ModLocalizedHandler(string languageCode) {
             PliersAssets.PLIERS_TOOLCOLLECTION = ToolMenu.CreateToolCollection(
-                Strings.Get(PliersStringIDs.STRING_PLIERS_NAME).String,
+                Strings.Get(PliersStrings.STRING_PLIERS_NAME).String,
                 PliersAssets.PLIERS_ICON_NAME,
                 Action.NumActions,
                 PliersAssets.PLIERS_TOOLNAME,
-                string.Format(Strings.Get(PliersStringIDs.STRING_PLIERS_TOOLTIP).String, Utilities.GetKeyCodeString(PliersAssets.PLIERS_INPUT_KEYBIND_TOOL)),
+                string.Format(Strings.Get(PliersStrings.STRING_PLIERS_TOOLTIP).String, Utilities.GetKeyCodeString(PliersAssets.PLIERS_INPUT_KEYBIND_TOOL)),
                 false
            );
         }

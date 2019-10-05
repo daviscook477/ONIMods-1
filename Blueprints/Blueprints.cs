@@ -6,7 +6,7 @@ using System.IO;
 using UnityEngine;
 
 namespace Blueprints {
-    public static class BlueprintsStringIDs {
+    public static class BlueprintsStrings {
         public const string STRING_BLUEPRINTS_CREATE_NAME = "BLUEPRINTS.CREATE.NAME";
         public const string STRING_BLUEPRINTS_CREATE_TOOLTIP = "BLUEPRINTS.CREATE.TOOLTIP";
         public const string STRING_BLUEPRINTS_CREATE_EMPTY = "BLUEPRINTS.CREATE.EMPTY";
@@ -81,12 +81,10 @@ namespace Blueprints {
         public static string BLUEPRINTS_PATH_CONFIGFOLDER;
         public static string BLUEPRINTS_PATH_CONFIGFILE;
         public static string BLUEPRINTS_PATH_KEYCODESFILE;
-        public static string BLUEPRINTS_PATH_ACCOUNTIDFILE;
 
         public static bool BLUEPRINTS_CONFIG_REQUIRECONSTRUCTABLE = true;
         public static bool BLUEPRINTS_CONFIG_COMPRESBLUEPRINTS = true;
         public static float BLUEPRINTS_CONFIG_FXTIME = 0.75F;
-        public static string BLUEPRINTS_ACCOUNTKEY;
     }
 
     public static class BlueprintsState {
@@ -312,7 +310,7 @@ namespace Blueprints {
                 }
 
                 catch (System.Exception exception) {
-                    Debug.LogError("Error when loading blueprint: " + FilePath + ",\n" + nameof(exception) + ": " + exception.Message);
+                    Debug.LogError("Error when loading blueprint: " + FilePath + ",\n" + nameof(exception) + ":" + exception.Message);
                 }
             }
 

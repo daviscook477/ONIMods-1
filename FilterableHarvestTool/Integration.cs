@@ -8,10 +8,10 @@ namespace FilterableHarvestTool {
     public static class Mod_OnLoad {
         public static void OnLoad() {
             ModLocalization.DefaultLocalization = new string[] {
-                FilterableHarvestToolStringIDs.FILTERABLEHARVESTTOOL_WILD_ENABLEHARVEST, "Enable Wild Harvest",
-                FilterableHarvestToolStringIDs.FILTERABLEHARVESTTOOL_WILD_DISABLEHARVEST, "Disable Wild Harvest",
-                FilterableHarvestToolStringIDs.FILTERABLEHARVESTTOOL_FARM_ENABLEHARVEST, "Enable Farm Harvest",
-                FilterableHarvestToolStringIDs.FILTERABLEHARVESTTOOL_FARM_DISABLEHARVEST, "Disable Farm Harvest"
+                FilterableHarvestToolStrings.FILTERABLEHARVESTTOOL_WILD_ENABLEHARVEST, "Enable Wild Harvest",
+                FilterableHarvestToolStrings.FILTERABLEHARVESTTOOL_WILD_DISABLEHARVEST, "Disable Wild Harvest",
+                FilterableHarvestToolStrings.FILTERABLEHARVESTTOOL_FARM_ENABLEHARVEST, "Enable Farm Harvest",
+                FilterableHarvestToolStrings.FILTERABLEHARVESTTOOL_FARM_DISABLEHARVEST, "Disable Farm Harvest"
             };
 
             Debug.Log("Filterable Harvest Tool Loaded: Version " + Assembly.GetExecutingAssembly().GetName().Version);

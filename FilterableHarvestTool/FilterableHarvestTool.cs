@@ -1,5 +1,5 @@
 ﻿namespace FilterableHarvestTool {
-    public static class FilterableHarvestToolStringIDs {
+    public static class FilterableHarvestToolStrings {
         public const string FILTERABLEHARVESTTOOL_WILD_ENABLEHARVEST = "STRINGS.UI.TOOLS.FILTERLAYERS.ENABLEHARVEST_WILD";
         public const string FILTERABLEHARVESTTOOL_WILD_DISABLEHARVEST = "STRINGS.UI.TOOLS.FILTERLAYERS.DISABLEHARVEST_WILD";
 
