@@ -73,20 +73,18 @@ namespace Blueprints {
                 }
 
                 else {
-                    FileNameDialog blueprintNameDialog = Utilities.CreateBlueprintRenameDialog();
-                    SpeedControlScreen.Instance.Pause(false);
+                    void onConfirmDelegate(string blueprintName, FileNameDialog parent) {
+                        blueprint.Rename(blueprintName, false);
+                        blueprint.SetFolder("");
 
-                    blueprintNameDialog.onConfirm = delegate (string blueprintName) {
-                        blueprint.Rename(blueprintName.Substring(0, blueprintName.Length - 4));
                         SpeedControlScreen.Instance.Unpause(false);
 
-                        blueprintNameDialog.Deactivate();
-                        blueprint.Write();
                         PopFXManager.Instance.SpawnFX(BlueprintsAssets.BLUEPRINTS_CREATE_ICON_SPRITE, Strings.Get(BlueprintsStrings.STRING_BLUEPRINTS_CREATE_CREATED), null, PlayerController.GetCursorPos(KInputManager.GetMousePos()), BlueprintsAssets.BLUEPRINTS_CONFIG_FXTIME);
+                        parent.Deactivate();
+                    }
 
-                        BlueprintsState.LoadedBlueprints.Add(blueprint);
-                        BlueprintsState.SelectedBlueprintIndex = BlueprintsState.LoadedBlueprints.Count - 1;
-                    };
+                    FileNameDialog blueprintNameDialog = UIUtilities.CreateTextDialog(Strings.Get(BlueprintsStrings.STRING_BLUEPRINTS_NAMEBLUEPRINT_TITLE), false, onConfirmDelegate);
+                    SpeedControlScreen.Instance.Pause(false);
 
                     blueprintNameDialog.onCancel = delegate {
                         SpeedControlScreen.Instance.Unpause(false);
