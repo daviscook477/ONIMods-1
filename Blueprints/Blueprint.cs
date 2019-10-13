@@ -2,6 +2,7 @@
 using Newtonsoft.Json.Linq;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using UnityEngine;
 
 namespace Blueprints {
@@ -106,8 +107,27 @@ namespace Blueprints {
         private string SanitizeFolder(string folder) {
             folder = folder.Replace('\\', Path.DirectorySeparatorChar);
             folder = folder.Replace('/', Path.DirectorySeparatorChar);
+            string returnString = "";
 
-            return folder;
+            string[] folderSections = folder.Split(Path.DirectorySeparatorChar);
+            foreach (string folderSection in folderSections) {
+                returnString += SanitizeFile(folderSection) + Path.DirectorySeparatorChar;
+            }
+
+            returnString = returnString.Substring(0, returnString.Length - 1);
+            return returnString;
+        }
+
+        private string SanitizeFile(string file) {
+            char[] invalidFileChars = Path.GetInvalidFileNameChars();
+            string returnString = "";
+
+            for(int i = 0; i < file.Length; ++i) {
+                char character = file[i];
+                returnString += invalidFileChars.Any(charaacter0 => character == charaacter0) ? '_' : character;
+            }
+
+            return returnString;
         }
 
         public bool ReadBinary() {
@@ -296,8 +316,6 @@ namespace Blueprints {
                 }
             }
 
-            
-
             Folder = SanitizeFolder(newFolder).ToLower();
             InferFileLocation();
 
@@ -331,11 +349,13 @@ namespace Blueprints {
         }
 
         private string GetFileLocation(int index) {
+            string sanitizedFriendlyName = SanitizeFile(FriendlyName);
+
             if (index == -1) {
-                return Path.Combine(Path.Combine(Utilities.GetBlueprintDirectory(), Folder), FriendlyName + ".blueprint");
+                return Path.Combine(Path.Combine(Utilities.GetBlueprintDirectory(), Folder), sanitizedFriendlyName + ".blueprint");
             }
 
-            return Path.Combine(Path.Combine(Utilities.GetBlueprintDirectory(), Folder), FriendlyName + "-" + index + ".blueprint");
+            return Path.Combine(Path.Combine(Utilities.GetBlueprintDirectory(), Folder), sanitizedFriendlyName + "-" + index + ".blueprint");
         }
 
         public void InferFriendlyName() {
