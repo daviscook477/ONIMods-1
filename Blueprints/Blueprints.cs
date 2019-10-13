@@ -24,11 +24,16 @@ namespace Blueprints {
         public const string STRING_BLUEPRINTS_USE_TOOLTIP_TITLE = "BLUEPRINTS.USE.TOOLTIP.TITLE";
         public const string STRING_BLUEPRINTS_USE_ACTION_CLICK = "BLUEPRINTS.USE.ACTION.CLICK";
         public const string STRING_BLUEPRINTS_USE_ACTION_BACK = "BLUEPRINTS.USE.ACTION.BACK";
+        public const string STRING_BLUEPRINTS_USE_CYCLEFOLDERS = "BLUEPRINTS.USE.CYCLEFOLDERS";
         public const string STRING_BLUEPRINTS_USE_CYCLEBLUEPRINTS = "BLUEPRINTS.USE.CYCLEBLUEPRINTS";
+        public const string STRING_BLUEPRINTS_USE_FOLDERBLUEPRINT = "BLUEPRINTS.USE.FOLDERBLUEPRINT";
+        public const string STRING_BLUEPRINTS_USE_FOLDERBLUEPRINT_NA = "BLUEPRINTS.USE.FOLDERBLUEPRINT.NA";
+        public const string STRING_BLUEPRINTS_USE_MOVEDBLUEPRINT = "BLUEPRINTS.USE.MOVEDBLUEPRINT";
         public const string STRING_BLUEPRINTS_USE_NAMEBLUEPRINT = "BLUEPRINTS.USE.NAMEBLUEPRINT";
         public const string STRING_BLUEPRINTS_USE_DELETEBLUEPRINT = "BLUEPRINTS.USE.DELETEBLUEPRINT";
         public const string STRING_BLUEPRINTS_USE_ERRORMESSAGE = "BLUEPRINTS.USE.ERRORMESSAGE";
         public const string STRING_BLUEPRINTS_USE_SELECTEDBLUEPRINT = "BLUEPRINTS.USE.SELECTEDBLUEPRINT";
+        public const string STRING_BLUEPRINTS_USE_FOLDEREMPTY = "BLUEPRINTS.USE.FOLDEREMPTY";
         public const string STRING_BLUEPRINTS_USE_NOBLUEPRINTS = "BLUEPRINTS.USE.NOBLUEPRINTS";
 
         public const string STRING_BLUEPRINTS_SNAPSHOT_NAME = "BLUEPRINTS.SNAPSHOT.NAME";
@@ -42,6 +47,7 @@ namespace Blueprints {
         public const string STRING_BLUEPRINTS_SNAPSHOT_NEWSNAPSHOT = "BLUEPRINTS.SNAPSHOT.NEWSNAPSHOT";
 
         public const string STRING_BLUEPRINTS_NAMEBLUEPRINT_TITLE = "BLUEPRINTS.NAMEBLUEPRINT.TITLE";
+        public const string STRING_BLUEPRINTS_FOLDERBLUEPRINT_TITLE = "BLUEPRINTS.FOLDERBLUEPRINT.TITLE";
     }
 
     public static class BlueprintsAssets {
@@ -71,8 +77,11 @@ namespace Blueprints {
         public static KeyCode BLUEPRINTS_KEYBIND_CREATE = KeyCode.None;
         public static KeyCode BLUEPRINTS_KEYBIND_USE = KeyCode.None;
         public static KeyCode BLUEPRINTS_KEYBIND_USE_RELOAD = KeyCode.LeftShift;
-        public static KeyCode BLUEPRINTS_KEYBIND_USE_CYCLELEFT = KeyCode.LeftArrow;
-        public static KeyCode BLUEPRINTS_KEYBIND_USE_CYCLERIGHT = KeyCode.RightArrow;
+        public static KeyCode BLUEPRINTS_KEYBIND_USE_CYCLEBLUEPRINT_LEFT = KeyCode.LeftArrow;
+        public static KeyCode BLUEPRINTS_KEYBIND_USE_CYCLEBLUEPRINT_RIGHT = KeyCode.RightArrow;
+        public static KeyCode BLUEPRINTS_KEYBIND_USE_CYCLEFOLDER_UP = KeyCode.UpArrow;
+        public static KeyCode BLUEPRINTS_KEYBIND_USE_CYCLEFOLDER_DOWN = KeyCode.DownArrow;
+        public static KeyCode BLUEPRINTS_KEYBIND_USE_FOLDER = KeyCode.Home;
         public static KeyCode BLUEPRINTS_KEYBIND_USE_RENAME = KeyCode.End;
         public static KeyCode BLUEPRINTS_KEYBIND_USE_DELETE = KeyCode.Delete;
         public static KeyCode BLUEPRINTS_KEYBIND_SNAPSHOT = KeyCode.None;
@@ -88,9 +97,20 @@ namespace Blueprints {
     }
 
     public static class BlueprintsState {
-        public static int SelectedBlueprintIndex { get; set; } = 0;
-        public static List<Blueprint> LoadedBlueprints { get; } = new List<Blueprint>();
-        public static Blueprint SelectedBlueprint => LoadedBlueprints[SelectedBlueprintIndex];
+        private static int selectedBlueprintFolderIndex;
+        public static int SelectedBlueprintFolderIndex {
+            get {
+                return selectedBlueprintFolderIndex;
+            }
+
+            set {
+                selectedBlueprintFolderIndex = Mathf.Clamp(value, 0, LoadedBlueprints.Count - 1);
+            }
+        }
+
+        public static List<BlueprintFolder> LoadedBlueprints { get; } = new List<BlueprintFolder>();
+        public static BlueprintFolder SelectedFolder => LoadedBlueprints[SelectedBlueprintFolderIndex];
+        public static Blueprint SelectedBlueprint => SelectedFolder.SelectedBlueprint;
 
         public static bool InstantBuild => DebugHandler.InstantBuildMode || Game.Instance.SandboxModeActive && SandboxToolParameterMenu.instance.settings.InstantBuild;
 
@@ -100,8 +120,22 @@ namespace Blueprints {
 
         public static readonly Dictionary<int, CellColorPayload> ColoredCells = new Dictionary<int, CellColorPayload>();
 
+        public static bool HasBlueprints() {
+            if (LoadedBlueprints.Count == 0) {
+                return false;
+            }
+
+            foreach (BlueprintFolder blueprintFolder in LoadedBlueprints) {
+                if (blueprintFolder.BlueprintCount > 0) {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
         public static Blueprint CreateBlueprint(Vector2I topLeft, Vector2I bottomRight, FilteredDragTool originTool = null) {
-            Blueprint blueprint = new Blueprint(Utilities.GetNewBlueprintLocation("unnamed"));
+            Blueprint blueprint = new Blueprint("unnamed", "");
             int blueprintHeight = (topLeft.y - bottomRight.y);
 
             for (int x = topLeft.x; x <= bottomRight.x; ++x) {
@@ -269,201 +303,12 @@ namespace Blueprints {
         }
     }
 
-    public sealed class Blueprint {
-        public string FilePath { get; private set; }
-        public string FriendlyName { get; set; }
-
-        public List<BuildingConfig> BuildingConfiguration { get; } = new List<BuildingConfig>();
-        public List<Vector2I> DigLocations { get; } = new List<Vector2I>();
-
-        public Blueprint(string filePath) {
-            FilePath = filePath;
-            InferFriendlyName();
-        }
-
-        public bool ReadBinary() {
-            if (File.Exists(FilePath)) {
-                BuildingConfiguration.Clear();
-                DigLocations.Clear();
-
-                try {
-                    using (BinaryReader reader = new BinaryReader(File.Open(FilePath, FileMode.Open))) {
-                        FriendlyName = reader.ReadString();
-
-                        int buildingCount = reader.ReadInt32();
-                        for (int i = 0; i < buildingCount; ++i) {
-                            BuildingConfig buildingConfig = new BuildingConfig();
-                            if (!buildingConfig.ReadBinary(reader)) {
-                                return false;
-                            }
-
-                            BuildingConfiguration.Add(buildingConfig);
-                        }
-
-                        int digLocationCount = reader.ReadInt32();
-                        for (int i = 0; i < digLocationCount; ++i) {
-                            DigLocations.Add(new Vector2I(reader.ReadInt32(), reader.ReadInt32()));
-                        }
-                    }
-
-                    return true;
-                }
-
-                catch (System.Exception exception) {
-                    Debug.LogError("Error when loading blueprint: " + FilePath + ",\n" + nameof(exception) + ":" + exception.Message);
-                }
-            }
-
-            return false;
-        }
-
-        public void ReadJSON() {
-            if (File.Exists(FilePath)) {
-                BuildingConfiguration.Clear();
-                DigLocations.Clear();
-
-                try {
-                    using (StreamReader reader = File.OpenText(FilePath))
-                    using (JsonTextReader jsonReader = new JsonTextReader(reader)) {
-                        JObject rootObject = (JObject)JToken.ReadFrom(jsonReader).Root;
-
-                        JToken friendlyNameToken = rootObject.SelectToken("friendlyname");
-                        JToken buildingsToken = rootObject.SelectToken("buildings");
-                        JToken digCommandsToken = rootObject.SelectToken("digcommands");
-
-                        if (friendlyNameToken != null && friendlyNameToken.Type == JTokenType.String) {
-                            FriendlyName = friendlyNameToken.Value<string>();
-                        }
-
-                        if (buildingsToken != null) {
-                            JArray buildingTokens = buildingsToken.Value<JArray>();
-
-                            if (buildingTokens != null) {
-                                foreach (JToken buildingToken in buildingTokens) {
-                                    BuildingConfig buildingConfig = new BuildingConfig();
-                                    buildingConfig.ReadJSON((JObject) buildingToken);
-
-                                    BuildingConfiguration.Add(buildingConfig);
-                                }
-                            }
-                        }
-
-                        if (digCommandsToken != null) {
-                            JArray digCommandTokens = digCommandsToken.Value<JArray>();
-
-                            if (digCommandTokens != null) {
-                                foreach (JToken digCommandToken in digCommandTokens) {
-                                    JToken xToken = digCommandToken.SelectToken("x");
-                                    JToken yToken = digCommandToken.SelectToken("y");
-
-                                    if (xToken != null && xToken.Type == JTokenType.Integer && yToken != null & yToken.Type == JTokenType.Integer) {
-                                        DigLocations.Add(new Vector2I(xToken.Value<int>(), yToken.Value<int>()));
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-
-                catch (System.Exception exception) {
-                    Debug.LogError("Error when loading blueprint: " + FilePath + ",\n" + nameof(exception) + ":" + exception.Message);
-                }
-            }
-        }
-
-        public void Write() {
-            if (BlueprintsAssets.BLUEPRINTS_CONFIG_COMPRESBLUEPRINTS) {
-                WriteBinary();
-            }
-
-            else {
-                WriteJSON();
-            }
-        }
-
-        public void WriteBinary() {
-            using (BinaryWriter binaryWriter = new BinaryWriter(File.Open(FilePath, FileMode.OpenOrCreate))) {
-                binaryWriter.Write(FriendlyName);
-
-                binaryWriter.Write(BuildingConfiguration.Count);
-                BuildingConfiguration.ForEach(buildingConfig => buildingConfig.WriteBinary(binaryWriter));
-
-                binaryWriter.Write(DigLocations.Count);
-                DigLocations.ForEach(digLocation => { binaryWriter.Write(digLocation.x); binaryWriter.Write(digLocation.y); });
-            }
-        }
-
-        public void WriteJSON() {
-            using (TextWriter textWriter = File.CreateText(FilePath))
-            using (JsonTextWriter jsonWriter = new JsonTextWriter(textWriter)) {
-                jsonWriter.Formatting = Formatting.Indented;
-                jsonWriter.WriteStartObject();
-
-                jsonWriter.WritePropertyName("friendlyname");
-                jsonWriter.WriteValue(FriendlyName);
-
-                jsonWriter.WritePropertyName("buildings");
-                jsonWriter.WriteStartArray();
-
-                foreach (BuildingConfig buildingConfig in BuildingConfiguration) {
-                    buildingConfig.WriteJSON(jsonWriter);
-                }
-
-                jsonWriter.WriteEndArray();
-                jsonWriter.WritePropertyName("digcommands");
-                jsonWriter.WriteStartArray();
-
-                foreach (Vector2I digLocation in DigLocations) {
-                    jsonWriter.WriteStartObject();
-                    jsonWriter.WritePropertyName("x");
-                    jsonWriter.WriteValue(digLocation.x);
-                    jsonWriter.WritePropertyName("y");
-                    jsonWriter.WriteValue(digLocation.y);
-                    jsonWriter.WriteEndObject();
-                }
-
-                jsonWriter.WriteEndObject();
-            }
-        }
-
-        public void DeleteFile() {
-            if (File.Exists(FilePath)) {
-                File.Delete(FilePath);
-            }
-        }
-
-        public void Rename(string newFriendlyName) {
-            if (newFriendlyName != FriendlyName) {
-                DeleteFile();
-
-                string newFileName = newFriendlyName;
-                foreach (char invalidCharacter in Path.GetInvalidFileNameChars()) {
-                    newFileName = newFileName.Replace(invalidCharacter, '_');
-                }
-
-                FilePath = Utilities.GetNewBlueprintLocation(newFileName);
-                FriendlyName = newFriendlyName;
-
-                Write();
-            }
-        }
-
-        public void InferFriendlyName() {
-            FileInfo fileInfo = new FileInfo(FilePath);
-            FriendlyName = fileInfo.Name.Substring(0, fileInfo.Name.Length - fileInfo.Extension.Length);
-        }
-
-        public bool IsEmpty() {
-            return BuildingConfiguration.Count == 0 && DigLocations.Count == 0;
-        }
-    }
-
     public sealed class BuildingConfig : System.IEquatable<BuildingConfig> {
-        public Vector2I Offset { get; set; }
+        public Vector2I Offset { get; set; } = new Vector2I(0, 0);
         public BuildingDef BuildingDef { get; set; }
         public List<Tag> SelectedElements { get; } = new List<Tag>();
-        public Orientation Orientation { get; set; }
-        public int Flags { get; set; }
+        public Orientation Orientation { get; set; } = 0;
+        public int Flags { get; set; } = 0;
 
         public void WriteBinary(BinaryWriter binaryWriter) {
             binaryWriter.Write(Offset.X);
@@ -477,23 +322,42 @@ namespace Blueprints {
 
         public void WriteJSON(JsonWriter jsonWriter) {
             jsonWriter.WriteStartObject();
-            jsonWriter.WritePropertyName("offset");
-            jsonWriter.WriteStartObject();
-            jsonWriter.WritePropertyName("x");
-            jsonWriter.WriteValue(Offset.x);
-            jsonWriter.WritePropertyName("y");
-            jsonWriter.WriteValue(Offset.y);
-            jsonWriter.WriteEndObject();
+
+            if (Offset.x != 0 || Offset.y != 0) {
+                jsonWriter.WritePropertyName("offset");
+                jsonWriter.WriteStartObject();
+
+                if (Offset.x != 0) {
+                    jsonWriter.WritePropertyName("x");
+                    jsonWriter.WriteValue(Offset.x);
+                }
+                
+                if (Offset.y != 0) {
+                    jsonWriter.WritePropertyName("y");
+                    jsonWriter.WriteValue(Offset.y);
+                }
+
+                jsonWriter.WriteEndObject();
+            }
+            
             jsonWriter.WritePropertyName("buildingdef");
             jsonWriter.WriteValue(BuildingDef.PrefabID);
+
             jsonWriter.WritePropertyName("selected_elements");
             jsonWriter.WriteStartArray();
             SelectedElements.ForEach(elementTag => jsonWriter.WriteValue(elementTag.GetHash()));
             jsonWriter.WriteEndArray();
-            jsonWriter.WritePropertyName("orientation");
-            jsonWriter.WriteValue((int) Orientation);
-            jsonWriter.WritePropertyName("flags");
-            jsonWriter.WriteValue(Flags);
+
+            if (Orientation != 0) {
+                jsonWriter.WritePropertyName("orientation");
+                jsonWriter.WriteValue((int) Orientation);
+            }
+            
+            if (Flags != 0) {
+                jsonWriter.WritePropertyName("flags");
+                jsonWriter.WriteValue(Flags);
+            }
+            
             jsonWriter.WriteEndObject();
         }
 
@@ -532,8 +396,8 @@ namespace Blueprints {
                 JToken xToken = offsetToken.SelectToken("x");
                 JToken yToken = offsetToken.SelectToken("y");
 
-                if (xToken != null && xToken.Type == JTokenType.Integer && yToken != null & yToken.Type == JTokenType.Integer) {
-                    Offset = new Vector2I(xToken.Value<int>(), yToken.Value<int>());
+                if (xToken != null && xToken.Type == JTokenType.Integer || yToken != null && yToken.Type == JTokenType.Integer) {
+                    Offset = new Vector2I(xToken == null ? 0 : xToken.Value<int>(), yToken == null ? 0 : yToken.Value<int>());
                 }
             }
 
