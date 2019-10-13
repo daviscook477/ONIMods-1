@@ -100,7 +100,6 @@ namespace Blueprints {
 
             ToolMenu.Instance.toolParameterMenu.gameObject.SetActive(true);
             ToolMenu.Instance.PriorityScreen.Show(false);
-            GridCompositor.Instance.ToggleMajor(false);
         }
 
         protected override void OnDragComplete(Vector3 cursorDown, Vector3 cursorUp) {
@@ -136,7 +135,6 @@ namespace Blueprints {
                     DestroyVisualizer();
 
                     PopFXManager.Instance.SpawnFX(BlueprintsAssets.BLUEPRINTS_CREATE_ICON_SPRITE, Strings.Get(BlueprintsStrings.STRING_BLUEPRINTS_SNAPSHOT_TAKEN), null, PlayerController.GetCursorPos(KInputManager.GetMousePos()), BlueprintsAssets.BLUEPRINTS_CONFIG_FXTIME);
-                    GridCompositor.Instance.ToggleMajor(true);
                     this.blueprint = blueprint;
                 }
             }

@@ -51,10 +51,6 @@ namespace Blueprints {
             gameObject.GetComponent<UseBlueprintToolInput>().ParentTool = this;
             ToolMenu.Instance.PriorityScreen.Show(true);
 
-            if (BlueprintsState.HasBlueprints()) {
-                GridCompositor.Instance.ToggleMajor(true);
-            }
-
             if (Input.GetKey(BlueprintsAssets.BLUEPRINTS_KEYBIND_USE_RELOAD) || Input.GetKeyUp(BlueprintsAssets.BLUEPRINTS_KEYBIND_USE_RELOAD)) {
                 int oldBlueprintCount = BlueprintsState.LoadedBlueprints.Count;
                 Utilities.ReloadBlueprints(true);
@@ -63,7 +59,7 @@ namespace Blueprints {
                 PopFXManager.Instance.SpawnFX(BlueprintsAssets.BLUEPRINTS_CREATE_ICON_SPRITE, string.Format(Strings.Get(BlueprintsStrings.STRING_BLUEPRINTS_USE_LOADEDBLUEPRINTS), Mathf.Abs(blueprintCountDelta) + " " + (blueprintCountDelta >= 0 ? Strings.Get(BlueprintsStrings.STRING_BLUEPRINTS_USE_LOADEDBLUEPRINTS_ADDITIONAL) : Strings.Get(BlueprintsStrings.STRING_BLUEPRINTS_USE_LOADEDBLUEPRINTS_FEWER)), BlueprintsState.LoadedBlueprints.Count), null, PlayerController.GetCursorPos(KInputManager.GetMousePos()), BlueprintsAssets.BLUEPRINTS_CONFIG_FXTIME * 4);
             }
 
-            if (BlueprintsState.HasBlueprints()) {
+            if (BlueprintsState.LoadedBlueprints.Count > 0) {
                 BlueprintsState.VisualizeBlueprint(Grid.PosToXY(PlayerController.GetCursorPos(KInputManager.GetMousePos())), BlueprintsState.SelectedBlueprint);
                 if (visualizer != null) {
                     Destroy(visualizer);
@@ -85,7 +81,6 @@ namespace Blueprints {
 
             BlueprintsState.ClearVisuals();
             ToolMenu.Instance.PriorityScreen.Show(false);
-            GridCompositor.Instance.ToggleMajor(false);
         }
 
         public override void OnLeftClickDown(Vector3 cursorPos) {

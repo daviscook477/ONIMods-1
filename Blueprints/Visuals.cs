@@ -34,12 +34,10 @@ namespace Blueprints {
         public Vector2I Offset { get; private set; }
 
         private readonly BuildingConfig buildingConfig;
-        private int cell;
 
         public BuildingVisual(BuildingConfig buildingConfig, int cell) {
             Offset = buildingConfig.Offset;
             this.buildingConfig = buildingConfig;
-            this.cell = cell;
 
             Vector3 positionCBC = Grid.CellToPosCBC(cell, Grid.SceneLayer.Building);
             Visualizer = GameUtil.KInstantiate(buildingConfig.BuildingDef.BuildingPreview, positionCBC, Grid.SceneLayer.Ore, "BlueprintModBuildingVisualizer", LayerMask.NameToLayer("Place"));
@@ -56,12 +54,6 @@ namespace Blueprints {
                 batchedAnimController.isMovable = true;
                 batchedAnimController.Offset = buildingConfig.BuildingDef.GetVisualizerOffset() + buildingConfig.BuildingDef.placementPivot;
                 batchedAnimController.TintColour = GetVisualizerColor(cell);
-
-                batchedAnimController.SetLayer(LayerMask.NameToLayer("Place"));
-            }
-
-            else {
-                Visualizer.SetLayerRecursively(LayerMask.NameToLayer("Place"));
             }
         }
 
@@ -70,14 +62,10 @@ namespace Blueprints {
         }
 
         public void MoveVisualizer(int cell) {
-            if (cell != this.cell) {
-                Visualizer.transform.SetPosition(Grid.CellToPosCBC(cell, buildingConfig.BuildingDef.SceneLayer));
+            Visualizer.transform.SetPosition(Grid.CellToPosCBC(cell, buildingConfig.BuildingDef.SceneLayer));
 
-                if (Visualizer.GetComponent<KBatchedAnimController>() != null) {
-                    Visualizer.GetComponent<KBatchedAnimController>().TintColour = GetVisualizerColor(cell);
-                }
-
-                this.cell = cell;
+            if (Visualizer.GetComponent<KBatchedAnimController>() != null) {
+                Visualizer.GetComponent<KBatchedAnimController>().TintColour = GetVisualizerColor(cell);
             }
         }
 
@@ -362,12 +350,10 @@ namespace Blueprints {
         public Vector2I Offset { get; private set; }
 
         private readonly BuildingConfig buildingConfig;
-        private int cell;
 
         public UtilityVisual(BuildingConfig buildingConfig, int cell) {
             Offset = buildingConfig.Offset;
             this.buildingConfig = buildingConfig;
-            this.cell = cell;
 
             Vector3 positionCBC = Grid.CellToPosCBC(cell, buildingConfig.BuildingDef.SceneLayer);
             Visualizer = GameUtil.KInstantiate(buildingConfig.BuildingDef.BuildingPreview, positionCBC, Grid.SceneLayer.Ore, "BlueprintModUtilityVisualizer", LayerMask.NameToLayer("Place"));
@@ -390,16 +376,8 @@ namespace Blueprints {
                     }
                 }
 
-                batchedAnimController.visibilityType = KAnimControllerBase.VisibilityType.Always;
+                batchedAnimController.visibilityType = KAnimControllerBase.VisibilityType.OffscreenUpdate;
                 batchedAnimController.isMovable = true;
-                batchedAnimController.Offset = buildingConfig.BuildingDef.GetVisualizerOffset() + buildingConfig.BuildingDef.placementPivot;
-                batchedAnimController.TintColour = GetVisualizerColor(cell);
-
-                batchedAnimController.SetLayer(LayerMask.NameToLayer("Place"));
-            }
-
-            else {
-                Visualizer.SetLayerRecursively(LayerMask.NameToLayer("Place"));
             }
 
             VisualsUtilities.SetVisualizerColor(cell, GetVisualizerColor(cell), Visualizer, buildingConfig);
@@ -410,12 +388,8 @@ namespace Blueprints {
         }
 
         public void MoveVisualizer(int cell) {
-            if (cell != this.cell) {
-                Visualizer.transform.SetPosition(Grid.CellToPosCBC(cell, Grid.SceneLayer.Building));
-                VisualsUtilities.SetVisualizerColor(cell, GetVisualizerColor(cell), Visualizer, buildingConfig);
-
-                this.cell = cell;
-            }
+            Visualizer.transform.SetPosition(Grid.CellToPosCBC(cell, Grid.SceneLayer.Building));
+            VisualsUtilities.SetVisualizerColor(cell, GetVisualizerColor(cell), Visualizer, buildingConfig);
         }
 
         public bool TryUse(int cell) {

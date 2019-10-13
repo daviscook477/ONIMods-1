@@ -1,10 +1,9 @@
-﻿using Harmony;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using STRINGS;
+using System;
 using System.Collections.Generic;
 using System.IO;
-using TMPro;
 using UnityEngine;
 
 namespace Blueprints {
@@ -29,79 +28,68 @@ namespace Blueprints {
             return folderLocation;
         }
 
-        public static void ReloadBlueprints(bool ingame) {
-            BlueprintsState.LoadedBlueprints.Clear();
-            LoadFolder(GetBlueprintDirectory());
+        public static string GetNewBlueprintLocation(string name) {
+            string returnString = GetBlueprintName(name, -1);
+            for (int i = 0; File.Exists(returnString); returnString = GetBlueprintName(name, i), ++i) { }
 
-            if (ingame && BlueprintsState.HasBlueprints()) {
-                BlueprintsState.ClearVisuals();
-                BlueprintsState.VisualizeBlueprint(Grid.PosToXY(PlayerController.GetCursorPos(KInputManager.GetMousePos())), BlueprintsState.SelectedBlueprint);
+            return returnString;
+        }
+
+        public static string GetBlueprintName(string name, int index) {
+            if (index == -1) {
+                return Path.Combine(GetBlueprintDirectory(), name + ".blueprint");
+            }
+
+            else {
+                return Path.Combine(GetBlueprintDirectory(), name + "-" + index + ".blueprint");
             }
         }
 
-        public static void LoadFolder(string folder) {
-            string[] files = Directory.GetFiles(folder);
-            string[] subfolders = Directory.GetDirectories(folder);
+        public static void ReloadBlueprints(bool ingame) {
+            BlueprintsState.LoadedBlueprints.Clear();
+            string[] blueprintFiles = Directory.GetFiles(GetBlueprintDirectory());
 
-            foreach (string file in files) {
-                if (file.EndsWith(".blueprint") || file.EndsWith(".json")) {
-                    Blueprint blueprint = new Blueprint(file);
-                    bool valid = false;
+            foreach (string blueprintFile in blueprintFiles) {
+                if (blueprintFile.EndsWith(".blueprint") || blueprintFile.EndsWith(".json")) {
+                    Blueprint blueprint = new Blueprint(blueprintFile);
 
                     if (blueprint.ReadBinary() && !blueprint.IsEmpty()) {
-                        valid = true;
+                        BlueprintsState.LoadedBlueprints.Add(blueprint);
                     }
 
                     else {
                         blueprint.ReadJSON();
 
                         if (!blueprint.IsEmpty()) {
-                            valid = true;
-                        }
-                    }
-
-                    if (valid) {
-                        PlaceIntoFolder(blueprint);
-                        blueprint.InferFileLocation();
-
-                        if (blueprint.FilePath != file) {
-                            File.Delete(file);
-                            blueprint.Write();
+                            BlueprintsState.LoadedBlueprints.Add(blueprint);
                         }
                     }
                 }
             }
 
-            foreach (string subfolder in subfolders) {
-                LoadFolder(subfolder);
+            if (ingame && BlueprintsState.LoadedBlueprints.Count > 0) {
+                BlueprintsState.SelectedBlueprintIndex = 0;
+                BlueprintsState.ClearVisuals();
+                BlueprintsState.VisualizeBlueprint(Grid.PosToXY(PlayerController.GetCursorPos(KInputManager.GetMousePos())), BlueprintsState.SelectedBlueprint);
             }
         }
 
-        public static void PlaceIntoFolder(Blueprint blueprint) {
-            int index = -1;
+        public static FileNameDialog CreateBlueprintRenameDialog() {
+            GameObject blueprintNameDialogParent = GameScreenManager.Instance.GetParent(GameScreenManager.UIRenderTarget.ScreenSpaceOverlay);
+            FileNameDialog blueprintNameDialog = Util.KInstantiateUI<FileNameDialog>(ScreenPrefabs.Instance.FileNameDialog.gameObject, blueprintNameDialogParent);
+            blueprintNameDialog.name = "BlueprintNameDialog";
 
-            for (int i = 0; i < BlueprintsState.LoadedBlueprints.Count; ++i) {
-                if (BlueprintsState.LoadedBlueprints[i].Name == blueprint.Folder) {
-                    index = i;
-                    break;
-                }
+            Transform titleTransform = blueprintNameDialog.transform.Find("Panel")?.Find("Title_BG")?.Find("Title");
+            if (titleTransform != null && titleTransform.GetComponent<LocText>() != null) {
+                titleTransform.GetComponent<LocText>().text = Strings.Get(BlueprintsStrings.STRING_BLUEPRINTS_NAMEBLUEPRINT_TITLE);
             }
 
-            if (index == -1) {
-                BlueprintFolder newFolder = new BlueprintFolder(blueprint.Folder);
-                newFolder.AddBlueprint(blueprint);
-
-                BlueprintsState.LoadedBlueprints.Add(newFolder);
-            }
-
-            else {
-                BlueprintsState.LoadedBlueprints[index].AddBlueprint(blueprint);
-            }
+            return blueprintNameDialog;
         }
 
         public static bool TryParseEnum<T>(string input, out T output) {
             string inputLower = input.ToLower();
-            foreach (T enumeration in System.Enum.GetValues(typeof(T))) {
+            foreach (T enumeration in Enum.GetValues(typeof(T))) {
                 if (enumeration.ToString().ToLower() == inputLower) {
                     output = enumeration;
                     return true;
@@ -135,37 +123,6 @@ namespace Blueprints {
         }
     }
 
-    public static class UIUtilities {
-        public static FileNameDialog CreateTextDialog(string title, bool allowEmpty = false, System.Action<string, FileNameDialog> onConfirm = null) {
-            GameObject textDialogParent = GameScreenManager.Instance.GetParent(GameScreenManager.UIRenderTarget.ScreenSpaceOverlay);
-            FileNameDialog textDialog = Util.KInstantiateUI<FileNameDialog>(ScreenPrefabs.Instance.FileNameDialog.gameObject, textDialogParent);
-            textDialog.name = "BlueprintsMod_TextDialog_" + title;
-
-            TMP_InputField inputField = Traverse.Create(textDialog).Field("inputField").GetValue<TMP_InputField>();
-            KButton confirmButton = Traverse.Create(textDialog).Field("confirmButton").GetValue<KButton>();
-            if (inputField != null && confirmButton && confirmButton != null && allowEmpty) {
-                confirmButton.onClick += delegate () {
-                    if (textDialog.onConfirm != null && inputField.text != null && inputField.text.Length == 0) {
-                        textDialog.onConfirm.Invoke(inputField.text);
-                    }
-                };
-            }
-
-            if (onConfirm != null) {
-                textDialog.onConfirm += delegate (string result) {
-                    onConfirm.Invoke(result.Substring(0, Mathf.Max(0, result.Length - 4)), textDialog);
-                };
-            }
-
-            Transform titleTransform = textDialog.transform.Find("Panel")?.Find("Title_BG")?.Find("Title");
-            if (titleTransform != null && titleTransform.GetComponent<LocText>() != null) {
-                titleTransform.GetComponent<LocText>().text = title;
-            }
-
-            return textDialog;
-        }
-    }
-
     public static class IOUtilities {
         public static void CreateDefaultConfig() {
             if (!Directory.Exists(BlueprintsAssets.BLUEPRINTS_PATH_CONFIGFOLDER)) {
@@ -180,16 +137,10 @@ namespace Blueprints {
                 jsonWriter.WritePropertyName("keybind_createtool");
                 jsonWriter.WriteValue(KeyCode.None.ToString());
 
-                jsonWriter.WritePropertyName("keybind_usetool_cyclefolder_up");
-                jsonWriter.WriteValue(KeyCode.UpArrow.ToString());
-
-                jsonWriter.WritePropertyName("keybind_usetool_cyclefolder_down");
-                jsonWriter.WriteValue(KeyCode.DownArrow.ToString());
-
-                jsonWriter.WritePropertyName("keybind_usetool_cycleblueprint_left");
+                jsonWriter.WritePropertyName("keybind_usetool_cycleleft");
                 jsonWriter.WriteValue(KeyCode.LeftArrow.ToString());
 
-                jsonWriter.WritePropertyName("keybind_usetool_cycleblueprint_right");
+                jsonWriter.WritePropertyName("keybind_usetool_cycleright");
                 jsonWriter.WriteValue(KeyCode.RightArrow.ToString());
 
                 jsonWriter.WritePropertyName("keybind_usetool_rename");
@@ -221,7 +172,7 @@ namespace Blueprints {
 
             if (!File.Exists(BlueprintsAssets.BLUEPRINTS_PATH_KEYCODESFILE)) {
                 using (TextWriter textWriter = File.CreateText(BlueprintsAssets.BLUEPRINTS_PATH_KEYCODESFILE)) {
-                    foreach (KeyCode keycode in System.Enum.GetValues(typeof(KeyCode))) {
+                    foreach (KeyCode keycode in Enum.GetValues(typeof(KeyCode))) {
                         textWriter.WriteLine(keycode.ToString());
                     }
                 }
@@ -241,10 +192,8 @@ namespace Blueprints {
                 JToken kCreateToolToken = rootObject.SelectToken("keybind_createtool");
                 JToken kUseToolToken = rootObject.SelectToken("keybind_usetool");
                 JToken kReloadToken = rootObject.SelectToken("keybind_usetool_reload");
-                JToken kCycleFolderUpToken = rootObject.SelectToken("keybind_usetool_cyclefolder_up");
-                JToken kCycleFolderDownToken = rootObject.SelectToken("keybind_usetool_cyclefolder_down");
-                JToken kCycleBlueprintLeftToken = rootObject.SelectToken("keybind_usetool_cycleblueprint_left");
-                JToken kCycleBlueprintRightToken = rootObject.SelectToken("keybind_usetool_cycleblueprint_right");
+                JToken kCycleLeftToken = rootObject.SelectToken("keybind_usetool_cycleleft");
+                JToken kCycleRightToken = rootObject.SelectToken("keybind_usetool_cycleright");
                 JToken kRenameToken = rootObject.SelectToken("keybind_usetool_rename");
                 JToken kUseDeleteToken = rootObject.SelectToken("keybind_usetool_delete");
                 JToken kSnapshotToolToken = rootObject.SelectToken("keybind_snapshottool");
@@ -265,20 +214,12 @@ namespace Blueprints {
                     BlueprintsAssets.BLUEPRINTS_KEYBIND_USE_RELOAD = kReload;
                 }
 
-                if (kCycleFolderUpToken != null && kCycleFolderUpToken.Type == JTokenType.String && Utilities.TryParseEnum<KeyCode>(kCycleFolderUpToken.Value<string>(), out KeyCode kCycleFolderUp)) {
-                    BlueprintsAssets.BLUEPRINTS_KEYBIND_USE_CYCLEFOLDER_UP = kCycleFolderUp;
+                if (kCycleLeftToken != null && kCycleLeftToken.Type == JTokenType.String && Utilities.TryParseEnum<KeyCode>(kCycleLeftToken.Value<string>(), out KeyCode kCycleLeft)) {
+                    BlueprintsAssets.BLUEPRINTS_KEYBIND_USE_CYCLELEFT = kCycleLeft;
                 }
 
-                if (kCycleFolderDownToken != null && kCycleFolderDownToken.Type == JTokenType.String && Utilities.TryParseEnum<KeyCode>(kCycleFolderDownToken.Value<string>(), out KeyCode kCycleFolderDown)) {
-                    BlueprintsAssets.BLUEPRINTS_KEYBIND_USE_CYCLEFOLDER_DOWN = kCycleFolderDown;
-                }
-
-                if (kCycleBlueprintLeftToken != null && kCycleBlueprintLeftToken.Type == JTokenType.String && Utilities.TryParseEnum<KeyCode>(kCycleBlueprintLeftToken.Value<string>(), out KeyCode kCycleBlueprintLeft)) {
-                    BlueprintsAssets.BLUEPRINTS_KEYBIND_USE_CYCLEBLUEPRINT_LEFT = kCycleBlueprintLeft;
-                }
-
-                if (kCycleBlueprintRightToken != null && kCycleBlueprintRightToken.Type == JTokenType.String && Utilities.TryParseEnum<KeyCode>(kCycleBlueprintRightToken.Value<string>(), out KeyCode kCycleBlueprintRight)) {
-                    BlueprintsAssets.BLUEPRINTS_KEYBIND_USE_CYCLEBLUEPRINT_RIGHT = kCycleBlueprintRight;
+                if (kCycleRightToken != null && kCycleRightToken.Type == JTokenType.String && Utilities.TryParseEnum<KeyCode>(kCycleRightToken.Value<string>(), out KeyCode kCycleRight)) {
+                    BlueprintsAssets.BLUEPRINTS_KEYBIND_USE_CYCLERIGHT = kCycleRight;
                 }
 
                 if (kRenameToken != null && kRenameToken.Type == JTokenType.String && Utilities.TryParseEnum<KeyCode>(kRenameToken.Value<string>(), out KeyCode kRename)) {

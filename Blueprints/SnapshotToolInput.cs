@@ -7,7 +7,6 @@ namespace Blueprints {
         public void Update() {
             if ((ParentTool?.hasFocus ?? false) && Input.GetKeyDown(BlueprintsAssets.BLUEPRINTS_KEYBIND_SNAPSHOT_NEWSNAPSHOT)) {
                 ParentTool.DeleteBlueprint();
-                GridCompositor.Instance.ToggleMajor(false);
             }
         }
     }
