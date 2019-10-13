@@ -2,15 +2,15 @@
 
 | Mod | Steam | Direct Download | Version |
 |-|-|-|-|
-| Blueprints | [Steam](https://steamcommunity.com/sharedfiles/filedetails/?id=1814341183) | [Direct Download](https://www.dropbox.com/s/2sq7wxrfmm6sslm/Blueprints.dll?dl=1) | 2.1.164.0 |
-| Pliers | [Steam](https://steamcommunity.com/sharedfiles/filedetails/?id=1848884654) | [Direct Download](https://www.dropbox.com/s/aczf2kfd3d5bqme/Pliers.dll?dl=1) | 1.1.42.0 |
-| Remove Overheatable | | [Direct Download](https://www.dropbox.com/s/iw6mgfd6cag02e6/RemoveOverheatable.dll?dl=1) | 1.0.1.0 |
-| Filterable Harvest Tool | | [Direct Download](https://www.dropbox.com/s/t0tjc2ee1wk4gq0/FilterableHarvestTool.dll?dl=1) | 1.0.0.0 |
+| Blueprints | [Steam](https://steamcommunity.com/sharedfiles/filedetails/?id=1814341183) | [Direct Download](https://1drv.ms/u/s!Aqo_oG6cB2nygnRzNMvi-ks3D0zg?e=pN82TM) | 2.2.49.0 |
+| Pliers | [Steam](https://steamcommunity.com/sharedfiles/filedetails/?id=1848884654) | [Direct Download](https://1drv.ms/u/s!Aqo_oG6cB2nygnVpmGxWyT_D8xmV?e=Qz60nb) | 1.1.42.0 |
+| Remove Overheatable | | [Direct Download](https://1drv.ms/u/s!Aqo_oG6cB2nygnf4ltVCsTyw5Esx?e=daZRZo) | 1.0.1.0 |
+| Filterable Harvest Tool | | [Direct Download](https://1drv.ms/u/s!Aqo_oG6cB2nygnYv5aPQCsE8ah9b?e=cf3tJx) | 1.0.0.0 |
 
 ## Mod Component Downloads
 
 | Component | Direct Download |
 |-|-|
-| Compatibility | [Direct Download](https://www.dropbox.com/s/pm6hujkvkkhthf5/Compatibility.dll?dl=1) |
-| Display Version | [Direct Download](https://www.dropbox.com/s/t9pqq4u46v2zxio/DisplayVersion.dll?dl=1) |
-| Mod Localization | [Direct Download](https://www.dropbox.com/s/2gxy7hf7hkqdeq4/ModLocalization.dll?dl=1) |
+| Compatibility | [Direct Download](https://1drv.ms/u/s!Aqo_oG6cB2nygnHNn-gh-NUOMEn6?e=F5whJD) |
+| Display Version | [Direct Download](https://1drv.ms/u/s!Aqo_oG6cB2nygnN4fwDlsJJ-qC39?e=ziFSOs) |
+| Mod Localization | [Direct Download](https://1drv.ms/u/s!Aqo_oG6cB2nygnJCDk9t1vKeofSU?e=vejosX) |
