@@ -57,11 +57,16 @@ namespace Blueprints {
                 BlueprintsStrings.STRING_BLUEPRINTS_USE_TOOLTIP_TITLE, "USE BLUEPRINT TOOL",
                 BlueprintsStrings.STRING_BLUEPRINTS_USE_ACTION_CLICK, "CLICK",
                 BlueprintsStrings.STRING_BLUEPRINTS_USE_ACTION_BACK, "BACK",
+                BlueprintsStrings.STRING_BLUEPRINTS_USE_CYCLEFOLDERS, "Use {0} and {1} to cycle folders.",
                 BlueprintsStrings.STRING_BLUEPRINTS_USE_CYCLEBLUEPRINTS, "Use {0} and {1} to cycle blueprints.",
+                BlueprintsStrings.STRING_BLUEPRINTS_USE_FOLDERBLUEPRINT, "Press {0} to assign folder.",
+                BlueprintsStrings.STRING_BLUEPRINTS_USE_FOLDERBLUEPRINT_NA, "Same folder provided - no change made.",
+                BlueprintsStrings.STRING_BLUEPRINTS_USE_MOVEDBLUEPRINT, "Moved \"{0}\" to \"{1}\"",
                 BlueprintsStrings.STRING_BLUEPRINTS_USE_NAMEBLUEPRINT, "Press {0} to rename blueprint.",
                 BlueprintsStrings.STRING_BLUEPRINTS_USE_DELETEBLUEPRINT, "Press {0} to delete blueprint.",
                 BlueprintsStrings.STRING_BLUEPRINTS_USE_ERRORMESSAGE, "This blueprint contained {0} misconfigured or missing prefabs which have been omitted!",
-                BlueprintsStrings.STRING_BLUEPRINTS_USE_SELECTEDBLUEPRINT, "Selected \"{0}\" ({1}/{2})",
+                BlueprintsStrings.STRING_BLUEPRINTS_USE_SELECTEDBLUEPRINT, "Selected \"{0}\" ({1}/{2}) from \"{3}\" ({4}/{5})",
+                BlueprintsStrings.STRING_BLUEPRINTS_USE_FOLDEREMPTY, "Selected folder \"{0}\" is empty!",
                 BlueprintsStrings.STRING_BLUEPRINTS_USE_NOBLUEPRINTS, "No blueprints loaded!",
 
                 BlueprintsStrings.STRING_BLUEPRINTS_SNAPSHOT_NAME, "Take Snapshot",
@@ -73,8 +78,9 @@ namespace Blueprints {
                 BlueprintsStrings.STRING_BLUEPRINTS_SNAPSHOT_ACTION_DRAG, "DRAG",
                 BlueprintsStrings.STRING_BLUEPRINTS_SNAPSHOT_ACTION_BACK, "BACK",
                 BlueprintsStrings.STRING_BLUEPRINTS_SNAPSHOT_NEWSNAPSHOT, "Press {0} to take new snapshot.",
-
-                BlueprintsStrings.STRING_BLUEPRINTS_NAMEBLUEPRINT_TITLE, "NAME BLUEPRINT"
+      
+                BlueprintsStrings.STRING_BLUEPRINTS_NAMEBLUEPRINT_TITLE, "NAME BLUEPRINT",
+                BlueprintsStrings.STRING_BLUEPRINTS_FOLDERBLUEPRINT_TITLE, "ASSIGN FOLDER"
             };
 
             Debug.Log("Blueprints Loaded: Version " + currentAssembly.GetName().Version);
@@ -109,7 +115,6 @@ namespace Blueprints {
            );
         }
     }
-
 
     namespace Patches {
         [HarmonyPatch(typeof(PlayerController), "OnPrefabInit")]
@@ -177,7 +182,7 @@ namespace Blueprints {
         [HarmonyPatch(typeof(FileNameDialog), "OnSpawn")]
         public static class FileNameDialog_OnSpawn {
             public static void Postfix(FileNameDialog __instance, TMP_InputField ___inputField) {
-                if (__instance.name == "BlueprintNameDialog") {
+                if (__instance.name.StartsWith("BlueprintsMod_TextDialog_")) {
                     ___inputField.onValueChanged.RemoveAllListeners();
                     ___inputField.onEndEdit.RemoveAllListeners();
                 }
