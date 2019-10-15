@@ -180,9 +180,21 @@ namespace Blueprints {
         [HarmonyPatch(typeof(FileNameDialog), "OnSpawn")]
         public static class FileNameDialog_OnSpawn {
             public static void Postfix(FileNameDialog __instance, TMP_InputField ___inputField) {
-                if (__instance.name.StartsWith("BlueprintsMod_TextDialog_")) {
+                if (__instance.name.StartsWith("BlueprintsMod_")) {
                     ___inputField.onValueChanged.RemoveAllListeners();
                     ___inputField.onEndEdit.RemoveAllListeners();
+
+                    if (__instance.name.StartsWith("BlueprintsMod_FolderDialog_")) {
+                        ___inputField.onValueChanged.AddListener(delegate (string text) {
+                            for (int i = text.Length - 1; i >= 0; --i) {
+                                if (i < text.Length && BlueprintsAssets.BLUEPRINTS_PATH_DISALLOWEDCHARACTERS.Contains(text[i])) {
+                                    text = text.Remove(i, 1);
+                                }
+                            }
+
+                            ___inputField.text = text;
+                        });
+                    }
                 }
             }
         }

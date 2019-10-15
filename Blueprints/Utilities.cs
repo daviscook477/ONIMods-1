@@ -164,6 +164,15 @@ namespace Blueprints {
 
             return textDialog;
         }
+
+        public static FileNameDialog CreateFolderDialog(System.Action<string, FileNameDialog> onConfirm = null) {
+            string title = Strings.Get(BlueprintsStrings.STRING_BLUEPRINTS_FOLDERBLUEPRINT_TITLE);
+
+            FileNameDialog folderDialog = CreateTextDialog(title, true, onConfirm);
+            folderDialog.name = "BlueprintsMod_FolderDialog_" + title;
+
+            return folderDialog;
+        }
     }
 
     public static class IOUtilities {

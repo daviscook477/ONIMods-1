@@ -13,7 +13,7 @@ namespace Blueprints {
 
                 if (Input.GetKeyDown(BlueprintsAssets.BLUEPRINTS_KEYBIND_USE_FOLDER)) {
                     static void onConfirmDelegate(string blueprintFolder, FileNameDialog parent) {
-                        string newFolder = blueprintFolder.Trim(' ', '/', '\\');
+                        string newFolder = blueprintFolder.Trim(' ', '/', '\\', Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
 
                         if (newFolder == BlueprintsState.SelectedBlueprint.Folder) {
                             PopFXManager.Instance.SpawnFX(BlueprintsAssets.BLUEPRINTS_CREATE_ICON_SPRITE, Strings.Get(BlueprintsStrings.STRING_BLUEPRINTS_USE_FOLDERBLUEPRINT_NA), null, PlayerController.GetCursorPos(KInputManager.GetMousePos()), BlueprintsAssets.BLUEPRINTS_CONFIG_FXTIME * 2, false, false);
@@ -26,12 +26,11 @@ namespace Blueprints {
                             PopFXManager.Instance.SpawnFX(BlueprintsAssets.BLUEPRINTS_CREATE_ICON_SPRITE, string.Format(Strings.Get(BlueprintsStrings.STRING_BLUEPRINTS_USE_MOVEDBLUEPRINT), blueprintName, newFolder), null, PlayerController.GetCursorPos(KInputManager.GetMousePos()), BlueprintsAssets.BLUEPRINTS_CONFIG_FXTIME * 4, false, false);
                         }
                         
-
                         SpeedControlScreen.Instance.Unpause(false);
                         parent.Deactivate();
                     }
 
-                    FileNameDialog blueprintFolderDialog = UIUtilities.CreateTextDialog(Strings.Get(BlueprintsStrings.STRING_BLUEPRINTS_FOLDERBLUEPRINT_TITLE), true, onConfirmDelegate);
+                    FileNameDialog blueprintFolderDialog = UIUtilities.CreateFolderDialog(onConfirmDelegate);
                     SpeedControlScreen.Instance.Pause(false);
                     blueprintFolderDialog.Activate();
                 }
