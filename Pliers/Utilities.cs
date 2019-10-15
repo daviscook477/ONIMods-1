@@ -36,35 +36,21 @@ namespace Pliers {
         }
 
         public static CellOffset ConnectionsToOffset(UtilityConnections utilityConnections) {
-            switch (utilityConnections) {
-                case UtilityConnections.Left:
-                    return new CellOffset(-1, 0);
-
-                case UtilityConnections.Right:
-                    return new CellOffset(1, 0);
-
-                case UtilityConnections.Up:
-                    return new CellOffset(0, 1);
-
-                default:
-                    return new CellOffset(0, -1);
-            }
+            return utilityConnections switch {
+                UtilityConnections.Left => new CellOffset(-1, 0),
+                UtilityConnections.Right => new CellOffset(1, 0),
+                UtilityConnections.Up => new CellOffset(0, 1),
+                _ => new CellOffset(0, -1)
+            };
         }
 
         public static UtilityConnections OppositeDirection(UtilityConnections utilityConnections) {
-            switch (utilityConnections) {
-                case UtilityConnections.Left:
-                    return UtilityConnections.Right;
-
-                case UtilityConnections.Right:
-                    return UtilityConnections.Left;
-
-                case UtilityConnections.Up:
-                    return UtilityConnections.Down;
-
-                default:
-                    return UtilityConnections.Up;
-            }
+            return utilityConnections switch {
+                UtilityConnections.Left => UtilityConnections.Right,
+                UtilityConnections.Right => UtilityConnections.Left,
+                UtilityConnections.Up => UtilityConnections.Down,
+                _ => UtilityConnections.Up,
+            };
         }
     }
 
@@ -74,15 +60,15 @@ namespace Pliers {
                 Directory.CreateDirectory(PliersAssets.PLIERS_PATH_CONFIGFOLDER);
             }
 
-            using (TextWriter textWriter = File.CreateText(PliersAssets.PLIERS_PATH_CONFIGFILE))
-            using (JsonTextWriter jsonWriter = new JsonTextWriter(textWriter)) {
-                jsonWriter.Formatting = Formatting.Indented;
+            using TextWriter textWriter = File.CreateText(PliersAssets.PLIERS_PATH_CONFIGFILE);
+            using JsonTextWriter jsonWriter = new JsonTextWriter(textWriter) {
+                Formatting = Formatting.Indented
+            };
 
-                jsonWriter.WriteStartObject();
-                jsonWriter.WritePropertyName("keybind_wirecutter");
-                jsonWriter.WriteValue(KeyCode.None.ToString());
-                jsonWriter.WriteEndObject();
-            }
+            jsonWriter.WriteStartObject();
+            jsonWriter.WritePropertyName("keybind_wirecutter");
+            jsonWriter.WriteValue(KeyCode.None.ToString());
+            jsonWriter.WriteEndObject();
         }
 
         public static void CreateKeycodeHintFile() {
@@ -91,10 +77,10 @@ namespace Pliers {
             }
 
             if (!File.Exists(PliersAssets.PLIERS_PATH_KEYCODESFILE)) {
-                using (TextWriter textWriter = File.CreateText(PliersAssets.PLIERS_PATH_KEYCODESFILE)) {
-                    foreach (KeyCode keycode in Enum.GetValues(typeof(KeyCode))) {
-                        textWriter.WriteLine(keycode.ToString());
-                    }
+                using TextWriter textWriter = File.CreateText(PliersAssets.PLIERS_PATH_KEYCODESFILE);
+
+                foreach (KeyCode keycode in Enum.GetValues(typeof(KeyCode))) {
+                    textWriter.WriteLine(keycode.ToString());
                 }
             }
         }
@@ -105,15 +91,14 @@ namespace Pliers {
                 return;
             }
 
-            using (StreamReader reader = File.OpenText(PliersAssets.PLIERS_PATH_CONFIGFILE))
-            using (JsonTextReader jsonReader = new JsonTextReader(reader)) {
-                JObject rootObject = (JObject)JToken.ReadFrom(jsonReader).Root;
+            using StreamReader reader = File.OpenText(PliersAssets.PLIERS_PATH_CONFIGFILE);
+            using JsonTextReader jsonReader = new JsonTextReader(reader);
 
-                JToken kWireToolToken = rootObject.SelectToken("keybind_wirecutter");
+            JObject rootObject = (JObject)JToken.ReadFrom(jsonReader).Root;
+            JToken kWireToolToken = rootObject.SelectToken("keybind_wirecutter");
 
-                if (kWireToolToken != null && kWireToolToken.Type == JTokenType.String && Utilities.TryParseEnum<KeyCode>(kWireToolToken.Value<string>(), out KeyCode kWireTool)) {
-                    PliersAssets.PLIERS_INPUT_KEYBIND_TOOL = kWireTool;
-                }
+            if (kWireToolToken != null && kWireToolToken.Type == JTokenType.String && Utilities.TryParseEnum<KeyCode>(kWireToolToken.Value<string>(), out KeyCode kWireTool)) {
+                PliersAssets.PLIERS_INPUT_KEYBIND_TOOL = kWireTool;
             }
         }
     }

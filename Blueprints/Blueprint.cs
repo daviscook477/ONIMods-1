@@ -172,46 +172,46 @@ namespace Blueprints {
                 DigLocations.Clear();
 
                 try {
-                    using (StreamReader reader = File.OpenText(FilePath))
-                    using (JsonTextReader jsonReader = new JsonTextReader(reader)) {
-                        JObject rootObject = (JObject)JToken.ReadFrom(jsonReader).Root;
+                    using StreamReader reader = File.OpenText(FilePath);
+                    using JsonTextReader jsonReader = new JsonTextReader(reader);
 
-                        JToken friendlyNameToken = rootObject.SelectToken("friendlyname");
-                        JToken buildingsToken = rootObject.SelectToken("buildings");
-                        JToken digCommandsToken = rootObject.SelectToken("digcommands");
+                    JObject rootObject = (JObject)JToken.ReadFrom(jsonReader).Root;
 
-                        if (friendlyNameToken != null && friendlyNameToken.Type == JTokenType.String) {
-                            FriendlyName = friendlyNameToken.Value<string>();
-                        }
+                    JToken friendlyNameToken = rootObject.SelectToken("friendlyname");
+                    JToken buildingsToken = rootObject.SelectToken("buildings");
+                    JToken digCommandsToken = rootObject.SelectToken("digcommands");
 
-                        if (buildingsToken != null) {
-                            JArray buildingTokens = buildingsToken.Value<JArray>();
+                    if (friendlyNameToken != null && friendlyNameToken.Type == JTokenType.String) {
+                        FriendlyName = friendlyNameToken.Value<string>();
+                    }
 
-                            if (buildingTokens != null) {
-                                foreach (JToken buildingToken in buildingTokens) {
-                                    BuildingConfig buildingConfig = new BuildingConfig();
-                                    buildingConfig.ReadJSON((JObject) buildingToken);
+                    if (buildingsToken != null) {
+                        JArray buildingTokens = buildingsToken.Value<JArray>();
 
-                                    BuildingConfiguration.Add(buildingConfig);
-                                }
+                        if (buildingTokens != null) {
+                            foreach (JToken buildingToken in buildingTokens) {
+                                BuildingConfig buildingConfig = new BuildingConfig();
+                                buildingConfig.ReadJSON((JObject) buildingToken);
+
+                                BuildingConfiguration.Add(buildingConfig);
                             }
                         }
+                    }
 
-                        if (digCommandsToken != null) {
-                            JArray digCommandTokens = digCommandsToken.Value<JArray>();
+                    if (digCommandsToken != null) {
+                        JArray digCommandTokens = digCommandsToken.Value<JArray>();
 
-                            if (digCommandTokens != null) {
-                                foreach (JToken digCommandToken in digCommandTokens) {
-                                    JToken xToken = digCommandToken.SelectToken("x");
-                                    JToken yToken = digCommandToken.SelectToken("y");
+                        if (digCommandTokens != null) {
+                            foreach (JToken digCommandToken in digCommandTokens) {
+                                JToken xToken = digCommandToken.SelectToken("x");
+                                JToken yToken = digCommandToken.SelectToken("y");
 
-                                    if (xToken != null && xToken.Type == JTokenType.Integer || yToken != null && yToken.Type == JTokenType.Integer) {
-                                        DigLocations.Add(new Vector2I(xToken == null ? 0 : xToken.Value<int>(), yToken == null ? 0 : yToken.Value<int>()));
-                                    }
+                                if (xToken != null && xToken.Type == JTokenType.Integer || yToken != null && yToken.Type == JTokenType.Integer) {
+                                    DigLocations.Add(new Vector2I(xToken == null ? 0 : xToken.Value<int>(), yToken == null ? 0 : yToken.Value<int>()));
+                                }
 
-                                    else if (xToken == null && yToken == null) {
-                                        DigLocations.Add(new Vector2I(0, 0));
-                                    }
+                                else if (xToken == null && yToken == null) {
+                                    DigLocations.Add(new Vector2I(0, 0));
                                 }
                             }
                         }
@@ -240,62 +240,63 @@ namespace Blueprints {
         }
 
         public void WriteBinary() {
-            using (BinaryWriter binaryWriter = new BinaryWriter(File.Open(FilePath, FileMode.OpenOrCreate))) {
-                binaryWriter.Write(FriendlyName);
+            using BinaryWriter binaryWriter = new BinaryWriter(File.Open(FilePath, FileMode.OpenOrCreate));
 
-                binaryWriter.Write(BuildingConfiguration.Count);
-                BuildingConfiguration.ForEach(buildingConfig => buildingConfig.WriteBinary(binaryWriter));
+            binaryWriter.Write(FriendlyName);
 
-                binaryWriter.Write(DigLocations.Count);
-                DigLocations.ForEach(digLocation => { binaryWriter.Write(digLocation.x); binaryWriter.Write(digLocation.y); });
-            }
+            binaryWriter.Write(BuildingConfiguration.Count);
+            BuildingConfiguration.ForEach(buildingConfig => buildingConfig.WriteBinary(binaryWriter));
+
+            binaryWriter.Write(DigLocations.Count);
+            DigLocations.ForEach(digLocation => { binaryWriter.Write(digLocation.x); binaryWriter.Write(digLocation.y); });
         }
 
         public void WriteJSON() {
-            using (TextWriter textWriter = File.CreateText(FilePath))
-            using (JsonTextWriter jsonWriter = new JsonTextWriter(textWriter)) {
-                jsonWriter.Formatting = Formatting.Indented;
-                jsonWriter.WriteStartObject();
+            using TextWriter textWriter = File.CreateText(FilePath);
+            using JsonTextWriter jsonWriter = new JsonTextWriter(textWriter) {
+                Formatting = Formatting.Indented
+            };
 
-                jsonWriter.WritePropertyName("friendlyname");
-                jsonWriter.WriteValue(FriendlyName);
+            jsonWriter.WriteStartObject();
 
-                if(BuildingConfiguration.Count > 0) {
-                    jsonWriter.WritePropertyName("buildings");
-                    jsonWriter.WriteStartArray();
+            jsonWriter.WritePropertyName("friendlyname");
+            jsonWriter.WriteValue(FriendlyName);
 
-                    foreach (BuildingConfig buildingConfig in BuildingConfiguration) {
-                        buildingConfig.WriteJSON(jsonWriter);
-                    }
+            if (BuildingConfiguration.Count > 0) {
+                jsonWriter.WritePropertyName("buildings");
+                jsonWriter.WriteStartArray();
 
-                    jsonWriter.WriteEndArray();
-                }
-                
-                if (DigLocations.Count > 0) {
-                    jsonWriter.WritePropertyName("digcommands");
-                    jsonWriter.WriteStartArray();
-
-                    foreach (Vector2I digLocation in DigLocations) {
-                        jsonWriter.WriteStartObject();
-
-                        if (digLocation.x != 0) {
-                            jsonWriter.WritePropertyName("x");
-                            jsonWriter.WriteValue(digLocation.x);
-                        }
- 
-                        if (digLocation.y != 0) {
-                            jsonWriter.WritePropertyName("y");
-                            jsonWriter.WriteValue(digLocation.y);
-                        }
-
-                        jsonWriter.WriteEndObject();
-                    }
-
-                    jsonWriter.WriteEndArray();
+                foreach (BuildingConfig buildingConfig in BuildingConfiguration) {
+                    buildingConfig.WriteJSON(jsonWriter);
                 }
 
-                jsonWriter.WriteEndObject();
+                jsonWriter.WriteEndArray();
             }
+
+            if (DigLocations.Count > 0) {
+                jsonWriter.WritePropertyName("digcommands");
+                jsonWriter.WriteStartArray();
+
+                foreach (Vector2I digLocation in DigLocations) {
+                    jsonWriter.WriteStartObject();
+
+                    if (digLocation.x != 0) {
+                        jsonWriter.WritePropertyName("x");
+                        jsonWriter.WriteValue(digLocation.x);
+                    }
+
+                    if (digLocation.y != 0) {
+                        jsonWriter.WritePropertyName("y");
+                        jsonWriter.WriteValue(digLocation.y);
+                    }
+
+                    jsonWriter.WriteEndObject();
+                }
+
+                jsonWriter.WriteEndArray();
+            }
+
+            jsonWriter.WriteEndObject();
         }
 
         public void DeleteFile() {

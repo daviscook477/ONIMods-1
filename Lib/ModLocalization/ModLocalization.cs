@@ -84,18 +84,19 @@ namespace ModFramework {
 
             string templateFile = Path.Combine(LocalizationFolder, "locale.template");
             if (!File.Exists(templateFile)) {
-                using (TextWriter textWriter = File.CreateText(templateFile))
-                using (JsonTextWriter jsonWriter = new JsonTextWriter(textWriter)) {
-                    jsonWriter.Formatting = Formatting.Indented;
-                    jsonWriter.WriteStartObject();
+                using TextWriter textWriter = File.CreateText(templateFile);
+                using JsonTextWriter jsonWriter = new JsonTextWriter(textWriter) {
+                    Formatting = Formatting.Indented
+                };
 
-                    for (int i = 0; i < DefaultLocalization.Length - 1; i += 2) {
-                        jsonWriter.WritePropertyName(DefaultLocalization[i]);
-                        jsonWriter.WriteValue(DefaultLocalization[i + 1]);
-                    }
+                jsonWriter.WriteStartObject();
 
-                    jsonWriter.WriteEndObject();
+                for (int i = 0; i < DefaultLocalization.Length - 1; i += 2) {
+                    jsonWriter.WritePropertyName(DefaultLocalization[i]);
+                    jsonWriter.WriteValue(DefaultLocalization[i + 1]);
                 }
+
+                jsonWriter.WriteEndObject();
             }
         }
 
