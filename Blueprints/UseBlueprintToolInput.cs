@@ -12,7 +12,7 @@ namespace Blueprints {
                 bool blueprintChanged = false;
 
                 if (Input.GetKeyDown(BlueprintsAssets.BLUEPRINTS_KEYBIND_USE_FOLDER)) {
-                    void onConfirmDelegate(string blueprintFolder, FileNameDialog parent) {
+                    static void onConfirmDelegate(string blueprintFolder, FileNameDialog parent) {
                         string newFolder = blueprintFolder.Trim(' ', '/', '\\');
 
                         if (newFolder == BlueprintsState.SelectedBlueprint.Folder) {
@@ -37,7 +37,7 @@ namespace Blueprints {
                 }
 
                 else if (Input.GetKeyDown(BlueprintsAssets.BLUEPRINTS_KEYBIND_USE_RENAME)) {
-                    void onConfirmDelegate(string blueprintName, FileNameDialog parent) {
+                    static void onConfirmDelegate(string blueprintName, FileNameDialog parent) {
                         BlueprintsState.SelectedBlueprint.Rename(blueprintName);
   
                         SpeedControlScreen.Instance.Unpause(false);
