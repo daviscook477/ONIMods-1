@@ -77,10 +77,10 @@ namespace Blueprints {
         public static KeyCode BLUEPRINTS_KEYBIND_CREATE = KeyCode.None;
         public static KeyCode BLUEPRINTS_KEYBIND_USE = KeyCode.None;
         public static KeyCode BLUEPRINTS_KEYBIND_USE_RELOAD = KeyCode.LeftShift;
-        public static KeyCode BLUEPRINTS_KEYBIND_USE_CYCLEBLUEPRINT_LEFT = KeyCode.LeftArrow;
-        public static KeyCode BLUEPRINTS_KEYBIND_USE_CYCLEBLUEPRINT_RIGHT = KeyCode.RightArrow;
         public static KeyCode BLUEPRINTS_KEYBIND_USE_CYCLEFOLDER_UP = KeyCode.UpArrow;
         public static KeyCode BLUEPRINTS_KEYBIND_USE_CYCLEFOLDER_DOWN = KeyCode.DownArrow;
+        public static KeyCode BLUEPRINTS_KEYBIND_USE_CYCLEBLUEPRINT_LEFT = KeyCode.LeftArrow;
+        public static KeyCode BLUEPRINTS_KEYBIND_USE_CYCLEBLUEPRINT_RIGHT = KeyCode.RightArrow;
         public static KeyCode BLUEPRINTS_KEYBIND_USE_FOLDER = KeyCode.Home;
         public static KeyCode BLUEPRINTS_KEYBIND_USE_RENAME = KeyCode.End;
         public static KeyCode BLUEPRINTS_KEYBIND_USE_DELETE = KeyCode.Delete;

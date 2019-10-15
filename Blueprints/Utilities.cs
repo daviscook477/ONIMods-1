@@ -167,7 +167,7 @@ namespace Blueprints {
     }
 
     public static class IOUtilities {
-        public static void CreateDefaultConfig() {
+        public static void WriteConfig() {
             if (!Directory.Exists(BlueprintsAssets.BLUEPRINTS_PATH_CONFIGFOLDER)) {
                 Directory.CreateDirectory(BlueprintsAssets.BLUEPRINTS_PATH_CONFIGFOLDER);
             }
@@ -180,37 +180,46 @@ namespace Blueprints {
             jsonWriter.WriteStartObject();
 
             jsonWriter.WritePropertyName("keybind_createtool");
-            jsonWriter.WriteValue(KeyCode.None.ToString());
+            jsonWriter.WriteValue(BlueprintsAssets.BLUEPRINTS_KEYBIND_CREATE.ToString());
+
+            jsonWriter.WritePropertyName("keybind_usetool");
+            jsonWriter.WriteValue(BlueprintsAssets.BLUEPRINTS_KEYBIND_USE.ToString());
+
+            jsonWriter.WritePropertyName("keybind_usetool_reload");
+            jsonWriter.WriteValue(BlueprintsAssets.BLUEPRINTS_KEYBIND_USE_RELOAD.ToString());
 
             jsonWriter.WritePropertyName("keybind_usetool_cyclefolder_up");
-            jsonWriter.WriteValue(KeyCode.UpArrow.ToString());
+            jsonWriter.WriteValue(BlueprintsAssets.BLUEPRINTS_KEYBIND_USE_CYCLEFOLDER_UP.ToString());
 
             jsonWriter.WritePropertyName("keybind_usetool_cyclefolder_down");
-            jsonWriter.WriteValue(KeyCode.DownArrow.ToString());
+            jsonWriter.WriteValue(BlueprintsAssets.BLUEPRINTS_KEYBIND_USE_CYCLEFOLDER_DOWN.ToString());
 
             jsonWriter.WritePropertyName("keybind_usetool_cycleblueprint_left");
-            jsonWriter.WriteValue(KeyCode.LeftArrow.ToString());
+            jsonWriter.WriteValue(BlueprintsAssets.BLUEPRINTS_KEYBIND_USE_CYCLEBLUEPRINT_LEFT.ToString());
 
             jsonWriter.WritePropertyName("keybind_usetool_cycleblueprint_right");
-            jsonWriter.WriteValue(KeyCode.RightArrow.ToString());
+            jsonWriter.WriteValue(BlueprintsAssets.BLUEPRINTS_KEYBIND_USE_CYCLEBLUEPRINT_RIGHT.ToString());
+
+            jsonWriter.WritePropertyName("keybind_usetool_folder");
+            jsonWriter.WriteValue(BlueprintsAssets.BLUEPRINTS_KEYBIND_USE_FOLDER.ToString());
 
             jsonWriter.WritePropertyName("keybind_usetool_rename");
-            jsonWriter.WriteValue(KeyCode.End.ToString());
+            jsonWriter.WriteValue(BlueprintsAssets.BLUEPRINTS_KEYBIND_USE_RENAME.ToString());
 
             jsonWriter.WritePropertyName("keybind_usetool_delete");
-            jsonWriter.WriteValue(KeyCode.Delete.ToString());
+            jsonWriter.WriteValue(BlueprintsAssets.BLUEPRINTS_KEYBIND_USE_DELETE.ToString());
 
             jsonWriter.WritePropertyName("keybind_snapshottool");
-            jsonWriter.WriteValue(KeyCode.None.ToString());
+            jsonWriter.WriteValue(BlueprintsAssets.BLUEPRINTS_KEYBIND_SNAPSHOT.ToString());
 
             jsonWriter.WritePropertyName("keybind_snapshottool_newsnapshot");
-            jsonWriter.WriteValue(KeyCode.Delete.ToString());
+            jsonWriter.WriteValue(BlueprintsAssets.BLUEPRINTS_KEYBIND_SNAPSHOT_NEWSNAPSHOT.ToString());
 
             jsonWriter.WritePropertyName("require_constructable");
-            jsonWriter.WriteValue(true);
+            jsonWriter.WriteValue(BlueprintsAssets.BLUEPRINTS_CONFIG_REQUIRECONSTRUCTABLE);
 
             jsonWriter.WritePropertyName("compress_blueprints");
-            jsonWriter.WriteValue(true);
+            jsonWriter.WriteValue(BlueprintsAssets.BLUEPRINTS_CONFIG_COMPRESBLUEPRINTS);
 
             jsonWriter.WriteEndObject();
         }
@@ -247,8 +256,9 @@ namespace Blueprints {
             JToken kCycleFolderDownToken = rootObject.SelectToken("keybind_usetool_cyclefolder_down");
             JToken kCycleBlueprintLeftToken = rootObject.SelectToken("keybind_usetool_cycleblueprint_left");
             JToken kCycleBlueprintRightToken = rootObject.SelectToken("keybind_usetool_cycleblueprint_right");
+            JToken kFolderToken = rootObject.SelectToken("keybind_usetool_folder");
             JToken kRenameToken = rootObject.SelectToken("keybind_usetool_rename");
-            JToken kUseDeleteToken = rootObject.SelectToken("keybind_usetool_delete");
+            JToken kDeleteToken = rootObject.SelectToken("keybind_usetool_delete");
             JToken kSnapshotToolToken = rootObject.SelectToken("keybind_snapshottool");
             JToken kSnapshotNewSnapshotToken = rootObject.SelectToken("keybind_snapshottool_newsnapshot");
 
@@ -283,12 +293,16 @@ namespace Blueprints {
                 BlueprintsAssets.BLUEPRINTS_KEYBIND_USE_CYCLEBLUEPRINT_RIGHT = kCycleBlueprintRight;
             }
 
+            if (kFolderToken != null && kFolderToken.Type == JTokenType.String && Utilities.TryParseEnum<KeyCode>(kFolderToken.Value<string>(), out KeyCode kFolder)) {
+                BlueprintsAssets.BLUEPRINTS_KEYBIND_USE_FOLDER = kFolder;
+            }
+
             if (kRenameToken != null && kRenameToken.Type == JTokenType.String && Utilities.TryParseEnum<KeyCode>(kRenameToken.Value<string>(), out KeyCode kRename)) {
                 BlueprintsAssets.BLUEPRINTS_KEYBIND_USE_RENAME = kRename;
             }
 
-            if (kUseDeleteToken != null && kUseDeleteToken.Type == JTokenType.String && Utilities.TryParseEnum<KeyCode>(kUseDeleteToken.Value<string>(), out KeyCode kUseDelete)) {
-                BlueprintsAssets.BLUEPRINTS_KEYBIND_USE_DELETE = kUseDelete;
+            if (kDeleteToken != null && kDeleteToken.Type == JTokenType.String && Utilities.TryParseEnum<KeyCode>(kDeleteToken.Value<string>(), out KeyCode kDelete)) {
+                BlueprintsAssets.BLUEPRINTS_KEYBIND_USE_DELETE = kDelete;
             }
 
             if (kSnapshotToolToken != null && kSnapshotToolToken.Type == JTokenType.String && Utilities.TryParseEnum<KeyCode>(kSnapshotToolToken.Value<string>(), out KeyCode kSnapshotTool)) {

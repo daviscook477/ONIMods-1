@@ -17,14 +17,12 @@ namespace Blueprints {
             BlueprintsAssets.BLUEPRINTS_PATH_CONFIGFILE = Path.Combine(BlueprintsAssets.BLUEPRINTS_PATH_CONFIGFOLDER, "config.json");
             BlueprintsAssets.BLUEPRINTS_PATH_KEYCODESFILE = Path.Combine(BlueprintsAssets.BLUEPRINTS_PATH_CONFIGFOLDER, "keycodes.txt");
 
-            IOUtilities.CreateKeycodeHintFile();
             if (File.Exists(BlueprintsAssets.BLUEPRINTS_PATH_CONFIGFILE)) {
                 IOUtilities.ReadConfig();
             }
 
-            else {
-                IOUtilities.CreateDefaultConfig();
-            }
+            IOUtilities.CreateKeycodeHintFile();
+            IOUtilities.WriteConfig();
 
             BlueprintsAssets.BLUEPRINTS_CREATE_ICON_SPRITE = Utilities.CreateSpriteDXT5(Assembly.GetExecutingAssembly().GetManifestResourceStream("Blueprints.image_createblueprint_button.dds"), 32, 32);
             BlueprintsAssets.BLUEPRINTS_CREATE_ICON_SPRITE.name = BlueprintsAssets.BLUEPRINTS_CREATE_ICON_NAME;
