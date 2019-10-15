@@ -105,29 +105,32 @@ namespace Blueprints {
         }
 
         private string SanitizeFolder(string folder) {
-            folder = folder.Replace('\\', Path.DirectorySeparatorChar);
-            folder = folder.Replace('/', Path.DirectorySeparatorChar);
-            string returnString = "";
-
-            string[] folderSections = folder.Split(Path.DirectorySeparatorChar);
-            foreach (string folderSection in folderSections) {
-                returnString += SanitizeFile(folderSection) + Path.DirectorySeparatorChar;
+            if (folder == "") {
+                return "";
             }
 
-            returnString = returnString.Substring(0, returnString.Length - 1);
-            return returnString;
+            folder = folder.Replace('\\', Path.DirectorySeparatorChar).Replace('/', Path.DirectorySeparatorChar).Replace(Path.AltDirectorySeparatorChar, Path.DirectorySeparatorChar);
+            string returnString = "";
+            
+            string[] folderSections = folder.Split(Path.DirectorySeparatorChar);
+            foreach (string folderSection in folderSections) {
+                if (folderSection.Trim().Length > 0) {
+                    returnString += SanitizeFile(folderSection) + Path.DirectorySeparatorChar;
+                }
+            }
+
+            return returnString.TrimEnd(Path.DirectorySeparatorChar).ToLowerInvariant();
         }
 
         private string SanitizeFile(string file) {
-            char[] invalidFileChars = Path.GetInvalidFileNameChars();
             string returnString = "";
 
             for(int i = 0; i < file.Length; ++i) {
                 char character = file[i];
-                returnString += invalidFileChars.Any(charaacter0 => character == charaacter0) ? '_' : character;
+                returnString += BlueprintsAssets.BLUEPRINTS_FILE_DISALLOWEDCHARACTERS.Contains(character) ? '_' : character;
             }
 
-            return returnString;
+            return returnString.Trim().ToLowerInvariant();
         }
 
         public bool ReadBinary() {
@@ -159,7 +162,7 @@ namespace Blueprints {
                 }
 
                 catch (System.Exception exception) {
-                    Debug.LogError("Error when loading blueprint: " + FilePath + ",\n" + nameof(exception) + ":" + exception.Message);
+                    Debug.LogError("Error when loading blueprint: " + FilePath + ",\n" + nameof(exception) + ": " + exception.Message);
                 }
             }
 
@@ -175,7 +178,7 @@ namespace Blueprints {
                     using StreamReader reader = File.OpenText(FilePath);
                     using JsonTextReader jsonReader = new JsonTextReader(reader);
 
-                    JObject rootObject = (JObject)JToken.ReadFrom(jsonReader).Root;
+                    JObject rootObject = (JObject) JToken.ReadFrom(jsonReader).Root;
 
                     JToken friendlyNameToken = rootObject.SelectToken("friendlyname");
                     JToken buildingsToken = rootObject.SelectToken("buildings");
