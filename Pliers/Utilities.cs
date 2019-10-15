@@ -55,7 +55,7 @@ namespace Pliers {
     }
 
     public static class IOUtilities {
-        public static void CreateDefaultConfig() {
+        public static void WriteConfig() {
             if (!Directory.Exists(PliersAssets.PLIERS_PATH_CONFIGFOLDER)) {
                 Directory.CreateDirectory(PliersAssets.PLIERS_PATH_CONFIGFOLDER);
             }
@@ -66,8 +66,10 @@ namespace Pliers {
             };
 
             jsonWriter.WriteStartObject();
+
             jsonWriter.WritePropertyName("keybind_wirecutter");
-            jsonWriter.WriteValue(KeyCode.None.ToString());
+            jsonWriter.WriteValue(PliersAssets.PLIERS_KEYBIND_TOOL.ToString());
+
             jsonWriter.WriteEndObject();
         }
 
@@ -98,7 +100,7 @@ namespace Pliers {
             JToken kWireToolToken = rootObject.SelectToken("keybind_wirecutter");
 
             if (kWireToolToken != null && kWireToolToken.Type == JTokenType.String && Utilities.TryParseEnum<KeyCode>(kWireToolToken.Value<string>(), out KeyCode kWireTool)) {
-                PliersAssets.PLIERS_INPUT_KEYBIND_TOOL = kWireTool;
+                PliersAssets.PLIERS_KEYBIND_TOOL = kWireTool;
             }
         }
     }

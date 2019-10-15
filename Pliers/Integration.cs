@@ -15,14 +15,12 @@ namespace Pliers {
             PliersAssets.PLIERS_PATH_CONFIGFILE = Path.Combine(PliersAssets.PLIERS_PATH_CONFIGFOLDER, "config.json");
             PliersAssets.PLIERS_PATH_KEYCODESFILE = Path.Combine(PliersAssets.PLIERS_PATH_CONFIGFOLDER, "keycodes.txt");
 
-            IOUtilities.CreateKeycodeHintFile();
             if (File.Exists(PliersAssets.PLIERS_PATH_CONFIGFILE)) {
                 IOUtilities.ReadConfig();
             }
 
-            else {
-                IOUtilities.CreateDefaultConfig();
-            }
+            IOUtilities.CreateKeycodeHintFile();
+            IOUtilities.WriteConfig();
 
             PliersAssets.PLIERS_ICON_SPRITE = Utilities.CreateSpriteDXT5(Assembly.GetExecutingAssembly().GetManifestResourceStream("Pliers.image_wirecutter_button.dds"), 32, 32);
             PliersAssets.PLIERS_ICON_SPRITE.name = PliersAssets.PLIERS_ICON_NAME;
@@ -46,7 +44,7 @@ namespace Pliers {
                 PliersAssets.PLIERS_ICON_NAME,
                 Action.NumActions,
                 PliersAssets.PLIERS_TOOLNAME,
-                string.Format(Strings.Get(PliersStrings.STRING_PLIERS_TOOLTIP).String, Utilities.GetKeyCodeString(PliersAssets.PLIERS_INPUT_KEYBIND_TOOL)),
+                string.Format(Strings.Get(PliersStrings.STRING_PLIERS_TOOLTIP).String, Utilities.GetKeyCodeString(PliersAssets.PLIERS_KEYBIND_TOOL)),
                 false
            );
         }
