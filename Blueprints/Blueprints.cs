@@ -87,6 +87,9 @@ namespace Blueprints {
         public static KeyCode BLUEPRINTS_KEYBIND_SNAPSHOT = KeyCode.None;
         public static KeyCode BLUEPRINTS_KEYBIND_SNAPSHOT_NEWSNAPSHOT = KeyCode.Delete;
 
+        public static HashSet<char> BLUEPRINTS_FILE_DISALLOWEDCHARACTERS;
+
+        public static HashSet<char> BLUEPRINTS_PATH_DISALLOWEDCHARACTERS;
         public static string BLUEPRINTS_PATH_CONFIGFOLDER;
         public static string BLUEPRINTS_PATH_CONFIGFILE;
         public static string BLUEPRINTS_PATH_KEYCODESFILE;
@@ -94,6 +97,20 @@ namespace Blueprints {
         public static bool BLUEPRINTS_CONFIG_REQUIRECONSTRUCTABLE = true;
         public static bool BLUEPRINTS_CONFIG_COMPRESBLUEPRINTS = true;
         public static float BLUEPRINTS_CONFIG_FXTIME = 0.75F;
+
+        static BlueprintsAssets() {
+            BLUEPRINTS_FILE_DISALLOWEDCHARACTERS = new HashSet<char>();
+            BLUEPRINTS_FILE_DISALLOWEDCHARACTERS.UnionWith(Path.GetInvalidFileNameChars());
+
+            BLUEPRINTS_PATH_DISALLOWEDCHARACTERS = new HashSet<char>();
+            BLUEPRINTS_PATH_DISALLOWEDCHARACTERS.UnionWith(Path.GetInvalidFileNameChars());
+            BLUEPRINTS_PATH_DISALLOWEDCHARACTERS.UnionWith(Path.GetInvalidPathChars());
+
+            BLUEPRINTS_PATH_DISALLOWEDCHARACTERS.Remove('/');
+            BLUEPRINTS_PATH_DISALLOWEDCHARACTERS.Remove('\\');
+            BLUEPRINTS_PATH_DISALLOWEDCHARACTERS.Remove(Path.DirectorySeparatorChar);
+            BLUEPRINTS_PATH_DISALLOWEDCHARACTERS.Remove(Path.AltDirectorySeparatorChar);
+        }
     }
 
     public static class BlueprintsState {
