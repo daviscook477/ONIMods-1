@@ -285,7 +285,7 @@ namespace Blueprints {
                 BlueprintsAssets.BLUEPRINTS_KEYBIND_USE.AssignIfEmpty(KeyCode.None);
             }
 
-            if (kReloadToken != null && kReloadToken.Type == JTokenType.String && Utilities.TryParseEnum<KeyCode>(kReloadToken.Value<string>(), out KeyCode kReload)) {
+            if (kReloadToken != null && kReloadToken.Type == JTokenType.String) {
                 BlueprintsAssets.BLUEPRINTS_KEYBIND_USE_RELOAD = new KeyBinding(kUseToolToken.Value<string>());
                 BlueprintsAssets.BLUEPRINTS_KEYBIND_USE_RELOAD.AssignIfEmpty(KeyCode.LeftShift);
             }
