@@ -76,7 +76,7 @@ namespace ModKeyBinding {
         }
 
         public string GetStringFormatted() {
-            return UI.FormatAsHotkey("[" + textRepresentation + "]");
+            return UI.FormatAsHotkey("[" + textRepresentation.ToUpper() + "]");
         }
 
         public override string ToString() {
