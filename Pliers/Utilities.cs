@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using ModKeyBinding;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using STRINGS;
 using System;
@@ -99,8 +100,9 @@ namespace Pliers {
             JObject rootObject = (JObject)JToken.ReadFrom(jsonReader).Root;
             JToken kWireToolToken = rootObject.SelectToken("keybind_wirecutter");
 
-            if (kWireToolToken != null && kWireToolToken.Type == JTokenType.String && Utilities.TryParseEnum<KeyCode>(kWireToolToken.Value<string>(), out KeyCode kWireTool)) {
-                PliersAssets.PLIERS_KEYBIND_TOOL = kWireTool;
+            if (kWireToolToken != null && kWireToolToken.Type == JTokenType.String) {
+                PliersAssets.PLIERS_KEYBIND_TOOL = new KeyBinding(kWireToolToken.Value<string>());
+                PliersAssets.PLIERS_KEYBIND_TOOL.AssignIfEmpty(KeyCode.None);
             }
         }
     }

@@ -44,7 +44,7 @@ namespace Pliers {
                 PliersAssets.PLIERS_ICON_NAME,
                 Action.NumActions,
                 PliersAssets.PLIERS_TOOLNAME,
-                string.Format(Strings.Get(PliersStrings.STRING_PLIERS_TOOLTIP).String, Utilities.GetKeyCodeString(PliersAssets.PLIERS_KEYBIND_TOOL)),
+                string.Format(Strings.Get(PliersStrings.STRING_PLIERS_TOOLTIP).String, PliersAssets.PLIERS_KEYBIND_TOOL.GetStringFormatted()),
                 false
            );
         }

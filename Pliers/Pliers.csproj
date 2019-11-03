@@ -92,10 +92,14 @@
       <Project>{9f4b0a89-b215-4e2d-9680-6576acbdce5c}</Project>
       <Name>ModLocalization</Name>
     </ProjectReference>
+    <ProjectReference Include="..\ModKeyBinding\ModKeyBinding.csproj">
+      <Project>{bc893326-bbfb-4905-b4c8-0fcaf589a038}</Project>
+      <Name>ModKeyBinding</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>"$(SolutionDir)packages\ILMerge.3.0.29\tools\net452\ILMerge.exe" /out:Pliers.dll UnmergedPliers.dll Compatibility.dll DisplayVersion.dll ModLocalization.dll /targetplatform:v2,C:\Windows\Microsoft.NET\Framework\v2.0.50727
+    <PostBuildEvent>"$(SolutionDir)packages\ILMerge.3.0.29\tools\net452\ILMerge.exe" /out:Pliers.dll UnmergedPliers.dll Compatibility.dll DisplayVersion.dll ModLocalization.dll ModKeyBinding.dll /targetplatform:v2,C:\Windows\Microsoft.NET\Framework\v2.0.50727
 xcopy /y  "$(TargetDir)Pliers.dll" "%25USERPROFILE%25\Documents\Klei\OxygenNotIncluded\mods\Local\Pliers LOCAL\"</PostBuildEvent>
   </PropertyGroup>
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
