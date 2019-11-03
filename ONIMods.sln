@@ -17,7 +17,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Compatibility", "Lib\Compat
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FilterableHarvestTool", "FilterableHarvestTool\FilterableHarvestTool.csproj", "{4EA41AE6-1917-4DAA-9B30-CAB341477F81}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ModKeyBinding", "ModKeyBinding\ModKeyBinding.csproj", "{BC893326-BBFB-4905-B4C8-0FCAF589A038}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ModKeyBinding", "Lib\ModKeyBinding\ModKeyBinding.csproj", "{BC893326-BBFB-4905-B4C8-0FCAF589A038}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
