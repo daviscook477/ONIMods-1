@@ -11,7 +11,7 @@ namespace Blueprints {
             if ((ParentTool?.hasFocus ?? false) && BlueprintsState.LoadedBlueprints.Count > 0) {
                 bool blueprintChanged = false;
 
-                if (Input.GetKeyDown(BlueprintsAssets.BLUEPRINTS_KEYBIND_USE_FOLDER)) {
+                if (BlueprintsAssets.BLUEPRINTS_KEYBIND_USE_FOLDER.IsActive()) {
                     static void onConfirmDelegate(string blueprintFolder, FileNameDialog parent) {
                         string newFolder = blueprintFolder.Trim(' ', '/', '\\', Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
 
@@ -35,7 +35,7 @@ namespace Blueprints {
                     blueprintFolderDialog.Activate();
                 }
 
-                else if (Input.GetKeyDown(BlueprintsAssets.BLUEPRINTS_KEYBIND_USE_RENAME)) {
+                else if (BlueprintsAssets.BLUEPRINTS_KEYBIND_USE_RENAME.IsActive()) {
                     static void onConfirmDelegate(string blueprintName, FileNameDialog parent) {
                         BlueprintsState.SelectedBlueprint.Rename(blueprintName);
   
@@ -48,7 +48,7 @@ namespace Blueprints {
                     blueprintNameDialog.Activate();
                 }
 
-                else if (Input.GetKeyDown(BlueprintsAssets.BLUEPRINTS_KEYBIND_USE_DELETE)) {
+                else if (BlueprintsAssets.BLUEPRINTS_KEYBIND_USE_DELETE.IsActive()) {
                     BlueprintsState.SelectedBlueprint.DeleteFile();
                     BlueprintsState.SelectedFolder.DeleteBlueprint(BlueprintsState.SelectedBlueprint);
                     
@@ -61,17 +61,17 @@ namespace Blueprints {
 
                 else if (BlueprintsState.LoadedBlueprints.Count > 0) {
                     if (BlueprintsState.SelectedFolder.BlueprintCount > 1) {
-                        if (Input.GetKeyDown(BlueprintsAssets.BLUEPRINTS_KEYBIND_USE_CYCLEBLUEPRINT_LEFT)) {
+                        if (BlueprintsAssets.BLUEPRINTS_KEYBIND_USE_CYCLEBLUEPRINT_LEFT.IsActive()) {
                             blueprintChanged = BlueprintsState.SelectedFolder.PreviousBlueprint();
                         }
 
-                        else if (Input.GetKeyDown(BlueprintsAssets.BLUEPRINTS_KEYBIND_USE_CYCLEBLUEPRINT_RIGHT)) {
+                        else if (BlueprintsAssets.BLUEPRINTS_KEYBIND_USE_CYCLEBLUEPRINT_RIGHT.IsActive()) {
                             blueprintChanged = BlueprintsState.SelectedFolder.NextBlueprint();
                         }
                     }
 
                     if (BlueprintsState.LoadedBlueprints.Count > 1) {
-                        if (Input.GetKeyDown(BlueprintsAssets.BLUEPRINTS_KEYBIND_USE_CYCLEFOLDER_UP)) {
+                        if (BlueprintsAssets.BLUEPRINTS_KEYBIND_USE_CYCLEFOLDER_UP.IsActive()) {
                             if (++BlueprintsState.SelectedBlueprintFolderIndex >= BlueprintsState.LoadedBlueprints.Count) {
                                 BlueprintsState.SelectedBlueprintFolderIndex = 0;
                             }
@@ -79,7 +79,7 @@ namespace Blueprints {
                             blueprintChanged = true;
                         }
 
-                        else if (Input.GetKeyDown(BlueprintsAssets.BLUEPRINTS_KEYBIND_USE_CYCLEFOLDER_DOWN)) {
+                        else if (BlueprintsAssets.BLUEPRINTS_KEYBIND_USE_CYCLEFOLDER_DOWN.IsActive()) {
                             if (--BlueprintsState.SelectedBlueprintFolderIndex < 0) {
                                 BlueprintsState.SelectedBlueprintFolderIndex = BlueprintsState.LoadedBlueprints.Count - 1;
                             }

@@ -1,6 +1,7 @@
 ﻿using Harmony;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using STRINGS;
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
@@ -74,18 +75,18 @@ namespace Blueprints {
         public static Color BLUEPRINTS_COLOR_NOTECH = new Color32(30, 144, 255, 255);
         public static Color BLUEPRINTS_COLOR_BLUEPRINT_DRAG = new Color32(0, 119, 145, 255);
 
-        public static KeyCode BLUEPRINTS_KEYBIND_CREATE = KeyCode.None;
-        public static KeyCode BLUEPRINTS_KEYBIND_USE = KeyCode.None;
-        public static KeyCode BLUEPRINTS_KEYBIND_USE_RELOAD = KeyCode.LeftShift;
-        public static KeyCode BLUEPRINTS_KEYBIND_USE_CYCLEFOLDER_UP = KeyCode.UpArrow;
-        public static KeyCode BLUEPRINTS_KEYBIND_USE_CYCLEFOLDER_DOWN = KeyCode.DownArrow;
-        public static KeyCode BLUEPRINTS_KEYBIND_USE_CYCLEBLUEPRINT_LEFT = KeyCode.LeftArrow;
-        public static KeyCode BLUEPRINTS_KEYBIND_USE_CYCLEBLUEPRINT_RIGHT = KeyCode.RightArrow;
-        public static KeyCode BLUEPRINTS_KEYBIND_USE_FOLDER = KeyCode.Home;
-        public static KeyCode BLUEPRINTS_KEYBIND_USE_RENAME = KeyCode.End;
-        public static KeyCode BLUEPRINTS_KEYBIND_USE_DELETE = KeyCode.Delete;
-        public static KeyCode BLUEPRINTS_KEYBIND_SNAPSHOT = KeyCode.None;
-        public static KeyCode BLUEPRINTS_KEYBIND_SNAPSHOT_NEWSNAPSHOT = KeyCode.Delete;
+        public static KeyBinding BLUEPRINTS_KEYBIND_CREATE = new KeyBinding(KeyCode.None);
+        public static KeyBinding BLUEPRINTS_KEYBIND_USE = new KeyBinding(KeyCode.None);
+        public static KeyBinding BLUEPRINTS_KEYBIND_USE_RELOAD = new KeyBinding(KeyCode.LeftShift);
+        public static KeyBinding BLUEPRINTS_KEYBIND_USE_CYCLEFOLDER_UP = new KeyBinding(KeyCode.UpArrow);
+        public static KeyBinding BLUEPRINTS_KEYBIND_USE_CYCLEFOLDER_DOWN = new KeyBinding(KeyCode.DownArrow);
+        public static KeyBinding BLUEPRINTS_KEYBIND_USE_CYCLEBLUEPRINT_LEFT = new KeyBinding(KeyCode.LeftArrow);
+        public static KeyBinding BLUEPRINTS_KEYBIND_USE_CYCLEBLUEPRINT_RIGHT = new KeyBinding(KeyCode.RightArrow);
+        public static KeyBinding BLUEPRINTS_KEYBIND_USE_FOLDER = new KeyBinding(KeyCode.Home);
+        public static KeyBinding BLUEPRINTS_KEYBIND_USE_RENAME = new KeyBinding(KeyCode.End);
+        public static KeyBinding BLUEPRINTS_KEYBIND_USE_DELETE = new KeyBinding(KeyCode.Delete);
+        public static KeyBinding BLUEPRINTS_KEYBIND_SNAPSHOT = new KeyBinding(KeyCode.None);
+        public static KeyBinding BLUEPRINTS_KEYBIND_SNAPSHOT_NEWSNAPSHOT = new KeyBinding(KeyCode.Delete);
 
         public static HashSet<char> BLUEPRINTS_FILE_DISALLOWEDCHARACTERS;
 
@@ -306,15 +307,15 @@ namespace Blueprints {
         public void Update() {
             ToolMenu.ToolCollection currentlySelectedCollection = ToolMenu.Instance.currentlySelectedCollection;
 
-            if (Input.GetKeyDown(BlueprintsAssets.BLUEPRINTS_KEYBIND_CREATE) && currentlySelectedCollection != BlueprintsAssets.BLUEPRINTS_CREATE_TOOLCOLLECTION) {
+            if (BlueprintsAssets.BLUEPRINTS_KEYBIND_CREATE.IsActive() && currentlySelectedCollection != BlueprintsAssets.BLUEPRINTS_CREATE_TOOLCOLLECTION) {
                 Traverse.Create(ToolMenu.Instance).Method("ChooseCollection", BlueprintsAssets.BLUEPRINTS_CREATE_TOOLCOLLECTION, true).GetValue();
             }
 
-            else if (Input.GetKeyDown(BlueprintsAssets.BLUEPRINTS_KEYBIND_USE) && currentlySelectedCollection != BlueprintsAssets.BLUEPRINTS_USE_TOOLCOLLECTION) {
+            else if (BlueprintsAssets.BLUEPRINTS_KEYBIND_USE.IsActive() && currentlySelectedCollection != BlueprintsAssets.BLUEPRINTS_USE_TOOLCOLLECTION) {
                 Traverse.Create(ToolMenu.Instance).Method("ChooseCollection", BlueprintsAssets.BLUEPRINTS_USE_TOOLCOLLECTION, true).GetValue();
             }
 
-            else if (Input.GetKeyDown(BlueprintsAssets.BLUEPRINTS_KEYBIND_SNAPSHOT) && currentlySelectedCollection != BlueprintsAssets.BLUEPRINTS_SNAPSHOT_TOOLCOLLECTION) {
+            else if (BlueprintsAssets.BLUEPRINTS_KEYBIND_SNAPSHOT.IsActive() && currentlySelectedCollection != BlueprintsAssets.BLUEPRINTS_SNAPSHOT_TOOLCOLLECTION) {
                 Traverse.Create(ToolMenu.Instance).Method("ChooseCollection", BlueprintsAssets.BLUEPRINTS_SNAPSHOT_TOOLCOLLECTION, true).GetValue();
             }
         }
@@ -461,4 +462,71 @@ namespace Blueprints {
             ReplacementLayer = replacementLayer;
         }
     }
+
+    public sealed class KeyBinding {
+        private readonly List<KeyCode> keyCodes = new List<KeyCode>();
+        private string textRepresentation;
+
+        public KeyBinding(string text) {
+            string[] keyBindings = text.Split('+');
+            textRepresentation = "";
+
+            foreach (string keyBinding in keyBindings) {
+                if (Utilities.TryParseEnum<KeyCode>(keyBinding, out KeyCode keyCode)) {
+                    if (keyCode != KeyCode.None) {
+                        keyCodes.Add(keyCode);
+                        textRepresentation += keyCode + "+";
+                    }
+                }
+            }
+
+            if (keyCodes.Count == 0) {
+                textRepresentation = "NONE";
+            }
+
+            else {
+                textRepresentation = textRepresentation.TrimEnd('+');
+            }
+        }
+
+        public KeyBinding(params KeyCode[] keyCodes) {
+            textRepresentation = "";
+
+            foreach (KeyCode keyCode in keyCodes) {
+                if (keyCode != KeyCode.None) {
+                    keyCodes.Add(keyCode);
+                    textRepresentation += keyCode + "+";
+                }
+
+            }
+
+            if (this.keyCodes.Count == 0) {
+                textRepresentation = "NONE";
+            }
+
+            else {
+                textRepresentation = textRepresentation.TrimEnd('+');
+            }
+        }
+
+        public void AssignIfEmpty(KeyCode keyCode) {
+            if (keyCodes.Count == 0) {
+                keyCodes.Add(keyCode);
+                textRepresentation = keyCode.ToString();
+            }
+        }
+
+        public bool IsActive() {
+            return keyCodes.Count > 0 && keyCodes.TrueForAll(x => Input.GetKey(x));
+            
+        }
+
+        public string GetStringFormatted() {
+            return UI.FormatAsHotkey("[" + textRepresentation + "]");
+        }
+
+        public override string ToString() {
+            return textRepresentation;
+        }
+    } 
 }

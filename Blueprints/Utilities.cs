@@ -274,52 +274,64 @@ namespace Blueprints {
             JToken bRequireConstructable = rootObject.SelectToken("require_constructable");
             JToken bCompressBlueprints = rootObject.SelectToken("compress_blueprints");
 
-            if (kCreateToolToken != null && kCreateToolToken.Type == JTokenType.String && Utilities.TryParseEnum<KeyCode>(kCreateToolToken.Value<string>(), out KeyCode kCreateTool)) {
-                BlueprintsAssets.BLUEPRINTS_KEYBIND_CREATE = kCreateTool;
+            if (kCreateToolToken != null && kCreateToolToken.Type == JTokenType.String) {
+                BlueprintsAssets.BLUEPRINTS_KEYBIND_CREATE = new KeyBinding(kCreateToolToken.Value<string>());
+                BlueprintsAssets.BLUEPRINTS_KEYBIND_CREATE.AssignIfEmpty(KeyCode.None);
             }
 
-            if (kUseToolToken != null && kUseToolToken.Type == JTokenType.String && Utilities.TryParseEnum<KeyCode>(kUseToolToken.Value<string>(), out KeyCode kUseTool)) {
-                BlueprintsAssets.BLUEPRINTS_KEYBIND_USE = kUseTool;
+            if (kUseToolToken != null && kUseToolToken.Type == JTokenType.String) {
+                BlueprintsAssets.BLUEPRINTS_KEYBIND_USE = new KeyBinding(kUseToolToken.Value<string>());
+                BlueprintsAssets.BLUEPRINTS_KEYBIND_USE.AssignIfEmpty(KeyCode.None);
             }
 
             if (kReloadToken != null && kReloadToken.Type == JTokenType.String && Utilities.TryParseEnum<KeyCode>(kReloadToken.Value<string>(), out KeyCode kReload)) {
-                BlueprintsAssets.BLUEPRINTS_KEYBIND_USE_RELOAD = kReload;
+                BlueprintsAssets.BLUEPRINTS_KEYBIND_USE_RELOAD = new KeyBinding(kUseToolToken.Value<string>());
+                BlueprintsAssets.BLUEPRINTS_KEYBIND_USE_RELOAD.AssignIfEmpty(KeyCode.LeftShift);
             }
 
-            if (kCycleFolderUpToken != null && kCycleFolderUpToken.Type == JTokenType.String && Utilities.TryParseEnum<KeyCode>(kCycleFolderUpToken.Value<string>(), out KeyCode kCycleFolderUp)) {
-                BlueprintsAssets.BLUEPRINTS_KEYBIND_USE_CYCLEFOLDER_UP = kCycleFolderUp;
+            if (kCycleFolderUpToken != null && kCycleFolderUpToken.Type == JTokenType.String) {
+                BlueprintsAssets.BLUEPRINTS_KEYBIND_USE_CYCLEFOLDER_UP = new KeyBinding(kCycleFolderUpToken.Value<string>());
+                BlueprintsAssets.BLUEPRINTS_KEYBIND_USE_CYCLEFOLDER_UP.AssignIfEmpty(KeyCode.UpArrow);
             }
 
-            if (kCycleFolderDownToken != null && kCycleFolderDownToken.Type == JTokenType.String && Utilities.TryParseEnum<KeyCode>(kCycleFolderDownToken.Value<string>(), out KeyCode kCycleFolderDown)) {
-                BlueprintsAssets.BLUEPRINTS_KEYBIND_USE_CYCLEFOLDER_DOWN = kCycleFolderDown;
+            if (kCycleFolderDownToken != null && kCycleFolderDownToken.Type == JTokenType.String) {
+                BlueprintsAssets.BLUEPRINTS_KEYBIND_USE_CYCLEFOLDER_DOWN = new KeyBinding(kCycleFolderDownToken.Value<string>());
+                BlueprintsAssets.BLUEPRINTS_KEYBIND_USE_CYCLEFOLDER_DOWN.AssignIfEmpty(KeyCode.UpArrow);
             }
 
-            if (kCycleBlueprintLeftToken != null && kCycleBlueprintLeftToken.Type == JTokenType.String && Utilities.TryParseEnum<KeyCode>(kCycleBlueprintLeftToken.Value<string>(), out KeyCode kCycleBlueprintLeft)) {
-                BlueprintsAssets.BLUEPRINTS_KEYBIND_USE_CYCLEBLUEPRINT_LEFT = kCycleBlueprintLeft;
+            if (kCycleBlueprintLeftToken != null && kCycleBlueprintLeftToken.Type == JTokenType.String) {
+                BlueprintsAssets.BLUEPRINTS_KEYBIND_USE_CYCLEBLUEPRINT_LEFT = new KeyBinding(kCycleBlueprintLeftToken.Value<string>());
+                BlueprintsAssets.BLUEPRINTS_KEYBIND_USE_CYCLEBLUEPRINT_LEFT.AssignIfEmpty(KeyCode.LeftArrow);
             }
 
-            if (kCycleBlueprintRightToken != null && kCycleBlueprintRightToken.Type == JTokenType.String && Utilities.TryParseEnum<KeyCode>(kCycleBlueprintRightToken.Value<string>(), out KeyCode kCycleBlueprintRight)) {
-                BlueprintsAssets.BLUEPRINTS_KEYBIND_USE_CYCLEBLUEPRINT_RIGHT = kCycleBlueprintRight;
+            if (kCycleBlueprintRightToken != null && kCycleBlueprintRightToken.Type == JTokenType.String) {
+                BlueprintsAssets.BLUEPRINTS_KEYBIND_USE_CYCLEBLUEPRINT_RIGHT = new KeyBinding(kCycleBlueprintRightToken.Value<string>());
+                BlueprintsAssets.BLUEPRINTS_KEYBIND_USE_CYCLEBLUEPRINT_RIGHT.AssignIfEmpty(KeyCode.RightArrow);
             }
 
-            if (kFolderToken != null && kFolderToken.Type == JTokenType.String && Utilities.TryParseEnum<KeyCode>(kFolderToken.Value<string>(), out KeyCode kFolder)) {
-                BlueprintsAssets.BLUEPRINTS_KEYBIND_USE_FOLDER = kFolder;
+            if (kFolderToken != null && kFolderToken.Type == JTokenType.String) {
+                BlueprintsAssets.BLUEPRINTS_KEYBIND_USE_FOLDER = new KeyBinding(kFolderToken.Value<string>());
+                BlueprintsAssets.BLUEPRINTS_KEYBIND_USE_FOLDER.AssignIfEmpty(KeyCode.Home);
             }
 
-            if (kRenameToken != null && kRenameToken.Type == JTokenType.String && Utilities.TryParseEnum<KeyCode>(kRenameToken.Value<string>(), out KeyCode kRename)) {
-                BlueprintsAssets.BLUEPRINTS_KEYBIND_USE_RENAME = kRename;
+            if (kRenameToken != null && kRenameToken.Type == JTokenType.String) {
+                BlueprintsAssets.BLUEPRINTS_KEYBIND_USE_RENAME = new KeyBinding(kRenameToken.Value<string>());
+                BlueprintsAssets.BLUEPRINTS_KEYBIND_USE_RENAME.AssignIfEmpty(KeyCode.End);
             }
 
-            if (kDeleteToken != null && kDeleteToken.Type == JTokenType.String && Utilities.TryParseEnum<KeyCode>(kDeleteToken.Value<string>(), out KeyCode kDelete)) {
-                BlueprintsAssets.BLUEPRINTS_KEYBIND_USE_DELETE = kDelete;
+            if (kDeleteToken != null && kDeleteToken.Type == JTokenType.String) {
+                BlueprintsAssets.BLUEPRINTS_KEYBIND_USE_DELETE = new KeyBinding(kDeleteToken.Value<string>());
+                BlueprintsAssets.BLUEPRINTS_KEYBIND_USE_DELETE.AssignIfEmpty(KeyCode.Delete);
             }
 
-            if (kSnapshotToolToken != null && kSnapshotToolToken.Type == JTokenType.String && Utilities.TryParseEnum<KeyCode>(kSnapshotToolToken.Value<string>(), out KeyCode kSnapshotTool)) {
-                BlueprintsAssets.BLUEPRINTS_KEYBIND_SNAPSHOT = kSnapshotTool;
+            if (kSnapshotToolToken != null && kSnapshotToolToken.Type == JTokenType.String) {
+                BlueprintsAssets.BLUEPRINTS_KEYBIND_SNAPSHOT = new KeyBinding(kSnapshotToolToken.Value<string>());
+                BlueprintsAssets.BLUEPRINTS_KEYBIND_SNAPSHOT.AssignIfEmpty(KeyCode.None);
             }
 
-            if (kSnapshotNewSnapshotToken != null && kSnapshotNewSnapshotToken.Type == JTokenType.String && Utilities.TryParseEnum<KeyCode>(kSnapshotNewSnapshotToken.Value<string>(), out KeyCode kSnapshotDelete)) {
-                BlueprintsAssets.BLUEPRINTS_KEYBIND_SNAPSHOT_NEWSNAPSHOT = kSnapshotDelete;
+            if (kSnapshotNewSnapshotToken != null && kSnapshotNewSnapshotToken.Type == JTokenType.String) {
+                BlueprintsAssets.BLUEPRINTS_KEYBIND_SNAPSHOT_NEWSNAPSHOT = new KeyBinding(kSnapshotNewSnapshotToken.Value<string>());
+                BlueprintsAssets.BLUEPRINTS_KEYBIND_SNAPSHOT_NEWSNAPSHOT.AssignIfEmpty(KeyCode.Delete);
             }
 
             if (bRequireConstructable != null && bRequireConstructable.Type == JTokenType.Boolean) {

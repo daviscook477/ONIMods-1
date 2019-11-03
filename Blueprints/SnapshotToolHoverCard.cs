@@ -25,7 +25,7 @@ namespace Blueprints {
 
             if (UsingSnapshot) {
                 drawer.NewLine(32);
-                drawer.DrawText(string.Format(Strings.Get(BlueprintsStrings.STRING_BLUEPRINTS_SNAPSHOT_NEWSNAPSHOT), Utilities.GetKeyCodeString(BlueprintsAssets.BLUEPRINTS_KEYBIND_SNAPSHOT_NEWSNAPSHOT)), Styles_Instruction.Standard);
+                drawer.DrawText(string.Format(Strings.Get(BlueprintsStrings.STRING_BLUEPRINTS_SNAPSHOT_NEWSNAPSHOT), BlueprintsAssets.BLUEPRINTS_KEYBIND_SNAPSHOT_NEWSNAPSHOT.GetStringFormatted()), Styles_Instruction.Standard);
             }
 
             drawer.EndShadowBar();

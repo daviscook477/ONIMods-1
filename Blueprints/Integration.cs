@@ -90,7 +90,7 @@ namespace Blueprints {
                 BlueprintsAssets.BLUEPRINTS_CREATE_ICON_NAME,
                 Action.NumActions,
                 BlueprintsAssets.BLUEPRINTS_CREATE_TOOLNAME,
-                string.Format(Strings.Get(BlueprintsStrings.STRING_BLUEPRINTS_CREATE_TOOLTIP), Utilities.GetKeyCodeString(BlueprintsAssets.BLUEPRINTS_KEYBIND_CREATE)),
+                string.Format(Strings.Get(BlueprintsStrings.STRING_BLUEPRINTS_CREATE_TOOLTIP), BlueprintsAssets.BLUEPRINTS_KEYBIND_CREATE.GetStringFormatted()),
                 true
             );
 
@@ -99,7 +99,7 @@ namespace Blueprints {
                 BlueprintsAssets.BLUEPRINTS_USE_ICON_NAME,
                 Action.NumActions,
                 BlueprintsAssets.BLUEPRINTS_USE_TOOLNAME,
-                string.Format(Strings.Get(BlueprintsStrings.STRING_BLUEPRINTS_USE_TOOLTIP), Utilities.GetKeyCodeString(BlueprintsAssets.BLUEPRINTS_KEYBIND_USE), Utilities.GetKeyCodeString(BlueprintsAssets.BLUEPRINTS_KEYBIND_USE_RELOAD)),
+                string.Format(Strings.Get(BlueprintsStrings.STRING_BLUEPRINTS_USE_TOOLTIP), BlueprintsAssets.BLUEPRINTS_KEYBIND_USE.GetStringFormatted(), BlueprintsAssets.BLUEPRINTS_KEYBIND_USE_RELOAD.GetStringFormatted()),
                 true
             );
 
@@ -108,7 +108,7 @@ namespace Blueprints {
                 BlueprintsAssets.BLUEPRINTS_SNAPSHOT_ICON_NAME,
                 Action.NumActions,
                 BlueprintsAssets.BLUEPRINTS_SNAPSHOT_TOOLNAME,
-                string.Format(Strings.Get(BlueprintsStrings.STRING_BLUEPRINTS_SNAPSHOT_TOOLTIP), Utilities.GetKeyCodeString(BlueprintsAssets.BLUEPRINTS_KEYBIND_SNAPSHOT)),
+                string.Format(Strings.Get(BlueprintsStrings.STRING_BLUEPRINTS_SNAPSHOT_TOOLTIP), BlueprintsAssets.BLUEPRINTS_KEYBIND_SNAPSHOT.GetStringFormatted()),
                 false
            );
         }

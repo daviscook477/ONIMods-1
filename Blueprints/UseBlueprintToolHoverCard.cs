@@ -25,20 +25,20 @@ namespace Blueprints {
             drawer.NewLine(32);
 
             if (BlueprintsState.HasBlueprints()) {
-                if(BlueprintsState.SelectedFolder.BlueprintCount > 0) {
-                    drawer.DrawText(string.Format(Strings.Get(BlueprintsStrings.STRING_BLUEPRINTS_USE_CYCLEFOLDERS), Utilities.GetKeyCodeString(BlueprintsAssets.BLUEPRINTS_KEYBIND_USE_CYCLEFOLDER_UP), Utilities.GetKeyCodeString(BlueprintsAssets.BLUEPRINTS_KEYBIND_USE_CYCLEFOLDER_DOWN)), Styles_Instruction.Standard);
+                if (BlueprintsState.SelectedFolder.BlueprintCount > 0) {
+                    drawer.DrawText(string.Format(Strings.Get(BlueprintsStrings.STRING_BLUEPRINTS_USE_CYCLEFOLDERS), BlueprintsAssets.BLUEPRINTS_KEYBIND_USE_CYCLEFOLDER_UP.GetStringFormatted(), BlueprintsAssets.BLUEPRINTS_KEYBIND_USE_CYCLEFOLDER_DOWN.GetStringFormatted()), Styles_Instruction.Standard);
                     drawer.NewLine(20);
 
-                    drawer.DrawText(string.Format(Strings.Get(BlueprintsStrings.STRING_BLUEPRINTS_USE_CYCLEBLUEPRINTS), Utilities.GetKeyCodeString(BlueprintsAssets.BLUEPRINTS_KEYBIND_USE_CYCLEBLUEPRINT_LEFT), Utilities.GetKeyCodeString(BlueprintsAssets.BLUEPRINTS_KEYBIND_USE_CYCLEBLUEPRINT_RIGHT)), Styles_Instruction.Standard);
+                    drawer.DrawText(string.Format(Strings.Get(BlueprintsStrings.STRING_BLUEPRINTS_USE_CYCLEBLUEPRINTS), BlueprintsAssets.BLUEPRINTS_KEYBIND_USE_CYCLEBLUEPRINT_LEFT.GetStringFormatted(), BlueprintsAssets.BLUEPRINTS_KEYBIND_USE_CYCLEBLUEPRINT_RIGHT.GetStringFormatted()), Styles_Instruction.Standard);
                     drawer.NewLine(32);
 
-                    drawer.DrawText(string.Format(Strings.Get(BlueprintsStrings.STRING_BLUEPRINTS_USE_FOLDERBLUEPRINT), Utilities.GetKeyCodeString(BlueprintsAssets.BLUEPRINTS_KEYBIND_USE_FOLDER)), Styles_Instruction.Standard);
+                    drawer.DrawText(string.Format(Strings.Get(BlueprintsStrings.STRING_BLUEPRINTS_USE_FOLDERBLUEPRINT), BlueprintsAssets.BLUEPRINTS_KEYBIND_USE_FOLDER.GetStringFormatted()), Styles_Instruction.Standard);
                     drawer.NewLine(20);
 
-                    drawer.DrawText(string.Format(Strings.Get(BlueprintsStrings.STRING_BLUEPRINTS_USE_NAMEBLUEPRINT), Utilities.GetKeyCodeString(BlueprintsAssets.BLUEPRINTS_KEYBIND_USE_RENAME)), Styles_Instruction.Standard);
+                    drawer.DrawText(string.Format(Strings.Get(BlueprintsStrings.STRING_BLUEPRINTS_USE_NAMEBLUEPRINT),BlueprintsAssets.BLUEPRINTS_KEYBIND_USE_RENAME.GetStringFormatted()), Styles_Instruction.Standard);
                     drawer.NewLine(20);
 
-                    drawer.DrawText(string.Format(Strings.Get(BlueprintsStrings.STRING_BLUEPRINTS_USE_DELETEBLUEPRINT), Utilities.GetKeyCodeString(BlueprintsAssets.BLUEPRINTS_KEYBIND_USE_DELETE)), Styles_Instruction.Standard);
+                    drawer.DrawText(string.Format(Strings.Get(BlueprintsStrings.STRING_BLUEPRINTS_USE_DELETEBLUEPRINT), BlueprintsAssets.BLUEPRINTS_KEYBIND_USE_DELETE.GetStringFormatted()), Styles_Instruction.Standard);
 
                     if (PrefabErrorCount > 0) {
                         drawer.NewLine(32);

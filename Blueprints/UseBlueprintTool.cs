@@ -55,7 +55,7 @@ namespace Blueprints {
                 GridCompositor.Instance.ToggleMajor(true);
             }
 
-            if (Input.GetKey(BlueprintsAssets.BLUEPRINTS_KEYBIND_USE_RELOAD) || Input.GetKeyUp(BlueprintsAssets.BLUEPRINTS_KEYBIND_USE_RELOAD)) {
+            if (BlueprintsAssets.BLUEPRINTS_KEYBIND_USE_RELOAD.IsActive()) {
                 int oldBlueprintCount = BlueprintsState.LoadedBlueprints.Count;
                 Utilities.ReloadBlueprints(true);
 
