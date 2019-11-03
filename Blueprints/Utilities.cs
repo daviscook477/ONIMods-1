@@ -259,62 +259,62 @@ namespace Blueprints {
             JToken bCompressBlueprints = rootObject.SelectToken("compress_blueprints");
 
             if (kCreateToolToken != null && kCreateToolToken.Type == JTokenType.String) {
-                BlueprintsAssets.BLUEPRINTS_KEYBIND_CREATE = new KeyBinding(kCreateToolToken.Value<string>());
+                BlueprintsAssets.BLUEPRINTS_KEYBIND_CREATE = new KeyBinding(KeyBindingType.Press, kCreateToolToken.Value<string>());
                 BlueprintsAssets.BLUEPRINTS_KEYBIND_CREATE.AssignIfEmpty(KeyCode.None);
             }
 
             if (kUseToolToken != null && kUseToolToken.Type == JTokenType.String) {
-                BlueprintsAssets.BLUEPRINTS_KEYBIND_USE = new KeyBinding(kUseToolToken.Value<string>());
+                BlueprintsAssets.BLUEPRINTS_KEYBIND_USE = new KeyBinding(KeyBindingType.Press, kUseToolToken.Value<string>());
                 BlueprintsAssets.BLUEPRINTS_KEYBIND_USE.AssignIfEmpty(KeyCode.None);
             }
 
             if (kReloadToken != null && kReloadToken.Type == JTokenType.String) {
-                BlueprintsAssets.BLUEPRINTS_KEYBIND_USE_RELOAD = new KeyBinding(kUseToolToken.Value<string>());
+                BlueprintsAssets.BLUEPRINTS_KEYBIND_USE_RELOAD = new KeyBinding(KeyBindingType.Press, kUseToolToken.Value<string>());
                 BlueprintsAssets.BLUEPRINTS_KEYBIND_USE_RELOAD.AssignIfEmpty(KeyCode.LeftShift);
             }
 
             if (kCycleFolderUpToken != null && kCycleFolderUpToken.Type == JTokenType.String) {
-                BlueprintsAssets.BLUEPRINTS_KEYBIND_USE_CYCLEFOLDER_UP = new KeyBinding(kCycleFolderUpToken.Value<string>());
+                BlueprintsAssets.BLUEPRINTS_KEYBIND_USE_CYCLEFOLDER_UP = new KeyBinding(KeyBindingType.Press, kCycleFolderUpToken.Value<string>());
                 BlueprintsAssets.BLUEPRINTS_KEYBIND_USE_CYCLEFOLDER_UP.AssignIfEmpty(KeyCode.UpArrow);
             }
 
             if (kCycleFolderDownToken != null && kCycleFolderDownToken.Type == JTokenType.String) {
-                BlueprintsAssets.BLUEPRINTS_KEYBIND_USE_CYCLEFOLDER_DOWN = new KeyBinding(kCycleFolderDownToken.Value<string>());
+                BlueprintsAssets.BLUEPRINTS_KEYBIND_USE_CYCLEFOLDER_DOWN = new KeyBinding(KeyBindingType.Press, kCycleFolderDownToken.Value<string>());
                 BlueprintsAssets.BLUEPRINTS_KEYBIND_USE_CYCLEFOLDER_DOWN.AssignIfEmpty(KeyCode.UpArrow);
             }
 
             if (kCycleBlueprintLeftToken != null && kCycleBlueprintLeftToken.Type == JTokenType.String) {
-                BlueprintsAssets.BLUEPRINTS_KEYBIND_USE_CYCLEBLUEPRINT_LEFT = new KeyBinding(kCycleBlueprintLeftToken.Value<string>());
+                BlueprintsAssets.BLUEPRINTS_KEYBIND_USE_CYCLEBLUEPRINT_LEFT = new KeyBinding(KeyBindingType.Press, kCycleBlueprintLeftToken.Value<string>());
                 BlueprintsAssets.BLUEPRINTS_KEYBIND_USE_CYCLEBLUEPRINT_LEFT.AssignIfEmpty(KeyCode.LeftArrow);
             }
 
             if (kCycleBlueprintRightToken != null && kCycleBlueprintRightToken.Type == JTokenType.String) {
-                BlueprintsAssets.BLUEPRINTS_KEYBIND_USE_CYCLEBLUEPRINT_RIGHT = new KeyBinding(kCycleBlueprintRightToken.Value<string>());
+                BlueprintsAssets.BLUEPRINTS_KEYBIND_USE_CYCLEBLUEPRINT_RIGHT = new KeyBinding(KeyBindingType.Press, kCycleBlueprintRightToken.Value<string>());
                 BlueprintsAssets.BLUEPRINTS_KEYBIND_USE_CYCLEBLUEPRINT_RIGHT.AssignIfEmpty(KeyCode.RightArrow);
             }
 
             if (kFolderToken != null && kFolderToken.Type == JTokenType.String) {
-                BlueprintsAssets.BLUEPRINTS_KEYBIND_USE_FOLDER = new KeyBinding(kFolderToken.Value<string>());
+                BlueprintsAssets.BLUEPRINTS_KEYBIND_USE_FOLDER = new KeyBinding(KeyBindingType.Press, kFolderToken.Value<string>());
                 BlueprintsAssets.BLUEPRINTS_KEYBIND_USE_FOLDER.AssignIfEmpty(KeyCode.Home);
             }
 
             if (kRenameToken != null && kRenameToken.Type == JTokenType.String) {
-                BlueprintsAssets.BLUEPRINTS_KEYBIND_USE_RENAME = new KeyBinding(kRenameToken.Value<string>());
+                BlueprintsAssets.BLUEPRINTS_KEYBIND_USE_RENAME = new KeyBinding(KeyBindingType.Press, kRenameToken.Value<string>());
                 BlueprintsAssets.BLUEPRINTS_KEYBIND_USE_RENAME.AssignIfEmpty(KeyCode.End);
             }
 
             if (kDeleteToken != null && kDeleteToken.Type == JTokenType.String) {
-                BlueprintsAssets.BLUEPRINTS_KEYBIND_USE_DELETE = new KeyBinding(kDeleteToken.Value<string>());
+                BlueprintsAssets.BLUEPRINTS_KEYBIND_USE_DELETE = new KeyBinding(KeyBindingType.Press, kDeleteToken.Value<string>());
                 BlueprintsAssets.BLUEPRINTS_KEYBIND_USE_DELETE.AssignIfEmpty(KeyCode.Delete);
             }
 
             if (kSnapshotToolToken != null && kSnapshotToolToken.Type == JTokenType.String) {
-                BlueprintsAssets.BLUEPRINTS_KEYBIND_SNAPSHOT = new KeyBinding(kSnapshotToolToken.Value<string>());
+                BlueprintsAssets.BLUEPRINTS_KEYBIND_SNAPSHOT = new KeyBinding(KeyBindingType.Press, kSnapshotToolToken.Value<string>());
                 BlueprintsAssets.BLUEPRINTS_KEYBIND_SNAPSHOT.AssignIfEmpty(KeyCode.None);
             }
 
             if (kSnapshotNewSnapshotToken != null && kSnapshotNewSnapshotToken.Type == JTokenType.String) {
-                BlueprintsAssets.BLUEPRINTS_KEYBIND_SNAPSHOT_NEWSNAPSHOT = new KeyBinding(kSnapshotNewSnapshotToken.Value<string>());
+                BlueprintsAssets.BLUEPRINTS_KEYBIND_SNAPSHOT_NEWSNAPSHOT = new KeyBinding(KeyBindingType.Press, kSnapshotNewSnapshotToken.Value<string>());
                 BlueprintsAssets.BLUEPRINTS_KEYBIND_SNAPSHOT_NEWSNAPSHOT.AssignIfEmpty(KeyCode.Delete);
             }
 

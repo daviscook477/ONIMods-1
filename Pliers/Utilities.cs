@@ -84,7 +84,7 @@ namespace Pliers {
             JToken kWireToolToken = rootObject.SelectToken("keybind_wirecutter");
 
             if (kWireToolToken != null && kWireToolToken.Type == JTokenType.String) {
-                PliersAssets.PLIERS_KEYBIND_TOOL = new KeyBinding(kWireToolToken.Value<string>());
+                PliersAssets.PLIERS_KEYBIND_TOOL = new KeyBinding(KeyBindingType.Press, kWireToolToken.Value<string>());
                 PliersAssets.PLIERS_KEYBIND_TOOL.AssignIfEmpty(KeyCode.None);
             }
         }

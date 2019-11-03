@@ -20,7 +20,7 @@ namespace Pliers {
 
         public static Color PLIERS_COLOR_DRAG = new Color32(255, 140, 105, 255);
 
-        public static KeyBinding PLIERS_KEYBIND_TOOL = new KeyBinding(KeyCode.None);
+        public static KeyBinding PLIERS_KEYBIND_TOOL = new KeyBinding(KeyBindingType.Press, KeyCode.None);
 
         public static string PLIERS_PATH_CONFIGFOLDER;
         public static string PLIERS_PATH_CONFIGFILE;

@@ -76,18 +76,18 @@ namespace Blueprints {
         public static Color BLUEPRINTS_COLOR_NOTECH = new Color32(30, 144, 255, 255);
         public static Color BLUEPRINTS_COLOR_BLUEPRINT_DRAG = new Color32(0, 119, 145, 255);
 
-        public static KeyBinding BLUEPRINTS_KEYBIND_CREATE = new KeyBinding(KeyCode.None);
-        public static KeyBinding BLUEPRINTS_KEYBIND_USE = new KeyBinding(KeyCode.None);
-        public static KeyBinding BLUEPRINTS_KEYBIND_USE_RELOAD = new KeyBinding(KeyCode.LeftShift);
-        public static KeyBinding BLUEPRINTS_KEYBIND_USE_CYCLEFOLDER_UP = new KeyBinding(KeyCode.UpArrow);
-        public static KeyBinding BLUEPRINTS_KEYBIND_USE_CYCLEFOLDER_DOWN = new KeyBinding(KeyCode.DownArrow);
-        public static KeyBinding BLUEPRINTS_KEYBIND_USE_CYCLEBLUEPRINT_LEFT = new KeyBinding(KeyCode.LeftArrow);
-        public static KeyBinding BLUEPRINTS_KEYBIND_USE_CYCLEBLUEPRINT_RIGHT = new KeyBinding(KeyCode.RightArrow);
-        public static KeyBinding BLUEPRINTS_KEYBIND_USE_FOLDER = new KeyBinding(KeyCode.Home);
-        public static KeyBinding BLUEPRINTS_KEYBIND_USE_RENAME = new KeyBinding(KeyCode.End);
-        public static KeyBinding BLUEPRINTS_KEYBIND_USE_DELETE = new KeyBinding(KeyCode.Delete);
-        public static KeyBinding BLUEPRINTS_KEYBIND_SNAPSHOT = new KeyBinding(KeyCode.None);
-        public static KeyBinding BLUEPRINTS_KEYBIND_SNAPSHOT_NEWSNAPSHOT = new KeyBinding(KeyCode.Delete);
+        public static KeyBinding BLUEPRINTS_KEYBIND_CREATE = new KeyBinding(KeyBindingType.Press, KeyCode.None);
+        public static KeyBinding BLUEPRINTS_KEYBIND_USE = new KeyBinding(KeyBindingType.Press, KeyCode.None);
+        public static KeyBinding BLUEPRINTS_KEYBIND_USE_RELOAD = new KeyBinding(KeyBindingType.Press, KeyCode.LeftShift);
+        public static KeyBinding BLUEPRINTS_KEYBIND_USE_CYCLEFOLDER_UP = new KeyBinding(KeyBindingType.Press, KeyCode.UpArrow);
+        public static KeyBinding BLUEPRINTS_KEYBIND_USE_CYCLEFOLDER_DOWN = new KeyBinding(KeyBindingType.Press, KeyCode.DownArrow);
+        public static KeyBinding BLUEPRINTS_KEYBIND_USE_CYCLEBLUEPRINT_LEFT = new KeyBinding(KeyBindingType.Press, KeyCode.LeftArrow);
+        public static KeyBinding BLUEPRINTS_KEYBIND_USE_CYCLEBLUEPRINT_RIGHT = new KeyBinding(KeyBindingType.Press, KeyCode.RightArrow);
+        public static KeyBinding BLUEPRINTS_KEYBIND_USE_FOLDER = new KeyBinding(KeyBindingType.Press, KeyCode.Home);
+        public static KeyBinding BLUEPRINTS_KEYBIND_USE_RENAME = new KeyBinding(KeyBindingType.Press, KeyCode.End);
+        public static KeyBinding BLUEPRINTS_KEYBIND_USE_DELETE = new KeyBinding(KeyBindingType.Press, KeyCode.Delete);
+        public static KeyBinding BLUEPRINTS_KEYBIND_SNAPSHOT = new KeyBinding(KeyBindingType.Press, KeyCode.None);
+        public static KeyBinding BLUEPRINTS_KEYBIND_SNAPSHOT_NEWSNAPSHOT = new KeyBinding(KeyBindingType.Press, KeyCode.Delete);
 
         public static HashSet<char> BLUEPRINTS_FILE_DISALLOWEDCHARACTERS;
 
