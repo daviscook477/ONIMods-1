@@ -100,10 +100,6 @@ namespace Blueprints {
             }
         }
 
-        public static string GetKeyCodeString(KeyCode keyCode) {
-            return UI.FormatAsHotkey("[" + keyCode.ToString().ToUpper() + "]");
-        }
-
         public static bool IsBuildable(this BuildingDef buildingDef) {
             if (!BlueprintsAssets.BLUEPRINTS_CONFIG_REQUIRECONSTRUCTABLE) {
                 return true;

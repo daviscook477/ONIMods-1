@@ -19,10 +19,6 @@ namespace Pliers {
             return Sprite.Create(texture, new Rect(0, 0, width, height), new Vector2(0.5F, 0.5F));
         }
 
-        public static string GetKeyCodeString(KeyCode keyCode) {
-            return UI.FormatAsHotkey("[" + keyCode.ToString().ToUpper() + "]");
-        }
-
         public static CellOffset ConnectionsToOffset(UtilityConnections utilityConnections) {
             return utilityConnections switch {
                 UtilityConnections.Left => new CellOffset(-1, 0),
