@@ -3,14 +3,22 @@ using System.Collections.Generic;
 using UnityEngine;
 
 namespace ModKeyBinding {
+    public enum KeyBindingType {
+        Press,
+        Hold,
+        Release
+    };
+
     public sealed class KeyBinding {
+        public KeyBindingType Type { get; set; }
         private readonly List<KeyCode> keyCodes = new List<KeyCode>();
         private string textRepresentation;
 
-        public KeyBinding(string text) {
-            string[] keyBindings = text.Split('+');
+        public KeyBinding(KeyBindingType type, string text) {
+            Type = type;
             textRepresentation = "";
 
+            string[] keyBindings = text.Split('+');
             foreach (string keyBinding in keyBindings) {
                 if (TryParseEnum<KeyCode>(keyBinding, out KeyCode keyCode)) {
                     if (keyCode != KeyCode.None) {
@@ -29,7 +37,8 @@ namespace ModKeyBinding {
             }
         }
 
-        public KeyBinding(params KeyCode[] keyCodes) {
+        public KeyBinding(KeyBindingType type, params KeyCode[] keyCodes) {
+            Type = type;
             textRepresentation = "";
 
             foreach (KeyCode keyCode in keyCodes) {
@@ -49,7 +58,7 @@ namespace ModKeyBinding {
             }
         }
 
-        internal static bool TryParseEnum<T>(string input, out T output) {
+        private static bool TryParseEnum<T>(string input, out T output) {
             string inputLower = input.ToLower();
             foreach (T enumeration in System.Enum.GetValues(typeof(T))) {
                 if (enumeration.ToString().ToLower() == inputLower) {
@@ -62,7 +71,6 @@ namespace ModKeyBinding {
             return false;
         }
 
-
         public void AssignIfEmpty(KeyCode keyCode) {
             if (keyCodes.Count == 0) {
                 keyCodes.Add(keyCode);
@@ -71,6 +79,32 @@ namespace ModKeyBinding {
         }
 
         public bool IsActive() {
+            foreach(KeyCode keyCode in keyCodes) {
+                switch(Type) {
+                    case KeyBindingType.Press:
+                        if(!Input.GetKeyDown(keyCode)) {
+                            return false;
+                        }
+
+                        break;
+
+                    case KeyBindingType.Hold:
+                        if (!Input.GetKey(keyCode)) {
+                            return false;
+                        }
+
+                        break;
+
+                    default:
+                        if (!Input.GetKeyUp(keyCode)) {
+                            return false;
+                        }
+
+                        break;
+
+                }
+            }
+
             return keyCodes.Count > 0 && keyCodes.TrueForAll(x => Input.GetKey(x));
 
         }
