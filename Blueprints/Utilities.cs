@@ -100,19 +100,6 @@ namespace Blueprints {
             }
         }
 
-        public static bool TryParseEnum<T>(string input, out T output) {
-            string inputLower = input.ToLower();
-            foreach (T enumeration in System.Enum.GetValues(typeof(T))) {
-                if (enumeration.ToString().ToLower() == inputLower) {
-                    output = enumeration;
-                    return true;
-                }
-            }
-
-            output = default;
-            return false;
-        }
-
         public static string GetKeyCodeString(KeyCode keyCode) {
             return UI.FormatAsHotkey("[" + keyCode.ToString().ToUpper() + "]");
         }

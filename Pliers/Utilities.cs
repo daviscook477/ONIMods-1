@@ -19,19 +19,6 @@ namespace Pliers {
             return Sprite.Create(texture, new Rect(0, 0, width, height), new Vector2(0.5F, 0.5F));
         }
 
-        public static bool TryParseEnum<T>(string input, out T output) {
-            string inputLower = input.ToLower();
-            foreach (T enumeration in Enum.GetValues(typeof(T))) {
-                if (enumeration.ToString().ToLower() == inputLower) {
-                    output = enumeration;
-                    return true;
-                }
-            }
-
-            output = default;
-            return false;
-        }
-
         public static string GetKeyCodeString(KeyCode keyCode) {
             return UI.FormatAsHotkey("[" + keyCode.ToString().ToUpper() + "]");
         }
