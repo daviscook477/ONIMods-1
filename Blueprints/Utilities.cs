@@ -63,12 +63,6 @@ namespace Blueprints {
 
                     if (valid) {
                         PlaceIntoFolder(blueprint);
-                        blueprint.InferFileLocation();
-
-                        if (blueprint.FilePath != file) {
-                            File.Delete(file);
-                            blueprint.Write();
-                        }
                     }
                 }
             }
