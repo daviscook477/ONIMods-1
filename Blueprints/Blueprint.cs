@@ -162,7 +162,7 @@ namespace Blueprints {
                 }
 
                 catch (System.Exception exception) {
-                    Debug.LogError("Error when loading blueprint: " + FilePath + ",\n" + nameof(exception) + ": " + exception.Message);
+                    Debug.Log("Error when loading blueprint: " + FilePath + ",\n" + nameof(exception) + ": " + exception.Message);
                 }
             }
 
@@ -222,7 +222,7 @@ namespace Blueprints {
                 }
 
                 catch (System.Exception exception) {
-                    Debug.LogError("Error when loading blueprint: " + FilePath + ",\n" + nameof(exception) + ":" + exception.Message);
+                    Debug.Log("Error when loading blueprint: " + FilePath + ",\n" + nameof(exception) + ":" + exception.Message);
                 }
             }
         }
