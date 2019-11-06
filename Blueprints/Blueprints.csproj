@@ -113,13 +113,13 @@
       <Project>{e0edc434-6d56-40a8-a603-83f0e9d7c60c}</Project>
       <Name>DisplayVersion</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Lib\ModKeyBinding\ModKeyBinding.csproj">
+      <Project>{bc893326-bbfb-4905-b4c8-0fcaf589a038}</Project>
+      <Name>ModKeyBinding</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Lib\ModLocalization\ModLocalization.csproj">
       <Project>{9f4b0a89-b215-4e2d-9680-6576acbdce5c}</Project>
       <Name>ModLocalization</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\ModKeyBinding\ModKeyBinding.csproj">
-      <Project>{bc893326-bbfb-4905-b4c8-0fcaf589a038}</Project>
-      <Name>ModKeyBinding</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
