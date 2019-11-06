@@ -330,6 +330,11 @@ namespace Blueprints {
         public int Flags { get; set; } = 0;
 
         public void WriteBinary(BinaryWriter binaryWriter) {
+            if (BuildingDef == null) {
+                Debug.Log("Error when writing building config: No building definition.");
+                return;
+            }
+
             binaryWriter.Write(Offset.X);
             binaryWriter.Write(Offset.y);
             binaryWriter.Write(BuildingDef.PrefabID);
@@ -340,6 +345,11 @@ namespace Blueprints {
         }
 
         public void WriteJSON(JsonWriter jsonWriter) {
+            if (BuildingDef == null) {
+                Debug.Log("Error when writing building config: No building definition.");
+                return;
+            }
+
             jsonWriter.WriteStartObject();
 
             if (Offset.x != 0 || Offset.y != 0) {
