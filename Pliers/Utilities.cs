@@ -1,7 +1,6 @@
 ﻿using ModKeyBinding;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using STRINGS;
 using System;
 using System.IO;
 using UnityEngine;
@@ -80,7 +79,7 @@ namespace Pliers {
             using StreamReader reader = File.OpenText(PliersAssets.PLIERS_PATH_CONFIGFILE);
             using JsonTextReader jsonReader = new JsonTextReader(reader);
 
-            JObject rootObject = (JObject)JToken.ReadFrom(jsonReader).Root;
+            JObject rootObject = (JObject) JToken.ReadFrom(jsonReader).Root;
             JToken kWireToolToken = rootObject.SelectToken("keybind_wirecutter");
 
             if (kWireToolToken != null && kWireToolToken.Type == JTokenType.String) {
