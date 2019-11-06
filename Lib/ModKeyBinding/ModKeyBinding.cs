@@ -79,34 +79,39 @@ namespace ModKeyBinding {
         }
 
         public bool IsActive() {
-            foreach(KeyCode keyCode in keyCodes) {
-                switch(Type) {
-                    case KeyBindingType.Press:
-                        if(!Input.GetKeyDown(keyCode)) {
+            if (keyCodes.Count == 0) {
+                return false;
+            }
+
+            foreach (KeyCode keyCode in keyCodes) {
+                switch (Type) {
+                    case KeyBindingType.Press: {
+                        if (!Input.GetKeyDown(keyCode)) {
                             return false;
                         }
 
                         break;
-
-                    case KeyBindingType.Hold:
+                    }
+                        
+                    case KeyBindingType.Hold: {
                         if (!Input.GetKey(keyCode)) {
                             return false;
                         }
 
                         break;
+                    }
 
-                    default:
+                    default: {
                         if (!Input.GetKeyUp(keyCode)) {
                             return false;
                         }
 
                         break;
-
+                    }
                 }
             }
 
-            return keyCodes.Count > 0 && keyCodes.TrueForAll(x => Input.GetKey(x));
-
+            return true;
         }
 
         public string GetStringFormatted() {
