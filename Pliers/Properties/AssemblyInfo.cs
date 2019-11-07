@@ -6,6 +6,6 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyProduct("Pliers")]
 [assembly: AssemblyCopyright("Copyright Mayall 2019")]
 [assembly: ComVisible(false)]
-[assembly: AssemblyVersion("1.1.50.0")]
+[assembly: AssemblyVersion("1.1.51.0")]
 [assembly: NeutralResourcesLanguage("en")]
 
