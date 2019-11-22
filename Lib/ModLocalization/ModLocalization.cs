@@ -22,8 +22,8 @@ namespace ModFramework {
             }
         }
 
+        public static string DefaultLocalizationCode { get; set; } = "en";
         public static string[] DefaultLocalization { get; set; }
-        private static readonly Dictionary<string, HashSet<string>> loadedStrings = new Dictionary<string, HashSet<string>>();
 
         public static bool LoadLocalization(string languageCode) {
             if (languageCode.IsNullOrWhiteSpace()) {
@@ -35,11 +35,21 @@ namespace ModFramework {
                 return false;
             }
 
-            string languageFile = Path.Combine(LocalizationFolder, languageCode);
-            if (!File.Exists(languageFile)) {
+            string[] languageFiles = Directory.GetFiles(LocalizationFolder, "*" + languageCode + "*", SearchOption.TopDirectoryOnly);
+            if(languageFiles.Length == 0) {
                 return false;
             }
 
+            string languageFile = languageFiles[0];
+            for (int i = 0; i < languageFiles.Length; ++i) {
+                string languageFile0 = languageFiles[0];
+
+                if (languageFile0 == languageCode) {
+                    languageFile = languageFile0;
+                    break;
+                }
+            }
+            
             try {
                 using (StreamReader reader = File.OpenText(languageFile))
                 using (JsonTextReader jsonReader = new JsonTextReader(reader)) {
@@ -48,12 +58,7 @@ namespace ModFramework {
                     foreach (JProperty property in rootObject.Properties()) {
                         JToken value = property.Value;
 
-                        if (value != null && value.Type == JTokenType.String) {
-                            if (!loadedStrings.ContainsKey(languageCode)) {
-                                loadedStrings.Add(languageCode, new HashSet<string>());
-                            }
-
-                            loadedStrings[languageCode].Add(property.Name);
+                        if (value != null && value.Type == JTokenType.String) { 
                             Strings.Add(property.Name, value.Value<string>());
                         }
                     }
@@ -67,10 +72,6 @@ namespace ModFramework {
             }
 
             return false;
-        }
-
-        public static bool HasKey(string key) {
-            return loadedStrings.ContainsKey(key);
         }
 
         public static void TryWriteTemplate() {
@@ -111,11 +112,11 @@ namespace ModFramework {
                             Strings.Add(DefaultLocalization[i], DefaultLocalization[i + 1]);
                         }
 
-                        LocalizationCompleteEvent?.Invoke("DEFAULT");
+                        LocalizationCompleteEvent?.Invoke(DefaultLocalizationCode);
                     }
 
                     else {
-                        LocalizationCompleteEvent?.Invoke("NONE");
+                        LocalizationCompleteEvent?.Invoke(null);
                     }
                 }
 
