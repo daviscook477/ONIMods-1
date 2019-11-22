@@ -63,7 +63,7 @@ namespace ModFramework {
             }
 
             catch (Exception exception) {
-                Debug.LogError("Error when reading localization: " + languageFile + ",\n" + nameof(exception) + ":" + exception.Message);
+                Debug.Log("Error when reading localization: " + languageFile + ",\n" + nameof(exception) + ": " + exception.Message);
             }
 
             return false;
