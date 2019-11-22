@@ -50,7 +50,7 @@ namespace Blueprints {
 
                 else if (BlueprintsAssets.BLUEPRINTS_KEYBIND_USE_DELETE.IsActive()) {
                     BlueprintsState.SelectedBlueprint.DeleteFile();
-                    BlueprintsState.SelectedFolder.RemoveBlueprint(BlueprintsState.SelectedBlueprint);
+                    BlueprintsState.SelectedFolder.DeleteBlueprint(BlueprintsState.SelectedBlueprint);
                     
                     if(!BlueprintsState.HasBlueprints()) {
                         GridCompositor.Instance.ToggleMajor(false);

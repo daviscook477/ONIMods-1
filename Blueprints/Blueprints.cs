@@ -8,11 +8,6 @@ using System.IO;
 using UnityEngine;
 
 namespace Blueprints {
-    /// <summary>
-    /// Contains the internal names for each of the strings used by the mod.
-    /// 
-    /// <para>Class is self documenting.</para>
-    /// </summary>
     public static class BlueprintsStrings {
         public const string STRING_BLUEPRINTS_CREATE_NAME = "BLUEPRINTS.CREATE.NAME";
         public const string STRING_BLUEPRINTS_CREATE_TOOLTIP = "BLUEPRINTS.CREATE.TOOLTIP";
@@ -57,11 +52,6 @@ namespace Blueprints {
         public const string STRING_BLUEPRINTS_FOLDERBLUEPRINT_TITLE = "BLUEPRINTS.FOLDERBLUEPRINT.TITLE";
     }
 
-    /// <summary>
-    /// Contains assets used by the mod.
-    /// 
-    /// <para>Class is mostly self documenting.</para>
-    /// </summary>
     public static class BlueprintsAssets {
         public static string BLUEPRINTS_CREATE_TOOLNAME = "CreateBlueprintTool";
         public static string BLUEPRINTS_CREATE_ICON_NAME = "BLUEPRINTS.TOOL.CREATE_BLUEPRINT.ICON";
@@ -108,11 +98,8 @@ namespace Blueprints {
 
         public static bool BLUEPRINTS_CONFIG_REQUIRECONSTRUCTABLE = true;
         public static bool BLUEPRINTS_CONFIG_COMPRESBLUEPRINTS = true;
-        public static float BLUEPRINTS_CONFIG_FXTIME = 0.75F; //Time in seconds.
+        public static float BLUEPRINTS_CONFIG_FXTIME = 0.75F;
 
-        /// <summary>
-        /// Sets up the disallowed file and path characters using information from the operating system.
-        /// </summary>
         static BlueprintsAssets() {
             BLUEPRINTS_FILE_DISALLOWEDCHARACTERS = new HashSet<char>();
             BLUEPRINTS_FILE_DISALLOWEDCHARACTERS.UnionWith(Path.GetInvalidFileNameChars());
@@ -128,16 +115,8 @@ namespace Blueprints {
         }
     }
 
-    /// <summary>
-    /// The global state of the mod.
-    /// </summary>
     public static class BlueprintsState {
-        //Backing variable for "SelectedBlueprintFolderIndex" below.
         private static int selectedBlueprintFolderIndex;
-
-        /// <summary>
-        /// The zero-based index of the selected blueprint folder in the folder list.
-        /// </summary>
         public static int SelectedBlueprintFolderIndex {
             get {
                 return selectedBlueprintFolderIndex;
@@ -148,49 +127,23 @@ namespace Blueprints {
             }
         }
 
-        /// <summary>
-        /// The loaded blueprint folders.
-        /// </summary>
         public static List<BlueprintFolder> LoadedBlueprints { get; } = new List<BlueprintFolder>();
-
-        /// <summary>
-        /// The selected blueprint folder.
-        /// </summary>
         public static BlueprintFolder SelectedFolder => LoadedBlueprints[SelectedBlueprintFolderIndex];
-
-        /// <summary>
-        /// The selected blueprint.
-        /// </summary>
         public static Blueprint SelectedBlueprint => SelectedFolder.SelectedBlueprint;
 
-        /// <summary>
-        /// Whether the player has enabled instant build via either debug or sandbox mode.
-        /// </summary>
         public static bool InstantBuild => DebugHandler.InstantBuildMode || Game.Instance.SandboxModeActive && SandboxToolParameterMenu.instance.settings.InstantBuild;
 
-        //Current visualized blueprint. Dependant and foundation visuals must be separated because foundations must be updated before dependant visuals to maintain accuracy.
         private static readonly List<IVisual> foundationVisuals = new List<IVisual>();
         private static readonly List<IVisual> dependantVisuals = new List<IVisual>();
-
-        //Any visuals that require cleaning when they are moved around the scene. Contains duplicates from "foundationVisuals" and "dependantVisuals".
         private static readonly List<ICleanableVisual> cleanableVisuals = new List<ICleanableVisual>();
 
-        /// <summary>
-        /// Keeps track of all of the colored cells in the game. Also stores all relevant information for undoing the coloring.
-        /// </summary>
         public static readonly Dictionary<int, CellColorPayload> ColoredCells = new Dictionary<int, CellColorPayload>();
 
-        /// <summary>
-        /// Returns whether the user has loaded any blueprints.
-        /// </summary>
-        /// <returns>True if there are any loaded blueprints, false otherwise</returns>
         public static bool HasBlueprints() {
-            //Return false if there are no folders.
             if (LoadedBlueprints.Count == 0) {
                 return false;
             }
 
-            //Check if there are any non-empty blueprint folders.
             foreach (BlueprintFolder blueprintFolder in LoadedBlueprints) {
                 if (blueprintFolder.BlueprintCount > 0) {
                     return true;
@@ -200,13 +153,6 @@ namespace Blueprints {
             return false;
         }
 
-        /// <summary>
-        /// Creates a blueprint by sampling an area.
-        /// </summary>
-        /// <param name="topLeft">The top left corner of the area to sample in grid coordinates</param>
-        /// <param name="bottomRight">The bottom right of thr area to sample in grid coordinates</param>
-        /// <param name="originTool">The tool used to do the sampling, null if no tool</param>
-        /// <returns>The blueprint created by sampling the area</returns>
         public static Blueprint CreateBlueprint(Vector2I topLeft, Vector2I bottomRight, FilteredDragTool originTool = null) {
             Blueprint blueprint = new Blueprint("unnamed", "");
             int blueprintHeight = (topLeft.y - bottomRight.y);
@@ -215,61 +161,48 @@ namespace Blueprints {
                 for (int y = bottomRight.y; y <= topLeft.y; ++y) {
                     int cell = Grid.XYToCell(x, y);
 
-                    //Only sample cells the player can actually see.
                     if (Grid.IsVisible(cell)) {
                         bool emptyCell = true;
 
-                        //Iterate through each of the layers contained within this cell.
                         for (int layer = 0; layer < Grid.ObjectLayers.Length; ++layer) {
-                            GameObject gameObject = Grid.Objects[cell, layer];            
-                            
-                            if (gameObject != null) {
-                                //Whether or not the selected tool is configured to sample this building.
-                                bool toolAllowed = originTool == null || originTool.IsActiveLayer(originTool.GetFilterLayerFromGameObject(gameObject));
-
-                                Building building;
-
-                                //Proceed only if the object is a building, it is buildable and if the tool is configured to sample it.
-                                if ((building = gameObject.GetComponent<Building>()) != null && building.Def.IsBuildable() && toolAllowed) {
-                                    PrimaryElement primaryElement;
-
-                                    if ((primaryElement = building.GetComponent<PrimaryElement>()) != null) {
-                                        Vector2I centre = Grid.CellToXY(GameUtil.NaturalBuildingCell(building));
-
-                                        BuildingConfig buildingConfig = new BuildingConfig {
-                                            Offset = new Vector2I(centre.x - topLeft.x, blueprintHeight - (topLeft.y - centre.y)),
-                                            BuildingDef = building.Def,
-                                            Orientation = building.Orientation
-                                        };
-
-                                        buildingConfig.SelectedElements.Add(primaryElement.ElementID.CreateTag());
-                                        if (building.Def.BuildingComplete.GetComponent<IHaveUtilityNetworkMgr>() != null) {
-                                            buildingConfig.Flags = (int) building.Def.BuildingComplete.GetComponent<IHaveUtilityNetworkMgr>().GetNetworkManager()?.GetConnections(cell, false);
-                                        }
-
-                                        if (!blueprint.BuildingConfiguration.Contains(buildingConfig)) {
-                                            blueprint.BuildingConfiguration.Add(buildingConfig);
-                                        }
-                                    }
-
-                                    emptyCell = false;
-                                }
+                            if (layer == 7) {
+                                continue;
                             }
 
-                            //Attempt to add dig commands to cells that contained no buildings when sampled.
-                            if (emptyCell) {
-                                //Whether or not the sampled object is a dig placer
-                                bool isDigPlacer = Grid.Objects[cell, 7] != null && Grid.Objects[cell, 7].name == "DigPlacer";
+                            GameObject gameObject = Grid.Objects[cell, layer];
+                            Building building;
 
-                                //Proceed only if the cell is empty (would need to be dug to replicate) or if the cell contains a queued dig command.
-                                if (!Grid.IsSolidCell(cell) || isDigPlacer) {
-                                    Vector2I digLocation = new Vector2I(x - topLeft.x, blueprintHeight - (topLeft.y - y));
+                            if (gameObject != null && (building = gameObject.GetComponent<Building>()) != null && building.Def.IsBuildable() && (originTool == null || originTool.IsActiveLayer(originTool.GetFilterLayerFromGameObject(gameObject)))) {
+                                PrimaryElement primaryElement;
 
-                                    //Do not add duplicate dig locations. Probably not actually necessary.
-                                    if (!blueprint.DigLocations.Contains(digLocation)) {
-                                        blueprint.DigLocations.Add(digLocation);
+                                if ((primaryElement = building.GetComponent<PrimaryElement>()) != null) {
+                                    Vector2I centre = Grid.CellToXY(GameUtil.NaturalBuildingCell(building));
+
+                                    BuildingConfig buildingConfig = new BuildingConfig {
+                                        Offset = new Vector2I(centre.x - topLeft.x, blueprintHeight - (topLeft.y - centre.y)),
+                                        BuildingDef = building.Def,
+                                        Orientation = building.Orientation
+                                    };
+
+                                    buildingConfig.SelectedElements.Add(primaryElement.ElementID.CreateTag());
+                                    if (building.Def.BuildingComplete.GetComponent<IHaveUtilityNetworkMgr>() != null) {
+                                        buildingConfig.Flags = (int) building.Def.BuildingComplete.GetComponent<IHaveUtilityNetworkMgr>().GetNetworkManager()?.GetConnections(cell, false);
+                                    }
+
+                                    if (!blueprint.BuildingConfiguration.Contains(buildingConfig)) {
+                                        blueprint.BuildingConfiguration.Add(buildingConfig);
                                     }
                                 }
+
+                                emptyCell = false;
+                            }
+                        }
+
+                        if (emptyCell && (!Grid.IsSolidCell(cell) || Grid.Objects[cell, 7] != null && Grid.Objects[cell, 7].name == "DigPlacer")) {
+                            Vector2I digLocation = new Vector2I(x - topLeft.x, blueprintHeight - (topLeft.y - y));
+
+                            if (!blueprint.DigLocations.Contains(digLocation)) {
+                                blueprint.DigLocations.Add(digLocation);
                             }
                         }
                     }
@@ -279,33 +212,24 @@ namespace Blueprints {
             return blueprint;
         }
 
-        /// <summary>
-        /// Visualize a blueprint for placement.
-        /// </summary>
-        /// <param name="bottomLeft">The bottom left coordinate of the area to place the blueprint visualizer</param>
-        /// <param name="blueprint">The blueprint to visualize</param>
-        public static void VisualizeBlueprint(Vector2I bottomLeft, Blueprint blueprint) {
+        public static void VisualizeBlueprint(Vector2I topLeft, Blueprint blueprint) {
             if (blueprint == null) {
                 return;
             }
 
             int errors = 0;
-
-            //Clear existing visualizers
             ClearVisuals();
- 
+
             foreach (BuildingConfig buildingConfig in blueprint.BuildingConfiguration) {
-                //Skip if there are any errors.
                 if (buildingConfig.BuildingDef == null || buildingConfig.SelectedElements.Count == 0) {
                     ++errors;
                     continue;
                 }
 
                 if (buildingConfig.BuildingDef.BuildingPreview != null) {
-                    int cell = Grid.XYToCell(bottomLeft.x + buildingConfig.Offset.x, bottomLeft.y + buildingConfig.Offset.y);
+                    int cell = Grid.XYToCell(topLeft.x + buildingConfig.Offset.x, topLeft.y + buildingConfig.Offset.y);
 
                     if (buildingConfig.BuildingDef.IsTilePiece) {
-                        //Utility interacting buildings (such as pipes, wires and c
                         if (buildingConfig.BuildingDef.BuildingComplete.GetComponent<IHaveUtilityNetworkMgr>() != null) {
                             AddVisual(new UtilityVisual(buildingConfig, cell), buildingConfig.BuildingDef);
                         }
@@ -322,7 +246,7 @@ namespace Blueprints {
             }
 
             foreach (Vector2I digLocation in blueprint.DigLocations) {
-                foundationVisuals.Add(new DigVisual(Grid.XYToCell(bottomLeft.x + digLocation.x, bottomLeft.y + digLocation.y), digLocation));
+                foundationVisuals.Add(new DigVisual(Grid.XYToCell(topLeft.x + digLocation.x, topLeft.y + digLocation.y), digLocation));
             }
 
             if (UseBlueprintTool.Instance.GetComponent<UseBlueprintToolHoverCard>() != null) {
@@ -395,6 +319,146 @@ namespace Blueprints {
             else if (BlueprintsAssets.BLUEPRINTS_KEYBIND_SNAPSHOT.IsActive() && currentlySelectedCollection != BlueprintsAssets.BLUEPRINTS_SNAPSHOT_TOOLCOLLECTION) {
                 Traverse.Create(ToolMenu.Instance).Method("ChooseCollection", BlueprintsAssets.BLUEPRINTS_SNAPSHOT_TOOLCOLLECTION, true).GetValue();
             }
+        }
+    }
+
+    public sealed class BuildingConfig : System.IEquatable<BuildingConfig> {
+        public Vector2I Offset { get; set; } = new Vector2I(0, 0);
+        public BuildingDef BuildingDef { get; set; }
+        public List<Tag> SelectedElements { get; } = new List<Tag>();
+        public Orientation Orientation { get; set; } = 0;
+        public int Flags { get; set; } = 0;
+
+        public void WriteBinary(BinaryWriter binaryWriter) {
+            if (BuildingDef == null) {
+                Debug.Log("Error when writing building config: No building definition.");
+                return;
+            }
+
+            binaryWriter.Write(Offset.X);
+            binaryWriter.Write(Offset.y);
+            binaryWriter.Write(BuildingDef.PrefabID);
+            binaryWriter.Write(SelectedElements.Count);
+            SelectedElements.ForEach(selectedElement => binaryWriter.Write(selectedElement.GetHash()));
+            binaryWriter.Write((int) Orientation);
+            binaryWriter.Write(Flags);
+        }
+
+        public void WriteJSON(JsonWriter jsonWriter) {
+            if (BuildingDef == null) {
+                Debug.Log("Error when writing building config: No building definition.");
+                return;
+            }
+
+            jsonWriter.WriteStartObject();
+
+            if (Offset.x != 0 || Offset.y != 0) {
+                jsonWriter.WritePropertyName("offset");
+                jsonWriter.WriteStartObject();
+
+                if (Offset.x != 0) {
+                    jsonWriter.WritePropertyName("x");
+                    jsonWriter.WriteValue(Offset.x);
+                }
+                
+                if (Offset.y != 0) {
+                    jsonWriter.WritePropertyName("y");
+                    jsonWriter.WriteValue(Offset.y);
+                }
+
+                jsonWriter.WriteEndObject();
+            }
+            
+            jsonWriter.WritePropertyName("buildingdef");
+            jsonWriter.WriteValue(BuildingDef.PrefabID);
+
+            jsonWriter.WritePropertyName("selected_elements");
+            jsonWriter.WriteStartArray();
+            SelectedElements.ForEach(elementTag => jsonWriter.WriteValue(elementTag.GetHash()));
+            jsonWriter.WriteEndArray();
+
+            if (Orientation != 0) {
+                jsonWriter.WritePropertyName("orientation");
+                jsonWriter.WriteValue((int) Orientation);
+            }
+            
+            if (Flags != 0) {
+                jsonWriter.WritePropertyName("flags");
+                jsonWriter.WriteValue(Flags);
+            }
+            
+            jsonWriter.WriteEndObject();
+        }
+
+        public bool ReadBinary(BinaryReader binaryReader) {
+            try {
+                Offset = new Vector2I(binaryReader.ReadInt32(), binaryReader.ReadInt32());
+                BuildingDef = Assets.GetBuildingDef(binaryReader.ReadString());
+
+                int selectedElementCount = binaryReader.ReadInt32();
+                for (int i = 0; i < selectedElementCount; ++i) {
+                    Tag elementTag;
+
+                    if (ElementLoader.GetElement(elementTag = new Tag(binaryReader.ReadInt32())) != null) {
+                        SelectedElements.Add(elementTag);
+                    }
+                }
+
+                Orientation = (Orientation) binaryReader.ReadInt32();
+                Flags = binaryReader.ReadInt32();
+                return true;
+            }
+
+            catch (System.Exception) {
+                return false;
+            }
+        }
+
+        public void ReadJSON(JObject rootObject) {
+            JToken offsetToken = rootObject.SelectToken("offset");
+            JToken buildingDefToken = rootObject.SelectToken("buildingdef");
+            JToken selectedElementsToken = rootObject.SelectToken("selected_elements");
+            JToken orientationToken = rootObject.SelectToken("orientation");
+            JToken flagsToken = rootObject.SelectToken("flags");
+
+            if (offsetToken != null && offsetToken.Type == JTokenType.Object) {
+                JToken xToken = offsetToken.SelectToken("x");
+                JToken yToken = offsetToken.SelectToken("y");
+
+                if (xToken != null && xToken.Type == JTokenType.Integer || yToken != null && yToken.Type == JTokenType.Integer) {
+                    Offset = new Vector2I(xToken == null ? 0 : xToken.Value<int>(), yToken == null ? 0 : yToken.Value<int>());
+                }
+            }
+
+            if (buildingDefToken != null && buildingDefToken.Type == JTokenType.String) {
+                BuildingDef = Assets.GetBuildingDef(buildingDefToken.Value<string>());
+            }
+
+            if (selectedElementsToken != null && selectedElementsToken.Type == JTokenType.Array) {
+                JArray selectedElementTokens = selectedElementsToken.Value<JArray>();
+
+                if (selectedElementTokens != null) {
+                    foreach (JToken selectedElement in selectedElementTokens) {
+                        Tag elementTag;
+
+                        if (selectedElement.Type == JTokenType.Integer && ElementLoader.GetElement(elementTag = new Tag(selectedElement.Value<int>())) != null) {
+                            SelectedElements.Add(elementTag);
+                        }
+                    }
+                }
+            }
+
+            if (orientationToken != null && orientationToken.Type == JTokenType.Integer) {
+                Orientation = (Orientation) orientationToken.Value<int>();
+            }
+
+            if (flagsToken != null && flagsToken.Type == JTokenType.Integer) {
+                Flags = flagsToken.Value<int>();
+            }
+        }
+
+        public bool Equals(BuildingConfig otherBuildingConfig) {
+            return Offset == otherBuildingConfig.Offset && BuildingDef == otherBuildingConfig.BuildingDef;
         }
     }
 
