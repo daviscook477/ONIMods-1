@@ -95,6 +95,10 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Lib\DisplayVersion\DisplayVersion.csproj">
+      <Project>{e0edc434-6d56-40a8-a603-83f0e9d7c60c}</Project>
+      <Name>DisplayVersion</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Lib\ModLocalization\ModLocalization.csproj">
       <Project>{9f4b0a89-b215-4e2d-9680-6576acbdce5c}</Project>
       <Name>ModLocalization</Name>
