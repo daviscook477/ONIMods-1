@@ -1,5 +1,6 @@
 ﻿using Harmony;
 using ModFramework;
+using PeterHan.PLib;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
@@ -8,6 +9,8 @@ using UnityEngine;
 namespace Pliers {
     public static class Mod_OnLoad {
         public static void OnLoad() {
+            PUtil.InitLibrary(false);
+
             Assembly currentAssembly = Assembly.GetExecutingAssembly();
             string currentAssemblyDirectory = Path.GetDirectoryName(currentAssembly.Location);
 
@@ -15,16 +18,11 @@ namespace Pliers {
             PliersAssets.PLIERS_PATH_CONFIGFILE = Path.Combine(PliersAssets.PLIERS_PATH_CONFIGFOLDER, "config.json");
             PliersAssets.PLIERS_PATH_KEYCODESFILE = Path.Combine(PliersAssets.PLIERS_PATH_CONFIGFOLDER, "keycodes.txt");
 
-            if (File.Exists(PliersAssets.PLIERS_PATH_CONFIGFILE)) {
-                IOUtilities.ReadConfig();
-            }
-
-            IOUtilities.CreateKeycodeHintFile();
-            IOUtilities.WriteConfig();
-
             PliersAssets.PLIERS_ICON_SPRITE = Utilities.CreateSpriteDXT5(Assembly.GetExecutingAssembly().GetManifestResourceStream("Pliers.image_wirecutter_button.dds"), 32, 32);
             PliersAssets.PLIERS_ICON_SPRITE.name = PliersAssets.PLIERS_ICON_NAME;
             PliersAssets.PLIERS_VISUALIZER_SPRITE = Utilities.CreateSpriteDXT5(Assembly.GetExecutingAssembly().GetManifestResourceStream("Pliers.image_wirecutter_visualizer.dds"), 256, 256);
+
+            PliersAssets.PLIERS_OPENTOOL = PAction.Register("Pliers.opentool", "Pliers", new PKeyBinding(KKeyCode.None, Modifier.None));
 
             ModLocalization.LocalizationCompleteEvent += ModLocalizedHandler;
             ModLocalization.DefaultLocalization = new string[] {
@@ -40,11 +38,11 @@ namespace Pliers {
 
         private static void ModLocalizedHandler(string languageCode) {
             PliersAssets.PLIERS_TOOLCOLLECTION = ToolMenu.CreateToolCollection(
-                Strings.Get(PliersStrings.STRING_PLIERS_NAME).String,
+                (string) Strings.Get(PliersStrings.STRING_PLIERS_NAME),
                 PliersAssets.PLIERS_ICON_NAME,
-                Action.NumActions,
+                PliersAssets.PLIERS_OPENTOOL.GetKAction(),
                 PliersAssets.PLIERS_TOOLNAME,
-                string.Format(Strings.Get(PliersStrings.STRING_PLIERS_TOOLTIP).String, PliersAssets.PLIERS_KEYBIND_TOOL.GetStringFormatted()),
+                string.Format(Strings.Get(PliersStrings.STRING_PLIERS_TOOLTIP).String, "{Hotkey}"),
                 false
            );
         }
@@ -74,7 +72,6 @@ namespace Pliers {
         [HarmonyPatch(typeof(ToolMenu), "OnPrefabInit")]
         public static class ToolMenu_OnPrefabInit {
             public static void Postfix(ToolMenu __instance, List<Sprite> ___icons) {
-                __instance.gameObject.AddComponent<ToolMenuInputManager>();
                 ___icons.Add(PliersAssets.PLIERS_ICON_SPRITE);
             }
         }
