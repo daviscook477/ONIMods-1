@@ -3,32 +3,103 @@ using System.Collections.Generic;
 using UnityEngine;
 
 namespace ModKeyBinding {
+
+
     public enum KeyBindingType {
         Press,
         Hold,
         Release
     };
 
-    public sealed class KeyBinding {
+    public interface IBinding {
+        bool IsActive();
+    }
+
+    public sealed class MouseWheelBinding : IBinding {
+        public bool Up { get; set; }
+
+        public MouseWheelBinding(bool up) {
+            Up = up;
+        }
+
+        public bool IsActive() {
+            return Up ? Input.mouseScrollDelta.y > 0 : Input.mouseScrollDelta.y < 0;
+        }
+
+        public override string ToString() {
+            return Up ? "MOUSEWHEELUP" : "MOUSEWHEELDOWN";
+        }
+    }
+
+    public sealed class KeyBinding : IBinding {
+        public KeyCode KeyCode { get; set; }
         public KeyBindingType Type { get; set; }
-        private readonly List<KeyCode> keyCodes = new List<KeyCode>();
+
+        public KeyBinding(KeyCode keyCode, KeyBindingType type) {
+            KeyCode = keyCode;
+            Type = type;
+        }
+
+        public bool IsActive() {
+            switch (Type) {
+                case KeyBindingType.Press: {
+                    if (!Input.GetKeyDown(KeyCode)) {
+                        return false;
+                    }
+
+                    break;
+                }
+
+                case KeyBindingType.Hold: {
+                    if (!Input.GetKey(KeyCode)) {
+                        return false;
+                    }
+
+                    break;
+                }
+
+                default: {
+                    if (!Input.GetKeyUp(KeyCode)) {
+                        return false;
+                    }
+
+                    break;
+                }
+            }
+
+            return true;
+        }
+    }
+
+    public sealed class ModKeyBinding {
+        private readonly List<IBinding> bindings = new List<IBinding>();
         private string textRepresentation;
 
-        public KeyBinding(KeyBindingType type, string text) {
-            Type = type;
+        public ModKeyBinding(string text) {
             textRepresentation = "";
 
             string[] keyBindings = text.Split('+');
             foreach (string keyBinding in keyBindings) {
+                bool key = false;
+
                 if (TryParseEnum<KeyCode>(keyBinding, out KeyCode keyCode)) {
                     if (keyCode != KeyCode.None) {
-                        keyCodes.Add(keyCode);
+                        bindings.Add(new KeyBinding(keyCode, KeyBindingType.Press));
                         textRepresentation += keyCode + "+";
+                        key = true;
+                    }
+                }
+
+                if (!key) {
+                    string lKeyBinding = keyBinding.ToLower();
+
+                    if (lKeyBinding == "mousewheelup" || lKeyBinding == "mousewheeldown") {
+                        bindings.Add(new MouseWheelBinding(lKeyBinding == "mousewheelup"));
                     }
                 }
             }
 
-            if (keyCodes.Count == 0) {
+            if (bindings.Count == 0) {
                 textRepresentation = "NONE";
             }
 
@@ -37,26 +108,7 @@ namespace ModKeyBinding {
             }
         }
 
-        public KeyBinding(KeyBindingType type, params KeyCode[] keyCodes) {
-            Type = type;
-            textRepresentation = "";
-
-            foreach (KeyCode keyCode in keyCodes) {
-                if (keyCode != KeyCode.None) {
-                    this.keyCodes.Add(keyCode);
-                    textRepresentation += keyCode + "+";
-                }
-
-            }
-
-            if (this.keyCodes.Count == 0) {
-                textRepresentation = "NONE";
-            }
-
-            else {
-                textRepresentation = textRepresentation.TrimEnd('+');
-            }
-        }
+        public ModKeyBinding(KeyCode keyCode) : this(keyCode.ToString()) {  }
 
         private static bool TryParseEnum<T>(string input, out T output) {
             string inputLower = input.ToLower();
@@ -72,42 +124,24 @@ namespace ModKeyBinding {
         }
 
         public void AssignIfEmpty(KeyCode keyCode) {
-            if (keyCodes.Count == 0) {
-                keyCodes.Add(keyCode);
-                textRepresentation = keyCode.ToString();
+            AssignIfEmpty(new KeyBinding(keyCode, KeyBindingType.Press));
+        }
+
+        public void AssignIfEmpty(IBinding binding) {
+            if (bindings.Count == 0) {
+                bindings.Add(binding);
+                textRepresentation = binding.ToString();
             }
         }
 
         public bool IsActive() {
-            if (keyCodes.Count == 0) {
+            if (bindings.Count == 0) {
                 return false;
             }
 
-            foreach (KeyCode keyCode in keyCodes) {
-                switch (Type) {
-                    case KeyBindingType.Press: {
-                        if (!Input.GetKeyDown(keyCode)) {
-                            return false;
-                        }
-
-                        break;
-                    }
-                        
-                    case KeyBindingType.Hold: {
-                        if (!Input.GetKey(keyCode)) {
-                            return false;
-                        }
-
-                        break;
-                    }
-
-                    default: {
-                        if (!Input.GetKeyUp(keyCode)) {
-                            return false;
-                        }
-
-                        break;
-                    }
+            foreach (IBinding binding in bindings) {
+                if (!binding.IsActive()) {
+                    return false;
                 }
             }
 
@@ -122,4 +156,6 @@ namespace ModKeyBinding {
             return textRepresentation;
         }
     }
+
+    
 }

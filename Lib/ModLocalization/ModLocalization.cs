@@ -2,7 +2,6 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 
@@ -36,7 +35,7 @@ namespace ModFramework {
             }
 
             string[] languageFiles = Directory.GetFiles(LocalizationFolder, "*" + languageCode + "*", SearchOption.TopDirectoryOnly);
-            if(languageFiles.Length == 0) {
+            if (languageFiles.Length == 0) {
                 return false;
             }
 
