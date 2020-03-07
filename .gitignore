@@ -5,3 +5,4 @@ ILMerge.props
 ILMergeOrder.txt
 packages.config
 packages/
+app.config
