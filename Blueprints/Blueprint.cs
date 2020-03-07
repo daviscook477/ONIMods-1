@@ -221,7 +221,7 @@ namespace Blueprints {
         }
 
         /// <summary>
-        /// "Sanitzes" a blueprint's file name, removing any invalid characters for the host operating system.
+        /// "Sanitizes" a blueprint's file name, removing any invalid characters for the host operating system.
         /// Since the name of the blueprint is stored inside the file not based upon the file name this is harmless.
         /// </summary>
         /// <param name="file">The file name to sanitize</param>
@@ -240,7 +240,7 @@ namespace Blueprints {
         }
 
         /// <summary>
-        /// Reads the contents of a binary-formatted file and adds its contents it to the blueprint.
+        /// Reads the contents of a binary-formatted file and adds its contents to the blueprint.
         /// </summary>
         /// <returns>True if the read succeeded, false otherwise</returns>
         public bool ReadBinary() {
@@ -344,7 +344,7 @@ namespace Blueprints {
             }
 
             //Use the smaller, binary format if blueprint compression is enabled, use JSON otherwise.
-            if (BlueprintsAssets.BLUEPRINTS_CONFIG_COMPRESBLUEPRINTS) {
+            if (BlueprintsAssets.Options.CompressBlueprints) {
                 WriteBinary();
             }
 

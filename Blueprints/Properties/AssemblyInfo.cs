@@ -4,8 +4,8 @@ using System.Runtime.InteropServices;
 
 [assembly: AssemblyTitle("Blueprints")]
 [assembly: AssemblyProduct("Blueprints")]
-[assembly: AssemblyCopyright("Copyright Mayall 2019")]
+[assembly: AssemblyCopyright("Copyright Mayall 2020")]
 [assembly: ComVisible(false)]
-[assembly: AssemblyVersion("2.2.103.0")]
+[assembly: AssemblyVersion("2.2.305.0")]
 [assembly: NeutralResourcesLanguage("en")]
 

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using STRINGS;
+using System.Collections.Generic;
 
 namespace Blueprints {
     public sealed class UseBlueprintToolHoverCard : HoverTextConfiguration {
@@ -26,19 +27,19 @@ namespace Blueprints {
 
             if (BlueprintsState.HasBlueprints()) {
                 if (BlueprintsState.SelectedFolder.BlueprintCount > 0) {
-                    drawer.DrawText(string.Format(Strings.Get(BlueprintsStrings.STRING_BLUEPRINTS_USE_CYCLEFOLDERS), BlueprintsAssets.BLUEPRINTS_KEYBIND_USE_CYCLEFOLDER_UP.GetStringFormatted(), BlueprintsAssets.BLUEPRINTS_KEYBIND_USE_CYCLEFOLDER_DOWN.GetStringFormatted()), Styles_Instruction.Standard);
+                    drawer.DrawText(string.Format(Strings.Get(BlueprintsStrings.STRING_BLUEPRINTS_USE_CYCLEFOLDERS), UI.FormatAsHotkey("[" + GameUtil.GetActionString(BlueprintsAssets.BLUEPRINTS_USE_CYCLEFOLDERS_NEXT.GetKAction()) + "]"), UI.FormatAsHotkey("[" + GameUtil.GetActionString(BlueprintsAssets.BLUEPRINTS_USE_CYCLEFOLDERS_PREVIOUS.GetKAction()) + "]")), Styles_Instruction.Standard);
                     drawer.NewLine(20);
 
-                    drawer.DrawText(string.Format(Strings.Get(BlueprintsStrings.STRING_BLUEPRINTS_USE_CYCLEBLUEPRINTS), BlueprintsAssets.BLUEPRINTS_KEYBIND_USE_CYCLEBLUEPRINT_LEFT.GetStringFormatted(), BlueprintsAssets.BLUEPRINTS_KEYBIND_USE_CYCLEBLUEPRINT_RIGHT.GetStringFormatted()), Styles_Instruction.Standard);
+                    drawer.DrawText(string.Format(Strings.Get(BlueprintsStrings.STRING_BLUEPRINTS_USE_CYCLEBLUEPRINTS), UI.FormatAsHotkey("[" + GameUtil.GetActionString(BlueprintsAssets.BLUEPRINTS_USE_CYCLEBLUEPRINTS_NEXT.GetKAction()) + "]"), UI.FormatAsHotkey("[" + GameUtil.GetActionString(BlueprintsAssets.BLUEPRINTS_USE_CYCLEBLUEPRINTS_PREVIOUS.GetKAction()) + "]")), Styles_Instruction.Standard);
                     drawer.NewLine(32);
 
-                    drawer.DrawText(string.Format(Strings.Get(BlueprintsStrings.STRING_BLUEPRINTS_USE_FOLDERBLUEPRINT), BlueprintsAssets.BLUEPRINTS_KEYBIND_USE_FOLDER.GetStringFormatted()), Styles_Instruction.Standard);
+                    drawer.DrawText(string.Format(Strings.Get(BlueprintsStrings.STRING_BLUEPRINTS_USE_FOLDERBLUEPRINT), UI.FormatAsHotkey("[" + GameUtil.GetActionString(BlueprintsAssets.BLUEPRINTS_USE_CREATEFOLDER.GetKAction()) + "]")), Styles_Instruction.Standard);
                     drawer.NewLine(20);
 
-                    drawer.DrawText(string.Format(Strings.Get(BlueprintsStrings.STRING_BLUEPRINTS_USE_NAMEBLUEPRINT),BlueprintsAssets.BLUEPRINTS_KEYBIND_USE_RENAME.GetStringFormatted()), Styles_Instruction.Standard);
+                    drawer.DrawText(string.Format(Strings.Get(BlueprintsStrings.STRING_BLUEPRINTS_USE_NAMEBLUEPRINT), UI.FormatAsHotkey("[" + GameUtil.GetActionString(BlueprintsAssets.BLUEPRINTS_USE_RENAME.GetKAction()) + "]")), Styles_Instruction.Standard);
                     drawer.NewLine(20);
 
-                    drawer.DrawText(string.Format(Strings.Get(BlueprintsStrings.STRING_BLUEPRINTS_USE_DELETEBLUEPRINT), BlueprintsAssets.BLUEPRINTS_KEYBIND_USE_DELETE.GetStringFormatted()), Styles_Instruction.Standard);
+                    drawer.DrawText(string.Format(Strings.Get(BlueprintsStrings.STRING_BLUEPRINTS_USE_DELETEBLUEPRINT), UI.FormatAsHotkey("[" + GameUtil.GetActionString(BlueprintsAssets.BLUEPRINTS_MULTI_DELETE.GetKAction()) + "]")), Styles_Instruction.Standard);
 
                     if (PrefabErrorCount > 0) {
                         drawer.NewLine(32);

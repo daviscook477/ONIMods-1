@@ -1,7 +1,7 @@
 ﻿using Harmony;
-using ModKeyBinding;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using PeterHan.PLib;
 using STRINGS;
 using System.Collections.Generic;
 using System.IO;
@@ -53,52 +53,44 @@ namespace Blueprints {
     }
 
     public static class BlueprintsAssets {
+        public static BlueprintsOptions Options { get; set; } = new BlueprintsOptions();
+
         public static string BLUEPRINTS_CREATE_TOOLNAME = "CreateBlueprintTool";
         public static string BLUEPRINTS_CREATE_ICON_NAME = "BLUEPRINTS.TOOL.CREATE_BLUEPRINT.ICON";
         public static Sprite BLUEPRINTS_CREATE_ICON_SPRITE;
         public static Sprite BLUEPRINTS_CREATE_VISUALIZER_SPRITE;
+        public static PAction BLUEPRINTS_CREATE_OPENTOOL;
         public static ToolMenu.ToolCollection BLUEPRINTS_CREATE_TOOLCOLLECTION;
 
         public static string BLUEPRINTS_USE_TOOLNAME = "UseBlueprintTool";
         public static string BLUEPRINTS_USE_ICON_NAME = "BLUEPRINTS.TOOL.USE_BLUEPRINT.ICON";
         public static Sprite BLUEPRINTS_USE_ICON_SPRITE;
         public static Sprite BLUEPRINTS_USE_VISUALIZER_SPRITE;
+        public static PAction BLUEPRINTS_USE_OPENTOOL;
+        public static PAction BLUEPRINTS_USE_CREATEFOLDER;
+        public static PAction BLUEPRINTS_USE_RENAME;
+        public static PAction BLUEPRINTS_USE_CYCLEBLUEPRINTS_PREVIOUS;
+        public static PAction BLUEPRINTS_USE_CYCLEBLUEPRINTS_NEXT;
+        public static PAction BLUEPRINTS_USE_CYCLEFOLDERS_PREVIOUS;
+        public static PAction BLUEPRINTS_USE_CYCLEFOLDERS_NEXT;
         public static ToolMenu.ToolCollection BLUEPRINTS_USE_TOOLCOLLECTION;
 
         public static string BLUEPRINTS_SNAPSHOT_TOOLNAME = "SnapshotTool";
         public static string BLUEPRINTS_SNAPSHOT_ICON_NAME = "BLUEPRINTS.TOOL.SNAPSHOT.ICON";
         public static Sprite BLUEPRINTS_SNAPSHOT_ICON_SPRITE;
         public static Sprite BLUEPRINTS_SNAPSHOT_VISUALIZER_SPRITE;
+        public static PAction BLUEPRINTS_SNAPSHOT_OPENTOOL;
         public static ToolMenu.ToolCollection BLUEPRINTS_SNAPSHOT_TOOLCOLLECTION;
+
+        public static PAction BLUEPRINTS_MULTI_DELETE;
 
         public static Color BLUEPRINTS_COLOR_VALIDPLACEMENT = Color.white;
         public static Color BLUEPRINTS_COLOR_INVALIDPLACEMENT = Color.red;
         public static Color BLUEPRINTS_COLOR_NOTECH = new Color32(30, 144, 255, 255);
         public static Color BLUEPRINTS_COLOR_BLUEPRINT_DRAG = new Color32(0, 119, 145, 255);
 
-        public static KeyBinding BLUEPRINTS_KEYBIND_CREATE = new KeyBinding(KeyBindingType.Press, KeyCode.None);
-        public static KeyBinding BLUEPRINTS_KEYBIND_USE = new KeyBinding(KeyBindingType.Press, KeyCode.None);
-        public static KeyBinding BLUEPRINTS_KEYBIND_USE_RELOAD = new KeyBinding(KeyBindingType.Press, KeyCode.LeftShift);
-        public static KeyBinding BLUEPRINTS_KEYBIND_USE_CYCLEFOLDER_UP = new KeyBinding(KeyBindingType.Press, KeyCode.UpArrow);
-        public static KeyBinding BLUEPRINTS_KEYBIND_USE_CYCLEFOLDER_DOWN = new KeyBinding(KeyBindingType.Press, KeyCode.DownArrow);
-        public static KeyBinding BLUEPRINTS_KEYBIND_USE_CYCLEBLUEPRINT_LEFT = new KeyBinding(KeyBindingType.Press, KeyCode.LeftArrow);
-        public static KeyBinding BLUEPRINTS_KEYBIND_USE_CYCLEBLUEPRINT_RIGHT = new KeyBinding(KeyBindingType.Press, KeyCode.RightArrow);
-        public static KeyBinding BLUEPRINTS_KEYBIND_USE_FOLDER = new KeyBinding(KeyBindingType.Press, KeyCode.Home);
-        public static KeyBinding BLUEPRINTS_KEYBIND_USE_RENAME = new KeyBinding(KeyBindingType.Press, KeyCode.End);
-        public static KeyBinding BLUEPRINTS_KEYBIND_USE_DELETE = new KeyBinding(KeyBindingType.Press, KeyCode.Delete);
-        public static KeyBinding BLUEPRINTS_KEYBIND_SNAPSHOT = new KeyBinding(KeyBindingType.Press, KeyCode.None);
-        public static KeyBinding BLUEPRINTS_KEYBIND_SNAPSHOT_NEWSNAPSHOT = new KeyBinding(KeyBindingType.Press, KeyCode.Delete);
-
         public static HashSet<char> BLUEPRINTS_FILE_DISALLOWEDCHARACTERS;
-
         public static HashSet<char> BLUEPRINTS_PATH_DISALLOWEDCHARACTERS;
-        public static string BLUEPRINTS_PATH_CONFIGFOLDER;
-        public static string BLUEPRINTS_PATH_CONFIGFILE;
-        public static string BLUEPRINTS_PATH_KEYCODESFILE;
-
-        public static bool BLUEPRINTS_CONFIG_REQUIRECONSTRUCTABLE = true;
-        public static bool BLUEPRINTS_CONFIG_COMPRESBLUEPRINTS = true;
-        public static float BLUEPRINTS_CONFIG_FXTIME = 0.75F;
 
         static BlueprintsAssets() {
             BLUEPRINTS_FILE_DISALLOWEDCHARACTERS = new HashSet<char>();
@@ -301,24 +293,6 @@ namespace Blueprints {
 
             ColoredCells.Clear();
             cleanableVisuals.ForEach(cleanableVisual => cleanableVisual.Clean());
-        }
-    }
-
-    public sealed class ToolMenuInputManager : MonoBehaviour {
-        public void Update() {
-            ToolMenu.ToolCollection currentlySelectedCollection = ToolMenu.Instance.currentlySelectedCollection;
-
-            if (BlueprintsAssets.BLUEPRINTS_KEYBIND_CREATE.IsActive() && currentlySelectedCollection != BlueprintsAssets.BLUEPRINTS_CREATE_TOOLCOLLECTION) {
-                Traverse.Create(ToolMenu.Instance).Method("ChooseCollection", BlueprintsAssets.BLUEPRINTS_CREATE_TOOLCOLLECTION, true).GetValue();
-            }
-
-            else if (BlueprintsAssets.BLUEPRINTS_KEYBIND_USE.IsActive() && currentlySelectedCollection != BlueprintsAssets.BLUEPRINTS_USE_TOOLCOLLECTION) {
-                Traverse.Create(ToolMenu.Instance).Method("ChooseCollection", BlueprintsAssets.BLUEPRINTS_USE_TOOLCOLLECTION, true).GetValue();
-            }
-
-            else if (BlueprintsAssets.BLUEPRINTS_KEYBIND_SNAPSHOT.IsActive() && currentlySelectedCollection != BlueprintsAssets.BLUEPRINTS_SNAPSHOT_TOOLCOLLECTION) {
-                Traverse.Create(ToolMenu.Instance).Method("ChooseCollection", BlueprintsAssets.BLUEPRINTS_SNAPSHOT_TOOLCOLLECTION, true).GetValue();
-            }
         }
     }
 

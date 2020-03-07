@@ -1,5 +1,7 @@
 ﻿using Harmony;
 using ModFramework;
+using PeterHan.PLib;
+using PeterHan.PLib.Options;
 using Rendering;
 using System.Collections.Generic;
 using System.IO;
@@ -10,31 +12,34 @@ using UnityEngine;
 namespace Blueprints {
     public static class Integration {
         public static void OnLoad() {
+            PUtil.InitLibrary(false);
+            POptions.RegisterOptions(typeof(BlueprintsOptions));
+
             Assembly currentAssembly = Assembly.GetExecutingAssembly();
             string currentAssemblyDirectory = Path.GetDirectoryName(currentAssembly.Location);
 
-            BlueprintsAssets.BLUEPRINTS_PATH_CONFIGFOLDER = Path.Combine(currentAssemblyDirectory, "config");
-            BlueprintsAssets.BLUEPRINTS_PATH_CONFIGFILE = Path.Combine(BlueprintsAssets.BLUEPRINTS_PATH_CONFIGFOLDER, "config.json");
-            BlueprintsAssets.BLUEPRINTS_PATH_KEYCODESFILE = Path.Combine(BlueprintsAssets.BLUEPRINTS_PATH_CONFIGFOLDER, "keycodes.txt");
-
-            if (File.Exists(BlueprintsAssets.BLUEPRINTS_PATH_CONFIGFILE)) {
-                IOUtilities.ReadConfig();
-            }
-
-            IOUtilities.CreateKeycodeHintFile();
-            IOUtilities.WriteConfig();
-
             BlueprintsAssets.BLUEPRINTS_CREATE_ICON_SPRITE = Utilities.CreateSpriteDXT5(Assembly.GetExecutingAssembly().GetManifestResourceStream("Blueprints.image_createblueprint_button.dds"), 32, 32);
             BlueprintsAssets.BLUEPRINTS_CREATE_ICON_SPRITE.name = BlueprintsAssets.BLUEPRINTS_CREATE_ICON_NAME;
+            BlueprintsAssets.BLUEPRINTS_CREATE_OPENTOOL = PAction.Register("Blueprints.create.opentool", "Create Blueprint", new PKeyBinding(KKeyCode.None, Modifier.None));
             BlueprintsAssets.BLUEPRINTS_CREATE_VISUALIZER_SPRITE = Utilities.CreateSpriteDXT5(Assembly.GetExecutingAssembly().GetManifestResourceStream("Blueprints.image_createblueprint_visualizer.dds"), 256, 256);
 
             BlueprintsAssets.BLUEPRINTS_USE_ICON_SPRITE = Utilities.CreateSpriteDXT5(Assembly.GetExecutingAssembly().GetManifestResourceStream("Blueprints.image_useblueprint_button.dds"), 32, 32);
             BlueprintsAssets.BLUEPRINTS_USE_ICON_SPRITE.name = BlueprintsAssets.BLUEPRINTS_USE_ICON_NAME;
+            BlueprintsAssets.BLUEPRINTS_USE_OPENTOOL = PAction.Register("Blueprints.use.opentool", "Use Blueprint", new PKeyBinding(KKeyCode.None, Modifier.None));
+            BlueprintsAssets.BLUEPRINTS_USE_CREATEFOLDER = PAction.Register("Blueprints.use.assignfolder", "Assign Folder", new PKeyBinding(KKeyCode.Home, Modifier.None));
+            BlueprintsAssets.BLUEPRINTS_USE_RENAME = PAction.Register("Blueprints.use.rename", "Rename Blueprint", new PKeyBinding(KKeyCode.End, Modifier.None));
+            BlueprintsAssets.BLUEPRINTS_USE_CYCLEFOLDERS_NEXT = PAction.Register("Blueprints.use.cyclefolders.next", "Next Folder", new PKeyBinding(KKeyCode.UpArrow, Modifier.None));
+            BlueprintsAssets.BLUEPRINTS_USE_CYCLEFOLDERS_PREVIOUS = PAction.Register("Blueprints.use.cyclefolders.previous", "Previous Folder", new PKeyBinding(KKeyCode.DownArrow, Modifier.None));
+            BlueprintsAssets.BLUEPRINTS_USE_CYCLEBLUEPRINTS_NEXT = PAction.Register("Blueprints.use.cycleblueprints.next", "Next Blueprint", new PKeyBinding(KKeyCode.RightArrow, Modifier.None));
+            BlueprintsAssets.BLUEPRINTS_USE_CYCLEBLUEPRINTS_PREVIOUS = PAction.Register("Blueprints.use.cycleblueprints.previous", "Previous Blueprint", new PKeyBinding(KKeyCode.LeftArrow, Modifier.None));
             BlueprintsAssets.BLUEPRINTS_USE_VISUALIZER_SPRITE = Utilities.CreateSpriteDXT5(Assembly.GetExecutingAssembly().GetManifestResourceStream("Blueprints.image_useblueprint_visualizer.dds"), 256, 256);
 
             BlueprintsAssets.BLUEPRINTS_SNAPSHOT_ICON_SPRITE = Utilities.CreateSpriteDXT5(Assembly.GetExecutingAssembly().GetManifestResourceStream("Blueprints.image_snapshot_button.dds"), 32, 32);
             BlueprintsAssets.BLUEPRINTS_SNAPSHOT_ICON_SPRITE.name = BlueprintsAssets.BLUEPRINTS_SNAPSHOT_ICON_NAME;
+            BlueprintsAssets.BLUEPRINTS_SNAPSHOT_OPENTOOL = PAction.Register("Blueprints.snapshot.opentool", "Take Snapshot", new PKeyBinding(KKeyCode.None, Modifier.None));
             BlueprintsAssets.BLUEPRINTS_SNAPSHOT_VISUALIZER_SPRITE = Utilities.CreateSpriteDXT5(Assembly.GetExecutingAssembly().GetManifestResourceStream("Blueprints.image_snapshot_visualizer.dds"), 256, 256);
+
+            BlueprintsAssets.BLUEPRINTS_MULTI_DELETE = PAction.Register("Blueprints.multi.delete", "Delete Blueprint/Snapshot", new PKeyBinding(KKeyCode.Delete, Modifier.None));
 
             ModLocalization.LocalizationCompleteEvent += ModLocalizedHandler;
             ModLocalization.DefaultLocalization = new string[] {
@@ -48,7 +53,7 @@ namespace Blueprints {
                 BlueprintsStrings.STRING_BLUEPRINTS_CREATE_ACTION_BACK, "BACK",
 
                 BlueprintsStrings.STRING_BLUEPRINTS_USE_NAME, "Use Blueprint",
-                BlueprintsStrings.STRING_BLUEPRINTS_USE_TOOLTIP, "Use blueprint {0} \n\nWhen selecting the tool hold {1} to reload blueprints",
+                BlueprintsStrings.STRING_BLUEPRINTS_USE_TOOLTIP, "Use blueprint {0}",
                 BlueprintsStrings.STRING_BLUEPRINTS_USE_LOADEDBLUEPRINTS, "Loaded {0} blueprints! ({1} total)",
                 BlueprintsStrings.STRING_BLUEPRINTS_USE_LOADEDBLUEPRINTS_ADDITIONAL, "additional",
                 BlueprintsStrings.STRING_BLUEPRINTS_USE_LOADEDBLUEPRINTS_FEWER, "fewer",
@@ -86,29 +91,29 @@ namespace Blueprints {
 
         private static void ModLocalizedHandler(string languageCode) {
             BlueprintsAssets.BLUEPRINTS_CREATE_TOOLCOLLECTION = ToolMenu.CreateToolCollection(
-                Strings.Get(BlueprintsStrings.STRING_BLUEPRINTS_CREATE_NAME).String,
+                (string) Strings.Get(BlueprintsStrings.STRING_BLUEPRINTS_CREATE_NAME),
                 BlueprintsAssets.BLUEPRINTS_CREATE_ICON_NAME,
-                Action.NumActions,
+                BlueprintsAssets.BLUEPRINTS_CREATE_OPENTOOL.GetKAction(),
                 BlueprintsAssets.BLUEPRINTS_CREATE_TOOLNAME,
-                string.Format(Strings.Get(BlueprintsStrings.STRING_BLUEPRINTS_CREATE_TOOLTIP), BlueprintsAssets.BLUEPRINTS_KEYBIND_CREATE.GetStringFormatted()),
+                string.Format(Strings.Get(BlueprintsStrings.STRING_BLUEPRINTS_CREATE_TOOLTIP), "{Hotkey}"),
                 true
             );
 
             BlueprintsAssets.BLUEPRINTS_USE_TOOLCOLLECTION = ToolMenu.CreateToolCollection(
-                Strings.Get(BlueprintsStrings.STRING_BLUEPRINTS_USE_NAME).String,
+                (string) Strings.Get(BlueprintsStrings.STRING_BLUEPRINTS_USE_NAME),
                 BlueprintsAssets.BLUEPRINTS_USE_ICON_NAME,
-                Action.NumActions,
+                BlueprintsAssets.BLUEPRINTS_USE_OPENTOOL.GetKAction(),
                 BlueprintsAssets.BLUEPRINTS_USE_TOOLNAME,
-                string.Format(Strings.Get(BlueprintsStrings.STRING_BLUEPRINTS_USE_TOOLTIP), BlueprintsAssets.BLUEPRINTS_KEYBIND_USE.GetStringFormatted(), BlueprintsAssets.BLUEPRINTS_KEYBIND_USE_RELOAD.GetStringFormatted()),
+                string.Format(Strings.Get(BlueprintsStrings.STRING_BLUEPRINTS_USE_TOOLTIP), "{Hotkey}"),
                 true
             );
 
             BlueprintsAssets.BLUEPRINTS_SNAPSHOT_TOOLCOLLECTION = ToolMenu.CreateToolCollection(
-                Strings.Get(BlueprintsStrings.STRING_BLUEPRINTS_SNAPSHOT_NAME).String,
+                (string) Strings.Get(BlueprintsStrings.STRING_BLUEPRINTS_SNAPSHOT_NAME),
                 BlueprintsAssets.BLUEPRINTS_SNAPSHOT_ICON_NAME,
-                Action.NumActions,
+                BlueprintsAssets.BLUEPRINTS_SNAPSHOT_OPENTOOL.GetKAction(),
                 BlueprintsAssets.BLUEPRINTS_SNAPSHOT_TOOLNAME,
-                string.Format(Strings.Get(BlueprintsStrings.STRING_BLUEPRINTS_SNAPSHOT_TOOLTIP), BlueprintsAssets.BLUEPRINTS_KEYBIND_SNAPSHOT.GetStringFormatted()),
+                string.Format(Strings.Get(BlueprintsStrings.STRING_BLUEPRINTS_SNAPSHOT_TOOLTIP), "{Hotkey}"),
                 false
            );
         }
@@ -152,14 +157,14 @@ namespace Blueprints {
 
 
                 __instance.tools = interfaceTools.ToArray();
+
+                BlueprintsAssets.Options = POptions.ReadSettings<BlueprintsOptions>() ?? new BlueprintsOptions();
             }
         }
 
         [HarmonyPatch(typeof(ToolMenu), "OnPrefabInit")]
         public static class ToolMenu_OnPrefabInit {
             public static void Postfix(ToolMenu __instance, List<Sprite> ___icons) {
-                __instance.gameObject.AddComponent<ToolMenuInputManager>();
-
                 ___icons.Add(BlueprintsAssets.BLUEPRINTS_CREATE_ICON_SPRITE);
                 ___icons.Add(BlueprintsAssets.BLUEPRINTS_USE_ICON_SPRITE);
                 ___icons.Add(BlueprintsAssets.BLUEPRINTS_SNAPSHOT_ICON_SPRITE);
@@ -211,10 +216,8 @@ namespace Blueprints {
         [HarmonyPatch(typeof(BlockTileRenderer), "GetCellColour")]
         public static class BlockTileRenderer_GetCellColour {
             public static void Postfix(int cell, SimHashes element, ref Color __result) {
-                if (__result != Color.red && element == SimHashes.Void) {
-                    if (BlueprintsState.ColoredCells.ContainsKey(cell)) {
-                        __result = BlueprintsState.ColoredCells[cell].Color;
-                    }
+                if (__result != Color.red && element == SimHashes.Void && BlueprintsState.ColoredCells.ContainsKey(cell)) {
+                    __result = BlueprintsState.ColoredCells[cell].Color;
                 }
             }
         }

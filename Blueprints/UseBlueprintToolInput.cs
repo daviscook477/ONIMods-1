@@ -8,6 +8,7 @@ namespace Blueprints {
         public UseBlueprintTool ParentTool { get; set; }
 
         public void Update() {
+            /*
             if ((ParentTool?.hasFocus ?? false) && BlueprintsState.LoadedBlueprints.Count > 0) {
                 bool blueprintChanged = false;
 
@@ -101,6 +102,7 @@ namespace Blueprints {
                     }
                 }
             }
+            */
         }
     }
 }

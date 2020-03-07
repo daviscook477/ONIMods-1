@@ -1,4 +1,5 @@
 ﻿using Harmony;
+using PeterHan.PLib.UI;
 using System.Reflection;
 using UnityEngine;
 
@@ -91,10 +92,6 @@ namespace Blueprints {
         protected override void OnDeactivateTool(InterfaceTool newTool) {
             base.OnDeactivateTool(newTool);
 
-            if (gameObject.GetComponent<SnapshotToolInput>() != null) {
-                Destroy(gameObject.GetComponent<SnapshotToolInput>());
-            }
-
             BlueprintsState.ClearVisuals();
             blueprint = null;
 
@@ -120,7 +117,7 @@ namespace Blueprints {
 
                 Blueprint blueprint = BlueprintsState.CreateBlueprint(new Vector2I(x0, y0), new Vector2I(x1, y1), this);
                 if (blueprint.IsEmpty()) {
-                    PopFXManager.Instance.SpawnFX(BlueprintsAssets.BLUEPRINTS_CREATE_ICON_SPRITE, Strings.Get(BlueprintsStrings.STRING_BLUEPRINTS_SNAPSHOT_EMPTY), null, PlayerController.GetCursorPos(KInputManager.GetMousePos()), BlueprintsAssets.BLUEPRINTS_CONFIG_FXTIME);
+                    PopFXManager.Instance.SpawnFX(BlueprintsAssets.BLUEPRINTS_CREATE_ICON_SPRITE, Strings.Get(BlueprintsStrings.STRING_BLUEPRINTS_SNAPSHOT_EMPTY), null, PlayerController.GetCursorPos(KInputManager.GetMousePos()), BlueprintsAssets.Options.FXTime);
                 }
 
                 else {
@@ -130,12 +127,9 @@ namespace Blueprints {
                     ToolMenu.Instance.PriorityScreen.Show(true);
 
                     gameObject.GetComponent<SnapshotToolHoverCard>().UsingSnapshot = true;
-
-                    gameObject.AddComponent<SnapshotToolInput>();
-                    gameObject.GetComponent<SnapshotToolInput>().ParentTool = this;
                     DestroyVisualizer();
 
-                    PopFXManager.Instance.SpawnFX(BlueprintsAssets.BLUEPRINTS_CREATE_ICON_SPRITE, Strings.Get(BlueprintsStrings.STRING_BLUEPRINTS_SNAPSHOT_TAKEN), null, PlayerController.GetCursorPos(KInputManager.GetMousePos()), BlueprintsAssets.BLUEPRINTS_CONFIG_FXTIME);
+                    PopFXManager.Instance.SpawnFX(BlueprintsAssets.BLUEPRINTS_CREATE_ICON_SPRITE, Strings.Get(BlueprintsStrings.STRING_BLUEPRINTS_SNAPSHOT_TAKEN), null, PlayerController.GetCursorPos(KInputManager.GetMousePos()), BlueprintsAssets.Options.FXTime);
                     GridCompositor.Instance.ToggleMajor(true);
                     this.blueprint = blueprint;
                 }
@@ -166,6 +160,15 @@ namespace Blueprints {
             else if (hasFocus) {
                 BlueprintsState.UpdateVisual(Grid.PosToXY(cursorPos));
             }
+        }
+
+        public override void OnKeyDown(KButtonEvent buttonEvent) {
+            if (buttonEvent.TryConsume(BlueprintsAssets.BLUEPRINTS_MULTI_DELETE.GetKAction())) {
+                Instance.DeleteBlueprint();
+                GridCompositor.Instance.ToggleMajor(false);
+            }
+
+            base.OnKeyDown(buttonEvent);
         }
     }
 }

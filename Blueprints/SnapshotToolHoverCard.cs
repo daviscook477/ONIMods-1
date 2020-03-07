@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using STRINGS;
+using System.Collections.Generic;
 
 namespace Blueprints {
     public sealed class SnapshotToolHoverCard : HoverTextConfiguration {
@@ -25,7 +26,7 @@ namespace Blueprints {
 
             if (UsingSnapshot) {
                 drawer.NewLine(32);
-                drawer.DrawText(string.Format(Strings.Get(BlueprintsStrings.STRING_BLUEPRINTS_SNAPSHOT_NEWSNAPSHOT), BlueprintsAssets.BLUEPRINTS_KEYBIND_SNAPSHOT_NEWSNAPSHOT.GetStringFormatted()), Styles_Instruction.Standard);
+                drawer.DrawText(string.Format(Strings.Get(BlueprintsStrings.STRING_BLUEPRINTS_SNAPSHOT_NEWSNAPSHOT), UI.FormatAsHotkey("[" + GameUtil.GetActionString(BlueprintsAssets.BLUEPRINTS_MULTI_DELETE.GetKAction()) + "]")), Styles_Instruction.Standard);
             }
 
             drawer.EndShadowBar();

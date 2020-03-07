@@ -140,7 +140,7 @@ namespace Blueprints {
         }
 
         public bool HasTech() {
-            return (BlueprintsState.InstantBuild || !BlueprintsAssets.BLUEPRINTS_CONFIG_REQUIRECONSTRUCTABLE || Db.Get().TechItems.IsTechItemComplete(buildingConfig.BuildingDef.PrefabID));
+            return (BlueprintsState.InstantBuild || !BlueprintsAssets.Options.RequireConstructable || Db.Get().TechItems.IsTechItemComplete(buildingConfig.BuildingDef.PrefabID));
         }
 
         public Color GetVisualizerColor(int cell) {
@@ -284,7 +284,7 @@ namespace Blueprints {
         }
 
         public bool HasTech() {
-            return BlueprintsState.InstantBuild || !BlueprintsAssets.BLUEPRINTS_CONFIG_REQUIRECONSTRUCTABLE || Db.Get().TechItems.IsTechItemComplete(buildingConfig.BuildingDef.PrefabID);
+            return BlueprintsState.InstantBuild || !BlueprintsAssets.Options.RequireConstructable || Db.Get().TechItems.IsTechItemComplete(buildingConfig.BuildingDef.PrefabID);
         }
 
         public bool HasTile(int cell) {
@@ -475,7 +475,7 @@ namespace Blueprints {
         }
 
         public bool HasTech() {
-            return (BlueprintsState.InstantBuild || !BlueprintsAssets.BLUEPRINTS_CONFIG_REQUIRECONSTRUCTABLE || Db.Get().TechItems.IsTechItemComplete(buildingConfig.BuildingDef.PrefabID));
+            return (BlueprintsState.InstantBuild || !BlueprintsAssets.Options.RequireConstructable || Db.Get().TechItems.IsTechItemComplete(buildingConfig.BuildingDef.PrefabID));
         }
 
         public bool HasUtility(int cell) {
