@@ -105,6 +105,7 @@ namespace Blueprints {
                     }
 
                     building.SetActive(true);
+                    CopyBuildingSettings.ApplyCopy(cell, buildingConfig.SettingsSource);
                     return true;
                 }
             }

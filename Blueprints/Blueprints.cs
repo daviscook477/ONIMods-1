@@ -170,10 +170,14 @@ namespace Blueprints {
                                 if ((primaryElement = building.GetComponent<PrimaryElement>()) != null) {
                                     Vector2I centre = Grid.CellToXY(GameUtil.NaturalBuildingCell(building));
 
+                                    GameObject settingsSource = Util.KInstantiate(gameObject, Vector3.zero);
+                                    settingsSource.SetActive(false);
+
                                     BuildingConfig buildingConfig = new BuildingConfig {
                                         Offset = new Vector2I(centre.x - topLeft.x, blueprintHeight - (topLeft.y - centre.y)),
                                         BuildingDef = building.Def,
-                                        Orientation = building.Orientation
+                                        Orientation = building.Orientation,
+                                        SettingsSource = settingsSource
                                     };
 
                                     buildingConfig.SelectedElements.Add(primaryElement.ElementID.CreateTag());

@@ -555,6 +555,12 @@ namespace Blueprints {
         public Orientation Orientation { get; set; } = 0;
 
         /// <summary>
+        /// The settings of the building.
+        /// Stored as a GameObject with the `CopyBuildingSettings`
+        /// </summary>
+        public GameObject SettingsSource { get; set; } = null;
+
+        /// <summary>
         /// Multi use flags for describing more complex elements of the building, such as pipe connections.
         /// </summary>
         public int Flags { get; set; } = 0;
