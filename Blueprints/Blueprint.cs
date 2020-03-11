@@ -2,8 +2,8 @@
 using Newtonsoft.Json.Linq;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using UnityEngine;
+using System;
 
 namespace Blueprints {
     /// <summary>
@@ -583,6 +583,12 @@ namespace Blueprints {
             SelectedElements.ForEach(selectedElement => binaryWriter.Write(selectedElement.GetHash()));
             binaryWriter.Write((int) Orientation);
             binaryWriter.Write(Flags);
+            binaryWriter.Write(SettingsSource != null);
+            if (SettingsSource != null) {
+                binaryWriter.Write(SettingsSource.PrefabID.ToString());
+                binaryWriter.Write(SettingsSource.Serialization.Length);
+                binaryWriter.Write(SettingsSource.Serialization);
+            }
         }
 
         /// <summary>
@@ -633,6 +639,16 @@ namespace Blueprints {
                 jsonWriter.WriteValue(Flags);
             }
 
+            if (SettingsSource != null) {
+                jsonWriter.WritePropertyName("settings");
+                jsonWriter.WriteStartObject();
+                jsonWriter.WritePropertyName("prefabID");
+                jsonWriter.WriteValue(SettingsSource.PrefabID.ToString());
+                jsonWriter.WritePropertyName("serialization");
+                jsonWriter.WriteValue(Convert.ToBase64String(SettingsSource.Serialization));
+                jsonWriter.WriteEndObject();
+            }
+
             jsonWriter.WriteEndObject();
         }
 
@@ -658,10 +674,19 @@ namespace Blueprints {
 
                 Orientation = (Orientation) binaryReader.ReadInt32();
                 Flags = binaryReader.ReadInt32();
+                bool nonNullSettingsSource = binaryReader.ReadBoolean();
+                if (nonNullSettingsSource) {
+                    SettingsSource = new SerializedBuilding() {
+                        PrefabID = binaryReader.ReadString().ToTag(),
+                        Serialization = binaryReader.ReadBytes(binaryReader.ReadInt32())
+                    };
+                } else {
+                    SettingsSource = null;
+                }
                 return true;
             }
 
-            catch (System.Exception) {
+            catch (Exception) {
                 return false;
             }
         }
@@ -676,6 +701,7 @@ namespace Blueprints {
             JToken selectedElementsToken = rootObject.SelectToken("selected_elements");
             JToken orientationToken = rootObject.SelectToken("orientation");
             JToken flagsToken = rootObject.SelectToken("flags");
+            JToken settingsToken = rootObject.SelectToken("settings");
 
             if (offsetToken != null && offsetToken.Type == JTokenType.Object) {
                 JToken xToken = offsetToken.SelectToken("x");
@@ -711,6 +737,20 @@ namespace Blueprints {
             if (flagsToken != null && flagsToken.Type == JTokenType.Integer) {
                 Flags = flagsToken.Value<int>();
             }
+
+            if (settingsToken != null && settingsToken.Type == JTokenType.Object) {
+                JToken prefabIDToken = offsetToken.SelectToken("prefabID");
+                JToken serializationToken = offsetToken.SelectToken("serialization");
+                if (prefabIDToken != null && prefabIDToken.Type == JTokenType.String
+                    && serializationToken != null && serializationToken.Type == JTokenType.String)
+                    SettingsSource = new SerializedBuilding()
+                    {
+                        PrefabID = prefabIDToken.Value<string>().ToTag(),
+                        Serialization = Convert.FromBase64String(serializationToken.Value<string>())
+                    };
+                else
+                    SettingsSource = null;
+            }
         }
 
         /// <summary>
@@ -723,10 +763,24 @@ namespace Blueprints {
         }
     }
 
+    /// <summary>
+    /// Describes a serialized version of an entire building (i.e. the backing GameObject).
+    /// Used to allow for storing the settings saved on buildings.
+    /// </summary>
+    [Serializable]
     public sealed class SerializedBuilding
     {
+        /// <summary>
+        /// The PrefabID of the building that is serialized.
+        /// Necessary information for reconstructing the serialized building and it's
+        /// easier for this to be a separate property than for it to be written into the
+        /// byte array.
+        /// </summary>
         public Tag PrefabID;
 
+        /// <summary>
+        /// The serialized building as an array of bytes.
+        /// </summary>
         public byte[] Serialization;
     }
 }

@@ -170,13 +170,18 @@ namespace Blueprints {
 
                                 if ((primaryElement = building.GetComponent<PrimaryElement>()) != null) {
                                     Vector2I centre = Grid.CellToXY(GameUtil.NaturalBuildingCell(building));
-                                    //GameObject settingsSource = CopyUtilities.CopyGameObjectWithSerialization(gameObject);
+                                    SerializedBuilding settingsSource = null;
+                                    // Since we perform settings copy using the framework established by CopyBuildingSettings
+                                    // we cannot copy settings on buildings that do not include it. Therefore we only take up
+                                    // valuable memory space storing the serialized building if we can actually copy it
+                                    if (gameObject.GetComponent<CopyBuildingSettings>() != null)
+                                        settingsSource = CopyUtilities.SerializeBuilding(gameObject);
 
                                     BuildingConfig buildingConfig = new BuildingConfig {
                                         Offset = new Vector2I(centre.x - topLeft.x, blueprintHeight - (topLeft.y - centre.y)),
                                         BuildingDef = building.Def,
                                         Orientation = building.Orientation,
-                                        SettingsSource = CopyUtilities.SerializeBuilding(gameObject)
+                                        SettingsSource = settingsSource
                                     };
 
                                     buildingConfig.SelectedElements.Add(primaryElement.ElementID.CreateTag());

@@ -113,7 +113,7 @@ namespace Blueprints {
             else if (IsPlaceable(cell)) {
                 Vector3 positionCBC = Grid.CellToPosCBC(cell, buildingConfig.BuildingDef.SceneLayer);
                 GameObject building = buildingConfig.BuildingDef.Instantiate(positionCBC, buildingConfig.Orientation, buildingConfig.SelectedElements);
-                building.AddComponent<ConstructableSettings>().settingsSource = CopyUtilities.DeserializeGameObject(buildingConfig.SettingsSource);
+                building.AddOrGet<ConstructableSettings>().settingsSource = buildingConfig.SettingsSource;
                 if (building == null) {
                     return false;
                 }

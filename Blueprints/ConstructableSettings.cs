@@ -3,8 +3,6 @@ using Harmony;
 using UnityEngine;
 using System.Collections.Generic;
 using System.Reflection.Emit;
-using System.IO;
-using PeterHan.PLib;
 
 namespace Blueprints {
     /// <summary>
@@ -18,34 +16,9 @@ namespace Blueprints {
     /// component is attached to.
     /// </summary>
     [SerializationConfig(MemberSerialization.OptIn)]
-    public sealed class ConstructableSettings : KMonoBehaviour, ISaveLoadable, ISaveLoadableDetails {
-        public GameObject settingsSource;
-
-        public void Deserialize(IReader reader)
-        {
-            PUtil.LogDebug("Attempting to deserialize a constructable settings");
-            Tag prefabID = reader.ReadKleiString();
-            GameObject prefab = SaveLoader.Instance.saveManager.GetPrefab(prefabID);
-            GameObject cloneGameObject = Util.KInstantiate(prefab,
-                Vector3.zero,
-                Quaternion.identity,
-                null, null, false, 0);
-            cloneGameObject.transform.localScale = Vector3.one;
-            cloneGameObject.SetActive(true);
-            Traverse.Create(typeof(SaveLoadRoot)).CallMethod("LoadInternal", cloneGameObject, reader);
-            cloneGameObject.SetActive(false);
-            settingsSource = cloneGameObject;
-        }
-
-        public void Serialize(BinaryWriter writer)
-        {
-            PUtil.LogDebug("Attempting to serialize a constructable settings");
-            Tag prefabID = settingsSource.PrefabID();
-            string tag_string = prefabID.ToString();
-            writer.WriteKleiString(tag_string);
-            SaveLoadRoot saveLoadRoot = settingsSource.GetComponent<SaveLoadRoot>();
-            saveLoadRoot.SaveWithoutTransform(writer);
-        }
+    public sealed class ConstructableSettings : KMonoBehaviour, ISaveLoadable {
+        [Serialize]
+        public SerializedBuilding settingsSource;
 
         /// <summary>
         /// Simple method used in the transpiler patch on `Constructable` that copies
@@ -56,11 +29,30 @@ namespace Blueprints {
         public static void CopySettings(GameObject gameObject, Constructable __instance) {
             ConstructableSettings settings = __instance.GetComponent<ConstructableSettings>();
             // Since this method hooks into all construction completions, many of them will not have any settings to transfer.
-            if (settings == null)
+            if (settings == null || settings.settingsSource == null)
                 return;
-            CopyUtilities.CopySettingsWithDelegateAndDestroy(gameObject, settings.settingsSource);
+            CopyUtilities.CopySettingsWithDelegateAndDestroy(gameObject, CopyUtilities.DeserializeGameObject(settings.settingsSource));
         }
 
+        /// <summary>
+        /// Patches BuildingLoader.CreateBuildingUnderConstruction to have a ConstructableSettings component
+        /// on the BuildingUnderConstruction prefab for each Building type. This is necessary as the game
+        /// save/load serialization/deserialization only deserializes components that are present in the
+        /// prefab for a given gameObject.
+        /// </summary>
+        [HarmonyPatch(typeof(BuildingLoader), "CreateBuildingUnderConstruction")]
+        public static class BuildingLoader_CreateBuildingUnderConstruction_Patch
+        {
+            public static void Postfix(GameObject __result)
+            {
+                __result.AddComponent<ConstructableSettings>();
+            }
+        }
+
+        /// <summary>
+        /// Patches Constructable.FinishConstruction to allow us to grab the generated gameObject for the new building
+        /// and apply the copied settings to i
+        /// </summary>
         [HarmonyPatch(typeof(Constructable))]
         [HarmonyPatch("FinishConstruction")]
         public static class Constructable_FinishConstruction_Patch {
