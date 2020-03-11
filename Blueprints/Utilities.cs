@@ -1,10 +1,8 @@
 ﻿using Harmony;
-using System;
 using System.Collections.Generic;
 using System.IO;
 using TMPro;
 using UnityEngine;
-using System.Reflection;
 using PeterHan.PLib;
 using KSerialization;
 
@@ -114,30 +112,18 @@ namespace Blueprints {
     }
 
     public static class CopyUtilities {
-        public static void DumpGameObject(GameObject gameObject)
-        {
-            if (gameObject == null)
-                PUtil.LogDebug("Attempted to dump a gameObject equal to null");
-            else
-                PUtil.LogDebug($"Dumping gameObject with name: {gameObject.name}");
-            foreach (KMonoBehaviour component in gameObject.GetComponents<KMonoBehaviour>())
-            {
-                PUtil.LogDebug($"  Found component with type: {component.GetType().Name}");
-                var flags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
-                foreach (FieldInfo field in component.GetType().GetFields(flags))
-                {
-                    var value = field.GetValue(component);
-                    string valueStr = value != null ? value.ToString() : null;
-                    PUtil.LogDebug($"    On that component the field: {field.Name} had value: {valueStr}");
-                }
-            }
-        }
-
         private static bool DestroyAndReturnFalse(GameObject sourceGameObject) {
             UnityEngine.Object.Destroy(sourceGameObject);
             return false;
         }
 
+        /// <summary>
+        /// Copies settings from a source GameObject to another GameObject using the copy settings
+        /// event/delegate system already used within the base game's "copy" settings button.
+        /// </summary>
+        /// <param name="gameObject">The GameObject to paste settings onto</param>
+        /// <param name="sourceGameObject">The GameObject to copy settings from</param>
+        /// <returns></returns>
         public static bool CopySettingsWithDelegateAndDestroy(GameObject gameObject, GameObject sourceGameObject) {
             if (gameObject == null || gameObject == sourceGameObject)
                 return DestroyAndReturnFalse(sourceGameObject);
@@ -159,10 +145,18 @@ namespace Blueprints {
             }
             else if (targetId.PrefabID() != sourceId.PrefabID())
                 return DestroyAndReturnFalse(sourceGameObject);
+            // When copying settings we need to delay it until the building is fully intialized so we queue
+            // the copy to happen later by adding a custom component that does exactly that.
             gameObject.AddComponent<DelayedSettingsCopy>().settingsSource = sourceGameObject;
             return true;
         }
 
+        /// <summary>
+        /// Serializes a building into a form that can be safely passed around without leaking memory
+        /// and that can be deserialized into a deep copy.
+        /// </summary>
+        /// <param name="sourceGameObject">The GameObject backing the building</param>
+        /// <returns></returns>
         public static SerializedBuilding SerializeBuilding(GameObject sourceGameObject)
         {
             SaveLoadRoot saveLoadRoot = sourceGameObject.GetComponent<SaveLoadRoot>();
@@ -198,6 +192,12 @@ namespace Blueprints {
             }
         }
 
+        /// <summary>
+        /// Deserializes a serialized building back into a GameObject that is a deep copy
+        /// of whatever building was originally serialized.
+        /// </summary>
+        /// <param name="serializedBuilding">The serialization of a building that we want to reconstruct</param>
+        /// <returns></returns>
         public static GameObject DeserializeGameObject(SerializedBuilding serializedBuilding)
         {
             Tag prefabID = serializedBuilding.PrefabID;
@@ -212,52 +212,6 @@ namespace Blueprints {
             IReader reader = new FastReader(serializedBuilding.Serialization);
             Manager.DeserializeDirectory(reader);
             Traverse.Create(typeof(SaveLoadRoot)).CallMethod("LoadInternal", cloneGameObject, reader);
-            cloneGameObject.SetActive(false);
-            return cloneGameObject;
-        }
-
-        /// <summary>
-        /// Copies a GameObject using klei's serialization utility.
-        /// Code is based on the usage of the serialization Manager in
-        /// the SaveLoader and WorldGenSimUtil.
-        /// </summary>
-        /// <param name="sourceGameObject">The GameObject to make a clone of</param>
-        /// <returns>A clone of the given GameObject</returns>
-        public static GameObject CopyGameObjectWithSerialization(GameObject sourceGameObject) {
-            SaveLoadRoot saveLoadRoot = sourceGameObject.GetComponent<SaveLoadRoot>();
-            if (saveLoadRoot == null) {
-                PUtil.LogDebug("Unable to copy GameObject because it lacks a SaveLoadRoot component.");
-                return null;
-            }
-            Tag key = sourceGameObject.PrefabID();
-            GameObject prefab = SaveLoader.Instance.saveManager.GetPrefab(key);
-            GameObject cloneGameObject = Util.KInstantiate(prefab,
-                sourceGameObject.transform.position,
-                sourceGameObject.transform.rotation,
-                null, null, false, 0);
-            cloneGameObject.transform.localScale = sourceGameObject.transform.localScale;
-            cloneGameObject.SetActive(true);
-            Manager.Clear();
-            using (MemoryStream objStream = new MemoryStream()) {
-                // Process serialization in two stages. The object must be serialized
-                // first to populate the templates in the serialization Manager.
-                using (BinaryWriter objWriter = new BinaryWriter(objStream)) {
-                    saveLoadRoot.SaveWithoutTransform(objWriter);
-                }
-                using (MemoryStream fullStream = new MemoryStream()) {
-                    using (BinaryWriter fullWriter = new BinaryWriter(fullStream)) {
-                        // But the templates must be serialized first on the final stream
-                        // before the object in order for the deserialization utility to
-                        // properly reconstruct the type.
-                        Manager.SerializeDirectory(fullWriter);
-                        fullWriter.Write(objStream.ToArray());
-                    }
-                    Manager.Clear();
-                    IReader reader = new FastReader(fullStream.ToArray());
-                    Manager.DeserializeDirectory(reader);
-                    Traverse.Create(typeof(SaveLoadRoot)).CallMethod("LoadInternal", cloneGameObject, reader);
-                }
-            }
             cloneGameObject.SetActive(false);
             return cloneGameObject;
         }

@@ -1,9 +1,4 @@
-﻿using Harmony;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using PeterHan.PLib;
-using STRINGS;
-using System;
+﻿using PeterHan.PLib;
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
@@ -171,10 +166,18 @@ namespace Blueprints {
                                 if ((primaryElement = building.GetComponent<PrimaryElement>()) != null) {
                                     Vector2I centre = Grid.CellToXY(GameUtil.NaturalBuildingCell(building));
                                     SerializedBuilding settingsSource = null;
+                                    // The options for if blueprints/snapshots should copy settings *must* be honored when the player
+                                    // creates a blueprint. Check which setting to honor by checking if the blueprint was made by
+                                    // the snapshot tool.
+                                    bool shouldCopy = false;
+                                    if (originTool is SnapshotTool && BlueprintsAssets.Options.SnapshotCopySettings)
+                                        shouldCopy = true;
+                                    if (!(originTool is SnapshotTool) && BlueprintsAssets.Options.BlueprintCopySettings)
+                                        shouldCopy = true;
                                     // Since we perform settings copy using the framework established by CopyBuildingSettings
                                     // we cannot copy settings on buildings that do not include it. Therefore we only take up
                                     // valuable memory space storing the serialized building if we can actually copy it
-                                    if (gameObject.GetComponent<CopyBuildingSettings>() != null)
+                                    if (gameObject.GetComponent<CopyBuildingSettings>() != null && shouldCopy)
                                         settingsSource = CopyUtilities.SerializeBuilding(gameObject);
 
                                     BuildingConfig buildingConfig = new BuildingConfig {

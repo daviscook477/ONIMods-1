@@ -675,6 +675,8 @@ namespace Blueprints {
                 Orientation = (Orientation) binaryReader.ReadInt32();
                 Flags = binaryReader.ReadInt32();
                 bool nonNullSettingsSource = binaryReader.ReadBoolean();
+                // We can't decide to load/not load settingssource based on the BlueprintCopySettings
+                // here b/c the binaryReader expects to have the entire blueprint read.
                 if (nonNullSettingsSource) {
                     SettingsSource = new SerializedBuilding() {
                         PrefabID = binaryReader.ReadString().ToTag(),
@@ -683,6 +685,13 @@ namespace Blueprints {
                 } else {
                     SettingsSource = null;
                 }
+                // The options for if blueprints should copy settings *must* be honored when a
+                // blueprint is loaded from disk. By only making changes on the loaded object, the original
+                // blueprint will still retain any copied settings (e.g. if the player loads the blueprint
+                // again after changing the options back to allow copied settings the blueprint will copy
+                // settings)
+                if (!BlueprintsAssets.Options.BlueprintCopySettings)
+                    SettingsSource = null;
                 return true;
             }
 
@@ -738,7 +747,8 @@ namespace Blueprints {
                 Flags = flagsToken.Value<int>();
             }
 
-            if (settingsToken != null && settingsToken.Type == JTokenType.Object) {
+            if (settingsToken != null && settingsToken.Type == JTokenType.Object)
+            {
                 JToken prefabIDToken = offsetToken.SelectToken("prefabID");
                 JToken serializationToken = offsetToken.SelectToken("serialization");
                 if (prefabIDToken != null && prefabIDToken.Type == JTokenType.String
@@ -751,6 +761,15 @@ namespace Blueprints {
                 else
                     SettingsSource = null;
             }
+            else
+                SettingsSource = null;
+            // The options for if blueprints should copy settings *must* be honored when a
+            // blueprint is loaded from disk. By only making changes on the loaded object, the original
+            // blueprint will still retain any copied settings (e.g. if the player loads the blueprint
+            // again after changing the options back to allow copied settings the blueprint will copy
+            // settings)
+            if (!BlueprintsAssets.Options.BlueprintCopySettings)
+                SettingsSource = null;
         }
 
         /// <summary>
