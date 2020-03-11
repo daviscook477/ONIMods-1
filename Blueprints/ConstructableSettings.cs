@@ -3,6 +3,8 @@ using Harmony;
 using UnityEngine;
 using System.Collections.Generic;
 using System.Reflection.Emit;
+using System.IO;
+using PeterHan.PLib;
 
 namespace Blueprints {
     /// <summary>
@@ -16,9 +18,34 @@ namespace Blueprints {
     /// component is attached to.
     /// </summary>
     [SerializationConfig(MemberSerialization.OptIn)]
-    public sealed class ConstructableSettings : KMonoBehaviour, ISaveLoadable {
-        [Serialize]
+    public sealed class ConstructableSettings : KMonoBehaviour, ISaveLoadable, ISaveLoadableDetails {
         public GameObject settingsSource;
+
+        public void Deserialize(IReader reader)
+        {
+            PUtil.LogDebug("Attempting to deserialize a constructable settings");
+            Tag prefabID = reader.ReadKleiString();
+            GameObject prefab = SaveLoader.Instance.saveManager.GetPrefab(prefabID);
+            GameObject cloneGameObject = Util.KInstantiate(prefab,
+                Vector3.zero,
+                Quaternion.identity,
+                null, null, false, 0);
+            cloneGameObject.transform.localScale = Vector3.one;
+            cloneGameObject.SetActive(true);
+            Traverse.Create(typeof(SaveLoadRoot)).CallMethod("LoadInternal", cloneGameObject, reader);
+            cloneGameObject.SetActive(false);
+            settingsSource = cloneGameObject;
+        }
+
+        public void Serialize(BinaryWriter writer)
+        {
+            PUtil.LogDebug("Attempting to serialize a constructable settings");
+            Tag prefabID = settingsSource.PrefabID();
+            string tag_string = prefabID.ToString();
+            writer.WriteKleiString(tag_string);
+            SaveLoadRoot saveLoadRoot = settingsSource.GetComponent<SaveLoadRoot>();
+            saveLoadRoot.SaveWithoutTransform(writer);
+        }
 
         /// <summary>
         /// Simple method used in the transpiler patch on `Constructable` that copies

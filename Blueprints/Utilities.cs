@@ -200,8 +200,8 @@ namespace Blueprints {
 
         public static GameObject DeserializeGameObject(SerializedBuilding serializedBuilding)
         {
-            Tag key = serializedBuilding.PrefabID;
-            GameObject prefab = SaveLoader.Instance.saveManager.GetPrefab(key);
+            Tag prefabID = serializedBuilding.PrefabID;
+            GameObject prefab = SaveLoader.Instance.saveManager.GetPrefab(prefabID);
             GameObject cloneGameObject = Util.KInstantiate(prefab,
                 Vector3.zero,
                 Quaternion.identity,
