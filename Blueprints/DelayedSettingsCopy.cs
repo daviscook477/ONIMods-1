@@ -32,7 +32,6 @@ namespace Blueprints {
             yield return 0;
             gameObject.Trigger((int) GameHashes.CopySettings, settingsSource);
             Destroy(settingsSource);
-            Destroy(this);
         }
     }
 }
