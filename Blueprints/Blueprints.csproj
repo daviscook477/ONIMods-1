@@ -92,9 +92,11 @@
   <ItemGroup>
     <Compile Include="Blueprint.cs" />
     <Compile Include="BlueprintsOptions.cs" />
+    <Compile Include="ConstructableSettings.cs" />
     <Compile Include="CreateBlueprintTool.cs" />
     <Compile Include="CreateBlueprintToolHoverCard.cs" />
     <Compile Include="Blueprints.cs" />
+    <Compile Include="DelayedSettingsCopy.cs" />
     <Compile Include="Integration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SnapshotTool.cs" />
@@ -130,7 +132,7 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>"$(SolutionDir)packages\ILMerge.3.0.29\tools\net452\ILMerge.exe" /out:Blueprints.dll UnmergedBlueprints.dll DisplayVersion.dll ModLocalization.dll PLib.dll /targetplatform:v4
-xcopy /y  "$(TargetDir)Blueprints.dll" "%25USERPROFILE%25\Documents\Klei\OxygenNotIncluded\mods\Local\Blueprints LOCAL\"
+xcopy /y  "$(TargetDir)Blueprints.dll" "%25USERPROFILE%25\Documents\Klei\OxygenNotIncluded\mods\dev\Blueprints LOCAL\"
 
 </PostBuildEvent>
   </PropertyGroup>

@@ -1,14 +1,78 @@
 ﻿using Harmony;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using STRINGS;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using TMPro;
 using UnityEngine;
+using System.Reflection;
+using PeterHan.PLib;
+using KSerialization;
 
 namespace Blueprints {
     public static class Utilities {
+        public static bool CopySettingsWithDelegate(GameObject gameObject, GameObject sourceGameObject) {
+            if (gameObject == null || gameObject == sourceGameObject)
+                return false;
+            KPrefabID sourceId = sourceGameObject.GetComponent<KPrefabID>();
+            if (sourceId == null)
+                return false;
+            KPrefabID targetId = gameObject.GetComponent<KPrefabID>();
+            if (targetId == null)
+                return false;
+            CopyBuildingSettings sourceCopySettings = sourceGameObject.GetComponent<CopyBuildingSettings>();
+            if (sourceCopySettings == null)
+                return false;
+            CopyBuildingSettings targetCopySettings = gameObject.GetComponent<CopyBuildingSettings>();
+            if (targetCopySettings == null)
+                return false;
+            if (sourceCopySettings.copyGroupTag != Tag.Invalid) {
+                if (sourceCopySettings.copyGroupTag != targetCopySettings.copyGroupTag)
+                    return false;
+            }
+            else if (targetId.PrefabID() != sourceId.PrefabID())
+                return false;
+            gameObject.AddComponent<DelayedSettingsCopy>().settingsSource = sourceGameObject;
+            return true;
+        }
+
+        public static bool CopySettingsWithReflection(GameObject gameObject, GameObject sourceGameObject) {
+            foreach (KMonoBehaviour component in gameObject.GetComponents<KMonoBehaviour>()) {
+                Type type = component.GetType();
+                Component tmpComponent = sourceGameObject.GetComponent(type);
+                if (!(tmpComponent is KMonoBehaviour)) {
+                    PUtil.LogDebug($"Could not copy serialized settings on component of type {component.GetType().Name} as it did not inherit from KMonoBehavior");
+                    return false;
+                }
+                KMonoBehaviour sourceComponent = (KMonoBehaviour)tmpComponent;
+                BindingFlags searchFlags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance;
+                foreach (FieldInfo field in sourceComponent.GetType().GetFields(searchFlags)) {
+                    if (Attribute.IsDefined(field, typeof(Serialize))) {
+                        object value = field.GetValue(sourceComponent);
+                        Stream stream = new MemoryStream();
+                        BinaryWriter templateWriter = new BinaryWriter(stream);
+                        SerializationTemplate serTemplate = new SerializationTemplate(value.GetType());
+                        serTemplate.SerializeTemplate(templateWriter);
+                        stream.Flush();
+                        KBinaryReader templateReader = new KBinaryReader(stream);
+                        DeserializationTemplate deserTemplate = new DeserializationTemplate(value.GetType().ToString(), templateReader);
+                        object copy = Activator.CreateInstance(value.GetType());
+                        DeserializationMapping mapping = new DeserializationMapping(deserTemplate, serTemplate);
+                        Stream objStream = new MemoryStream();
+                        BinaryWriter objWriter = new BinaryWriter(objStream);
+                        Serializer.Serialize(value, objWriter);
+                        objWriter.Flush();
+                        KBinaryReader objReader = new KBinaryReader(objStream);
+                        mapping.Deserialize(copy, objReader);
+                        if (value != null && copy == null) {
+                            PUtil.LogDebug($"Could not copy field {field.Name} on type {type.ToString()} because serialization/deserialization failed");
+                        }
+                        type.GetField(field.Name, searchFlags).SetValue(component, copy);
+                    }
+                }
+            }
+            return true;
+        }
+
         public static Sprite CreateSpriteDXT5(Stream inputStream, int width, int height) {
             byte[] buffer = new byte[inputStream.Length - 128];
             inputStream.Seek(128, SeekOrigin.Current);

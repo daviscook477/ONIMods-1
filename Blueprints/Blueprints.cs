@@ -3,6 +3,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using PeterHan.PLib;
 using STRINGS;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
@@ -172,6 +173,7 @@ namespace Blueprints {
 
                                     GameObject settingsSource = Util.KInstantiate(gameObject, Vector3.zero);
                                     settingsSource.SetActive(false);
+                                    Utilities.CopySettingsWithReflection(settingsSource, gameObject);
 
                                     BuildingConfig buildingConfig = new BuildingConfig {
                                         Offset = new Vector2I(centre.x - topLeft.x, blueprintHeight - (topLeft.y - centre.y)),
@@ -282,10 +284,10 @@ namespace Blueprints {
             CleanDirtyVisuals();
             cleanableVisuals.Clear();
 
-            foundationVisuals.ForEach(foundationVisual => Object.DestroyImmediate(foundationVisual.Visualizer));
+            foundationVisuals.ForEach(foundationVisual => UnityEngine.Object.DestroyImmediate(foundationVisual.Visualizer));
             foundationVisuals.Clear();
 
-            dependantVisuals.ForEach(dependantVisual => Object.DestroyImmediate(dependantVisual.Visualizer));
+            dependantVisuals.ForEach(dependantVisual => UnityEngine.Object.DestroyImmediate(dependantVisual.Visualizer));
             dependantVisuals.Clear();
         }
 

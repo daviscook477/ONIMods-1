@@ -528,6 +528,15 @@ namespace Blueprints {
         public bool IsEmpty() {
             return BuildingConfiguration.Count == 0 && DigLocations.Count == 0;
         }
+
+        /// <summary>
+        /// Disposes of all resources consumed by this blueprint.
+        /// </summary>
+        public void Dispose() {
+            foreach (BuildingConfig config in BuildingConfiguration) {
+                config.Dispose();
+            }
+        }
     }
 
     /// <summary>
@@ -720,6 +729,13 @@ namespace Blueprints {
         /// <returns>True if the two objects are equal, false otherwise</returns>
         public bool Equals(BuildingConfig otherBuildingConfig) {
             return Offset == otherBuildingConfig.Offset && BuildingDef == otherBuildingConfig.BuildingDef && Orientation == otherBuildingConfig.Orientation;
+        }
+
+        /// <summary>
+        /// Disposes of all resources consumed by this building description.
+        /// </summary>
+        public void Dispose() {
+            Object.Destroy(SettingsSource);
         }
     }
 }
