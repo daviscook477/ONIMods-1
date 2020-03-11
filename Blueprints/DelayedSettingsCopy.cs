@@ -23,13 +23,15 @@ namespace Blueprints {
 
         /// <summary>
         /// Coroutine that delays the execution of the CopySettings trigger by a single frame.
+        /// Upon completion it destroys the source of the settings as it is no longer in use.
         /// Also destroys this script as it has nothing left to do after performing this delayed trigger.
         /// </summary>
         /// <returns>Some weird stuff with yield. I don't know how coroutines work.</returns>
         IEnumerator DelayedCopy()
         {
             yield return 0;
-            gameObject.Trigger(-905833192, settingsSource);
+            gameObject.Trigger((int) GameHashes.CopySettings, settingsSource);
+            Destroy(settingsSource);
             Destroy(this);
         }
     }

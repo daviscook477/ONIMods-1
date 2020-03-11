@@ -99,6 +99,7 @@
     <Compile Include="DelayedSettingsCopy.cs" />
     <Compile Include="Integration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SettingsRegistry.cs" />
     <Compile Include="SnapshotTool.cs" />
     <Compile Include="SnapshotToolHoverCard.cs" />
     <Compile Include="UseBlueprintTool.cs" />

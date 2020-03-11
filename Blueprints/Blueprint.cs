@@ -528,15 +528,6 @@ namespace Blueprints {
         public bool IsEmpty() {
             return BuildingConfiguration.Count == 0 && DigLocations.Count == 0;
         }
-
-        /// <summary>
-        /// Disposes of all resources consumed by this blueprint.
-        /// </summary>
-        public void Dispose() {
-            foreach (BuildingConfig config in BuildingConfiguration) {
-                config.Dispose();
-            }
-        }
     }
 
     /// <summary>
@@ -565,9 +556,9 @@ namespace Blueprints {
 
         /// <summary>
         /// The settings of the building.
-        /// Stored as a GameObject with the `CopyBuildingSettings`
+        /// Stored with serialization to allow for performing deep copies.
         /// </summary>
-        public GameObject SettingsSource { get; set; } = null;
+        public SerializedBuilding SettingsSource { get; set; } = null;
 
         /// <summary>
         /// Multi use flags for describing more complex elements of the building, such as pipe connections.
@@ -730,12 +721,12 @@ namespace Blueprints {
         public bool Equals(BuildingConfig otherBuildingConfig) {
             return Offset == otherBuildingConfig.Offset && BuildingDef == otherBuildingConfig.BuildingDef && Orientation == otherBuildingConfig.Orientation;
         }
+    }
 
-        /// <summary>
-        /// Disposes of all resources consumed by this building description.
-        /// </summary>
-        public void Dispose() {
-            Object.Destroy(SettingsSource);
-        }
+    public sealed class SerializedBuilding
+    {
+        public Tag PrefabID;
+
+        public byte[] Serialization;
     }
 }

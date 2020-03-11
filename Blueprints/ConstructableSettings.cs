@@ -2,7 +2,6 @@
 using Harmony;
 using UnityEngine;
 using System.Collections.Generic;
-using System;
 using System.Reflection.Emit;
 
 namespace Blueprints {
@@ -32,7 +31,7 @@ namespace Blueprints {
             // Since this method hooks into all construction completions, many of them will not have any settings to transfer.
             if (settings == null)
                 return;
-            CopyUtilities.CopySettingsWithDelegate(gameObject, settings.settingsSource);
+            CopyUtilities.CopySettingsWithDelegateAndDestroy(gameObject, settings.settingsSource);
         }
 
         [HarmonyPatch(typeof(Constructable))]

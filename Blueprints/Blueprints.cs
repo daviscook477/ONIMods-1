@@ -170,13 +170,13 @@ namespace Blueprints {
 
                                 if ((primaryElement = building.GetComponent<PrimaryElement>()) != null) {
                                     Vector2I centre = Grid.CellToXY(GameUtil.NaturalBuildingCell(building));
-                                    GameObject settingsSource = CopyUtilities.CopyGameObjectWithSerialization(gameObject);
+                                    //GameObject settingsSource = CopyUtilities.CopyGameObjectWithSerialization(gameObject);
 
                                     BuildingConfig buildingConfig = new BuildingConfig {
                                         Offset = new Vector2I(centre.x - topLeft.x, blueprintHeight - (topLeft.y - centre.y)),
                                         BuildingDef = building.Def,
                                         Orientation = building.Orientation,
-                                        SettingsSource = settingsSource
+                                        SettingsSource = CopyUtilities.SerializeBuilding(gameObject)
                                     };
 
                                     buildingConfig.SelectedElements.Add(primaryElement.ElementID.CreateTag());

@@ -133,29 +133,87 @@ namespace Blueprints {
             }
         }
 
-        public static bool CopySettingsWithDelegate(GameObject gameObject, GameObject sourceGameObject) {
+        private static bool DestroyAndReturnFalse(GameObject sourceGameObject) {
+            UnityEngine.Object.Destroy(sourceGameObject);
+            return false;
+        }
+
+        public static bool CopySettingsWithDelegateAndDestroy(GameObject gameObject, GameObject sourceGameObject) {
             if (gameObject == null || gameObject == sourceGameObject)
-                return false;
+                return DestroyAndReturnFalse(sourceGameObject);
             KPrefabID sourceId = sourceGameObject.GetComponent<KPrefabID>();
             if (sourceId == null)
-                return false;
+                return DestroyAndReturnFalse(sourceGameObject);
             KPrefabID targetId = gameObject.GetComponent<KPrefabID>();
             if (targetId == null)
-                return false;
+                return DestroyAndReturnFalse(sourceGameObject);
             CopyBuildingSettings sourceCopySettings = sourceGameObject.GetComponent<CopyBuildingSettings>();
             if (sourceCopySettings == null)
-                return false;
+                return DestroyAndReturnFalse(sourceGameObject);
             CopyBuildingSettings targetCopySettings = gameObject.GetComponent<CopyBuildingSettings>();
             if (targetCopySettings == null)
-                return false;
+                return DestroyAndReturnFalse(sourceGameObject);
             if (sourceCopySettings.copyGroupTag != Tag.Invalid) {
                 if (sourceCopySettings.copyGroupTag != targetCopySettings.copyGroupTag)
-                    return false;
+                    return DestroyAndReturnFalse(sourceGameObject);
             }
             else if (targetId.PrefabID() != sourceId.PrefabID())
-                return false;
+                return DestroyAndReturnFalse(sourceGameObject);
             gameObject.AddComponent<DelayedSettingsCopy>().settingsSource = sourceGameObject;
             return true;
+        }
+
+        public static SerializedBuilding SerializeBuilding(GameObject sourceGameObject)
+        {
+            SaveLoadRoot saveLoadRoot = sourceGameObject.GetComponent<SaveLoadRoot>();
+            if (saveLoadRoot == null)
+            {
+                PUtil.LogDebug("Unable to serialize GameObject because it lacks a SaveLoadRoot component.");
+                return null;
+            }
+            Manager.Clear();
+            using (MemoryStream objStream = new MemoryStream())
+            {
+                // Process serialization in two stages. The object must be serialized
+                // first to populate the templates in the serialization Manager.
+                using (BinaryWriter objWriter = new BinaryWriter(objStream))
+                {
+                    saveLoadRoot.SaveWithoutTransform(objWriter);
+                }
+                using (MemoryStream fullStream = new MemoryStream())
+                {
+                    using (BinaryWriter fullWriter = new BinaryWriter(fullStream))
+                    {
+                        // But the templates must be serialized first on the final stream
+                        // before the object in order for the deserialization utility to
+                        // properly reconstruct the type.
+                        Manager.SerializeDirectory(fullWriter);
+                        fullWriter.Write(objStream.ToArray());
+                        return new SerializedBuilding {
+                            PrefabID = sourceGameObject.PrefabID(),
+                            Serialization = fullStream.ToArray()
+                        };
+                    }
+                }
+            }
+        }
+
+        public static GameObject DeserializeGameObject(SerializedBuilding serializedBuilding)
+        {
+            Tag key = serializedBuilding.PrefabID;
+            GameObject prefab = SaveLoader.Instance.saveManager.GetPrefab(key);
+            GameObject cloneGameObject = Util.KInstantiate(prefab,
+                Vector3.zero,
+                Quaternion.identity,
+                null, null, false, 0);
+            cloneGameObject.transform.localScale = Vector3.one;
+            cloneGameObject.SetActive(true);
+            Manager.Clear();
+            IReader reader = new FastReader(serializedBuilding.Serialization);
+            Manager.DeserializeDirectory(reader);
+            Traverse.Create(typeof(SaveLoadRoot)).CallMethod("LoadInternal", cloneGameObject, reader);
+            cloneGameObject.SetActive(false);
+            return cloneGameObject;
         }
 
         /// <summary>
