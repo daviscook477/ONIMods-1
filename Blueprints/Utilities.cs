@@ -10,69 +10,6 @@ using KSerialization;
 
 namespace Blueprints {
     public static class Utilities {
-        public static bool CopySettingsWithDelegate(GameObject gameObject, GameObject sourceGameObject) {
-            if (gameObject == null || gameObject == sourceGameObject)
-                return false;
-            KPrefabID sourceId = sourceGameObject.GetComponent<KPrefabID>();
-            if (sourceId == null)
-                return false;
-            KPrefabID targetId = gameObject.GetComponent<KPrefabID>();
-            if (targetId == null)
-                return false;
-            CopyBuildingSettings sourceCopySettings = sourceGameObject.GetComponent<CopyBuildingSettings>();
-            if (sourceCopySettings == null)
-                return false;
-            CopyBuildingSettings targetCopySettings = gameObject.GetComponent<CopyBuildingSettings>();
-            if (targetCopySettings == null)
-                return false;
-            if (sourceCopySettings.copyGroupTag != Tag.Invalid) {
-                if (sourceCopySettings.copyGroupTag != targetCopySettings.copyGroupTag)
-                    return false;
-            }
-            else if (targetId.PrefabID() != sourceId.PrefabID())
-                return false;
-            gameObject.AddComponent<DelayedSettingsCopy>().settingsSource = sourceGameObject;
-            return true;
-        }
-
-        public static bool CopySettingsWithReflection(GameObject gameObject, GameObject sourceGameObject) {
-            foreach (KMonoBehaviour component in gameObject.GetComponents<KMonoBehaviour>()) {
-                Type type = component.GetType();
-                Component tmpComponent = sourceGameObject.GetComponent(type);
-                if (!(tmpComponent is KMonoBehaviour)) {
-                    PUtil.LogDebug($"Could not copy serialized settings on component of type {component.GetType().Name} as it did not inherit from KMonoBehavior");
-                    return false;
-                }
-                KMonoBehaviour sourceComponent = (KMonoBehaviour)tmpComponent;
-                BindingFlags searchFlags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance;
-                foreach (FieldInfo field in sourceComponent.GetType().GetFields(searchFlags)) {
-                    if (Attribute.IsDefined(field, typeof(Serialize))) {
-                        object value = field.GetValue(sourceComponent);
-                        Stream stream = new MemoryStream();
-                        BinaryWriter templateWriter = new BinaryWriter(stream);
-                        SerializationTemplate serTemplate = new SerializationTemplate(value.GetType());
-                        serTemplate.SerializeTemplate(templateWriter);
-                        stream.Flush();
-                        KBinaryReader templateReader = new KBinaryReader(stream);
-                        DeserializationTemplate deserTemplate = new DeserializationTemplate(value.GetType().ToString(), templateReader);
-                        object copy = Activator.CreateInstance(value.GetType());
-                        DeserializationMapping mapping = new DeserializationMapping(deserTemplate, serTemplate);
-                        Stream objStream = new MemoryStream();
-                        BinaryWriter objWriter = new BinaryWriter(objStream);
-                        Serializer.Serialize(value, objWriter);
-                        objWriter.Flush();
-                        KBinaryReader objReader = new KBinaryReader(objStream);
-                        mapping.Deserialize(copy, objReader);
-                        if (value != null && copy == null) {
-                            PUtil.LogDebug($"Could not copy field {field.Name} on type {type.ToString()} because serialization/deserialization failed");
-                        }
-                        type.GetField(field.Name, searchFlags).SetValue(component, copy);
-                    }
-                }
-            }
-            return true;
-        }
-
         public static Sprite CreateSpriteDXT5(Stream inputStream, int width, int height) {
             byte[] buffer = new byte[inputStream.Length - 128];
             inputStream.Seek(128, SeekOrigin.Current);
@@ -173,6 +110,98 @@ namespace Blueprints {
             }
 
             return false;
+        }
+    }
+
+    public static class CopyUtilities {
+        public static void DumpGameObject(GameObject gameObject)
+        {
+            if (gameObject == null)
+                PUtil.LogDebug("Attempted to dump a gameObject equal to null");
+            else
+                PUtil.LogDebug($"Dumping gameObject with name: {gameObject.name}");
+            foreach (KMonoBehaviour component in gameObject.GetComponents<KMonoBehaviour>())
+            {
+                PUtil.LogDebug($"  Found component with type: {component.GetType().Name}");
+                var flags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
+                foreach (FieldInfo field in component.GetType().GetFields(flags))
+                {
+                    var value = field.GetValue(component);
+                    string valueStr = value != null ? value.ToString() : null;
+                    PUtil.LogDebug($"    On that component the field: {field.Name} had value: {valueStr}");
+                }
+            }
+        }
+
+        public static bool CopySettingsWithDelegate(GameObject gameObject, GameObject sourceGameObject) {
+            if (gameObject == null || gameObject == sourceGameObject)
+                return false;
+            KPrefabID sourceId = sourceGameObject.GetComponent<KPrefabID>();
+            if (sourceId == null)
+                return false;
+            KPrefabID targetId = gameObject.GetComponent<KPrefabID>();
+            if (targetId == null)
+                return false;
+            CopyBuildingSettings sourceCopySettings = sourceGameObject.GetComponent<CopyBuildingSettings>();
+            if (sourceCopySettings == null)
+                return false;
+            CopyBuildingSettings targetCopySettings = gameObject.GetComponent<CopyBuildingSettings>();
+            if (targetCopySettings == null)
+                return false;
+            if (sourceCopySettings.copyGroupTag != Tag.Invalid) {
+                if (sourceCopySettings.copyGroupTag != targetCopySettings.copyGroupTag)
+                    return false;
+            }
+            else if (targetId.PrefabID() != sourceId.PrefabID())
+                return false;
+            gameObject.AddComponent<DelayedSettingsCopy>().settingsSource = sourceGameObject;
+            return true;
+        }
+
+        /// <summary>
+        /// Copies a GameObject using klei's serialization utility.
+        /// Code is based on the usage of the serialization Manager in
+        /// the SaveLoader and WorldGenSimUtil.
+        /// </summary>
+        /// <param name="sourceGameObject">The GameObject to make a clone of</param>
+        /// <returns>A clone of the given GameObject</returns>
+        public static GameObject CopyGameObjectWithSerialization(GameObject sourceGameObject) {
+            SaveLoadRoot saveLoadRoot = sourceGameObject.GetComponent<SaveLoadRoot>();
+            if (saveLoadRoot == null) {
+                PUtil.LogDebug("Unable to copy GameObject because it lacks a SaveLoadRoot component.");
+                return null;
+            }
+            Tag key = sourceGameObject.PrefabID();
+            GameObject prefab = SaveLoader.Instance.saveManager.GetPrefab(key);
+            GameObject cloneGameObject = Util.KInstantiate(prefab,
+                sourceGameObject.transform.position,
+                sourceGameObject.transform.rotation,
+                null, null, false, 0);
+            cloneGameObject.transform.localScale = sourceGameObject.transform.localScale;
+            cloneGameObject.SetActive(true);
+            Manager.Clear();
+            using (MemoryStream objStream = new MemoryStream()) {
+                // Process serialization in two stages. The object must be serialized
+                // first to populate the templates in the serialization Manager.
+                using (BinaryWriter objWriter = new BinaryWriter(objStream)) {
+                    saveLoadRoot.SaveWithoutTransform(objWriter);
+                }
+                using (MemoryStream fullStream = new MemoryStream()) {
+                    using (BinaryWriter fullWriter = new BinaryWriter(fullStream)) {
+                        // But the templates must be serialized first on the final stream
+                        // before the object in order for the deserialization utility to
+                        // properly reconstruct the type.
+                        Manager.SerializeDirectory(fullWriter);
+                        fullWriter.Write(objStream.ToArray());
+                    }
+                    Manager.Clear();
+                    IReader reader = new FastReader(fullStream.ToArray());
+                    Manager.DeserializeDirectory(reader);
+                    Traverse.Create(typeof(SaveLoadRoot)).CallMethod("LoadInternal", cloneGameObject, reader);
+                }
+            }
+            cloneGameObject.SetActive(false);
+            return cloneGameObject;
         }
     }
 

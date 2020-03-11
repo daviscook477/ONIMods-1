@@ -48,6 +48,7 @@ namespace Blueprints {
         }
 
         public void DeleteBlueprint() {
+            SnapshotRegistry.Instance.TryDispose(blueprint);
             blueprint = null;
 
             gameObject.GetComponent<SnapshotToolHoverCard>().UsingSnapshot = false;
@@ -115,6 +116,7 @@ namespace Blueprints {
                 }
 
                 Blueprint blueprint = BlueprintsState.CreateBlueprint(new Vector2I(x0, y0), new Vector2I(x1, y1), this);
+                SnapshotRegistry.Instance.Register(blueprint);
                 if (blueprint.IsEmpty()) {
                     PopFXManager.Instance.SpawnFX(BlueprintsAssets.BLUEPRINTS_CREATE_ICON_SPRITE, Strings.Get(BlueprintsStrings.STRING_BLUEPRINTS_SNAPSHOT_EMPTY), null, PlayerController.GetCursorPos(KInputManager.GetMousePos()), BlueprintsAssets.Options.FXTime);
                 }
@@ -142,6 +144,7 @@ namespace Blueprints {
 
             else if (hasFocus) {
                 BlueprintsState.UseBlueprint(Grid.PosToXY(cursorPos));
+                SnapshotRegistry.Instance.AddReferences(blueprint, blueprint.BuildingConfiguration.Count);
             }
         }
 

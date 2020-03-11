@@ -170,10 +170,7 @@ namespace Blueprints {
 
                                 if ((primaryElement = building.GetComponent<PrimaryElement>()) != null) {
                                     Vector2I centre = Grid.CellToXY(GameUtil.NaturalBuildingCell(building));
-
-                                    GameObject settingsSource = Util.KInstantiate(gameObject, Vector3.zero);
-                                    settingsSource.SetActive(false);
-                                    Utilities.CopySettingsWithReflection(settingsSource, gameObject);
+                                    GameObject settingsSource = CopyUtilities.CopyGameObjectWithSerialization(gameObject);
 
                                     BuildingConfig buildingConfig = new BuildingConfig {
                                         Offset = new Vector2I(centre.x - topLeft.x, blueprintHeight - (topLeft.y - centre.y)),

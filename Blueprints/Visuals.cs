@@ -105,7 +105,7 @@ namespace Blueprints {
                     }
 
                     building.SetActive(true);
-                    Utilities.CopySettingsWithDelegate(building, buildingConfig.SettingsSource);
+                    CopyUtilities.CopySettingsWithDelegate(building, buildingConfig.SettingsSource);
                     return true;
                 }
             }

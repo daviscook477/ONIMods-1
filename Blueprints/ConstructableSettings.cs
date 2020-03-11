@@ -32,7 +32,7 @@ namespace Blueprints {
             // Since this method hooks into all construction completions, many of them will not have any settings to transfer.
             if (settings == null)
                 return;
-            Utilities.CopySettingsWithDelegate(gameObject, settings.settingsSource);
+            CopyUtilities.CopySettingsWithDelegate(gameObject, settings.settingsSource);
         }
 
         [HarmonyPatch(typeof(Constructable))]
