@@ -105,7 +105,8 @@ namespace Blueprints {
                     }
 
                     building.SetActive(true);
-                    CopyUtilities.CopySettingsWithDelegateAndDestroy(building, CopyUtilities.DeserializeGameObject(buildingConfig.SettingsSource));
+                    if (buildingConfig.SettingsSource != null)
+                        CopyUtilities.CopySettingsWithDelegateAndDestroy(building, CopyUtilities.DeserializeGameObject(buildingConfig.SettingsSource));
                     return true;
                 }
             }
